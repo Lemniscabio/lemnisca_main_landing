@@ -365,8 +365,20 @@
             }
         });
 
-        // 3. Scroll Reveal Logic (Existing)
+        // 3. Scroll Reveal Logic (Revised to force visibility on initial load)
         document.addEventListener('DOMContentLoaded', () => {
+            const elementsToObserve = document.querySelectorAll('.reveal-on-scroll');
+            
+            // First, force visibility for elements that are already in the viewport (a common deployment fix)
+            elementsToObserve.forEach(el => {
+                // Check if element is close to the top (i.e., should be visible immediately)
+                const rect = el.getBoundingClientRect();
+                if (rect.top < window.innerHeight * 1.5) { // If top is within 1.5 screen heights
+                    el.classList.add('is-visible');
+                }
+            });
+
+            // Then, set up the standard observer for elements lower down
             const observerOptions = { root: null, rootMargin: '0px', threshold: 0.1 };
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
@@ -376,7 +388,7 @@
                 });
             }, observerOptions);
 
-            document.querySelectorAll('.reveal-on-scroll').forEach(el => observer.observe(el));
+            elementsToObserve.forEach(el => observer.observe(el));
         });
     </script>
 </body>
