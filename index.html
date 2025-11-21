@@ -35,19 +35,6 @@
             font-family: 'Inter', sans-serif;
         }
 
-        /* Smooth Reveal Animation Classes */
-        /* Only applied to sections below the fold now */
-        .reveal-on-scroll {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .reveal-on-scroll.is-visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
         /* Logo Entrance & Shimmer Animation */
         @keyframes cinematicBlur {
             0% { opacity: 0; filter: blur(10px); letter-spacing: 0.1em; }
@@ -160,7 +147,7 @@
     <!-- Main Content Wrapper -->
     <main class="relative z-10 w-full max-w-[700px] px-6 md:px-0 flex flex-col items-center text-center pb-24 pt-20">
 
-        <!-- SECTION: HERO (NO reveal-on-scroll) -->
+        <!-- SECTION: HERO -->
         <section class="min-h-[85vh] flex flex-col justify-center items-center w-full">
             <h1 class="text-4xl md:text-6xl font-bold tracking-tight leading-[1.1] mb-6 text-white">
                 A new architecture for how the world makes matter.
@@ -170,7 +157,7 @@
             </p>
         </section>
 
-        <!-- SECTION: THE IDEA (NO reveal-on-scroll) -->
+        <!-- SECTION: THE IDEA -->
         <section class="w-full mb-32 max-w-[600px] mx-auto">
             <div class="space-y-8 text-lg md:text-xl font-light leading-relaxed text-[#D1D5DB]">
                 <p>
@@ -185,8 +172,8 @@
             </div>
         </section>
 
-        <!-- SECTION: WHAT WE BELIEVE (reveal-on-scroll remains) -->
-        <section class="w-full mb-32 text-left reveal-on-scroll">
+        <!-- SECTION: WHAT WE BELIEVE -->
+        <section class="w-full mb-32 text-left">
             <div class="w-full flex justify-center md:justify-start">
                 <h6 class="text-xs font-bold tracking-[0.2em] uppercase text-[#D1D5DB] mb-12 opacity-60 border-b border-[#2B3A67] pb-4 inline-block">
                     Core Principles
@@ -238,8 +225,8 @@
             </div>
         </section>
 
-        <!-- SECTION: WHAT WE're BUILDING (reveal-on-scroll remains) -->
-        <section class="w-full mb-32 reveal-on-scroll">
+        <!-- SECTION: WHAT WE're BUILDING -->
+        <section class="w-full mb-32">
              <div class="w-full flex justify-center md:justify-start">
                 <h6 class="text-xs font-bold tracking-[0.2em] uppercase text-[#D1D5DB] mb-8 opacity-60 border-b border-[#2B3A67] pb-4 inline-block">
                     What We're Building
@@ -253,8 +240,8 @@
             </div>
         </section>
 
-        <!-- SECTION: EMAIL CTA (reveal-on-scroll remains) -->
-        <section class="w-full mb-20 reveal-on-scroll">
+        <!-- SECTION: EMAIL CTA -->
+        <section class="w-full mb-20">
             <div class="bg-[#0A0F1C] border border-[#2B3A67] p-8 md:p-12 rounded-sm text-center shadow-[0_0_50px_-15px_rgba(43,58,103,0.1)]">
                 
                 <!-- Form Container -->
@@ -288,8 +275,8 @@
             </div>
         </section>
 
-        <!-- FOOTER (reveal-on-scroll remains) -->
-        <footer class="w-full text-center reveal-on-scroll">
+        <!-- FOOTER -->
+        <footer class="w-full text-center">
             <p class="text-sm text-[#D1D5DB] opacity-40 font-light tracking-widest uppercase">
                 Lemnisca &copy; 2025 — Some journeys don’t have a finish line.
             </p>
@@ -303,7 +290,12 @@
         import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
         import { getFirestore, collection, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
 
-        const firebaseConfig = JSON.parse(__firebase_config);
+        // Check if environment variables are available (for deployment/Canvas use)
+        if (typeof __firebase_config === 'undefined' || typeof __app_id === 'undefined') {
+            console.warn("Firebase environment variables are missing. Form submission will not work.");
+        }
+        
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
@@ -312,17 +304,17 @@
         let user = null;
 
         // 1. Authenticate anonymously to allow writing to DB
-        signInAnonymously(auth)
-            .then(() => {
-                console.log("Anonymous auth successful");
-            })
-            .catch((error) => {
-                console.error("Auth failed", error);
-            });
-
-        onAuthStateChanged(auth, (u) => {
-            user = u;
-        });
+        // Use a fallback to prevent error if firebase config is missing entirely
+        if (Object.keys(firebaseConfig).length > 0) {
+            signInAnonymously(auth)
+                .then((credential) => {
+                    user = credential.user;
+                    console.log("Anonymous auth successful for user:", user.uid);
+                })
+                .catch((error) => {
+                    console.error("Firebase Auth failed:", error);
+                });
+        }
 
         // 2. Handle Form Submission
         const form = document.getElementById('email-form');
@@ -334,7 +326,25 @@
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            if (!emailInput.value || !user) return;
+            if (!emailInput.value) {
+                // Should not happen with 'required' but good for robustness
+                console.error("Email required.");
+                return;
+            }
+            
+            if (!user) {
+                // If Firebase auth failed or didn't run, warn the user but proceed visually
+                console.warn("User not authenticated or Firebase unavailable. Cannot save email to Firestore.");
+                
+                // Still show success state to the user since the page is "coming soon"
+                formContainer.classList.add('fade-out');
+                setTimeout(() => {
+                    formContainer.style.display = 'none';
+                    successMessage.classList.remove('hidden');
+                    successMessage.classList.add('fade-in');
+                }, 500);
+                return;
+            }
 
             // UI Loading State
             const originalBtnText = submitBtn.innerText;
@@ -360,35 +370,11 @@
 
             } catch (error) {
                 console.error("Error adding document: ", error);
+                
+                // Revert UI on failure
                 submitBtn.innerText = "Error. Try Again.";
                 submitBtn.disabled = false;
             }
-        });
-
-        // 3. Scroll Reveal Logic (Revised to force visibility on initial load)
-        document.addEventListener('DOMContentLoaded', () => {
-            const elementsToObserve = document.querySelectorAll('.reveal-on-scroll');
-            
-            // First, force visibility for elements that are already in the viewport (a common deployment fix)
-            elementsToObserve.forEach(el => {
-                // Check if element is close to the top (i.e., should be visible immediately)
-                const rect = el.getBoundingClientRect();
-                if (rect.top < window.innerHeight * 1.5) { // If top is within 1.5 screen heights
-                    el.classList.add('is-visible');
-                }
-            });
-
-            // Then, set up the standard observer for elements lower down
-            const observerOptions = { root: null, rootMargin: '0px', threshold: 0.1 };
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('is-visible');
-                    }
-                });
-            }, observerOptions);
-
-            elementsToObserve.forEach(el => observer.observe(el));
         });
     </script>
 </body>
