@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lemnisca | A New Architecture</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* Custom Font Setup */
+        :root {
+            --bg-navy: #0A0F1C;
+            --text-white: #FFFFFF;
+            --text-grey: #D1D5DB;
+            --accent-blue: #2B3A67;
+        }
+
+        body {
+            background-color: var(--bg-navy);
+            color: var(--text-white);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        h1, h2, .brand-font {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        
+        /* Principles now use Inter for a cleaner technical look */
+        h3 {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Smooth Reveal Animation Classes */
+        .reveal-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .reveal-on-scroll.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Logo Entrance & Shimmer Animation */
+        @keyframes cinematicBlur {
+            0% { opacity: 0; filter: blur(10px); letter-spacing: 0.1em; }
+            100% { opacity: 1; filter: blur(0); letter-spacing: 0.25em; }
+        }
+        
+        @keyframes shimmer {
+            0% { background-position: 200% center; }
+            100% { background-position: -200% center; }
+        }
+
+        .logo-entrance {
+            animation: cinematicBlur 2.5s ease-out forwards;
+            opacity: 0; /* Start hidden */
+        }
+
+        .dynamic-brand {
+            background: linear-gradient(to right, #FFFFFF 20%, #5f72a8 50%, #FFFFFF 80%);
+            background-size: 200% auto;
+            color: #FFFFFF; /* Fallback */
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer 8s linear infinite;
+        }
+
+        /* Background Infinity Pulse Animation */
+        @keyframes slowPulse {
+            0% { opacity: 0.15; transform: scale(1) rotate(0deg); }
+            50% { opacity: 0.3; transform: scale(1.02) rotate(1deg); }
+            100% { opacity: 0.15; transform: scale(1) rotate(0deg); }
+        }
+
+        .infinity-bg {
+            animation: slowPulse 12s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        /* Form Focus Styles */
+        .minimal-input:focus {
+            border-color: #FFFFFF;
+            outline: none;
+        }
+
+        /* Button Hover Effect */
+        .minimal-btn {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .minimal-btn:hover {
+            background-color: white;
+            color: var(--bg-navy);
+        }
+        
+        .minimal-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Selection Color */
+        ::selection {
+            background: var(--text-grey);
+            color: var(--bg-navy);
+        }
+        
+        /* Fade out utility for form replacement */
+        .fade-out {
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        
+        .fade-in {
+            opacity: 0;
+            animation: fadeIn 0.5s ease forwards;
+        }
+        
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body class="relative min-h-screen flex flex-col items-center w-full">
+
+    <!-- Fixed Header -->
+    <header class="absolute top-0 w-full flex justify-center py-12 z-50">
+        <div class="logo-entrance">
+            <span class="font-bold text-sm md:text-base tracking-[0.25em] uppercase brand-font dynamic-brand">
+                Lemnisca
+            </span>
+        </div>
+    </header>
+
+    <!-- Background Motif: Wireframe Lemniscate -->
+    <div class="fixed inset-0 z-0 flex items-center justify-center overflow-hidden">
+        <svg class="infinity-bg w-[140vw] h-[140vw] md:w-[80vw] md:h-[80vw] text-white fill-none stroke-current" viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg">
+            <!-- Layer 1 -->
+            <path d="M100,50 C100,50 140,10 170,50 C200,90 140,90 100,50 C60,10 0,10 30,50 C60,90 100,50 100,50" 
+                  stroke-width="0.2" stroke-opacity="0.8" />
+            <!-- Layer 2 (Offset) -->
+            <path d="M100,50 C100,50 142,8 172,50 C202,92 142,92 100,50 C58,8 -2,8 28,50 C58,92 100,50 100,50" 
+                  stroke-width="0.1" stroke-opacity="0.6" />
+            <!-- Layer 3 (Offset Inner) -->
+            <path d="M100,50 C100,50 138,12 168,50 C198,88 138,88 100,50 C62,12 2,12 32,50 C62,88 100,50 100,50" 
+                  stroke-width="0.1" stroke-opacity="0.6" />
+        </svg>
+    </div>
+
+    <!-- Main Content Wrapper -->
+    <main class="relative z-10 w-full max-w-[700px] px-6 md:px-0 flex flex-col items-center text-center pb-24 pt-20">
+
+        <!-- SECTION: HERO -->
+        <section class="min-h-[85vh] flex flex-col justify-center items-center w-full reveal-on-scroll">
+            <h1 class="text-4xl md:text-6xl font-bold tracking-tight leading-[1.1] mb-6 text-white">
+                A new architecture for how the world makes matter.
+            </h1>
+            <p class="text-lg md:text-xl text-[#D1D5DB] font-light tracking-wide opacity-90">
+                Where intelligence and biology shape matter locally.
+            </p>
+        </section>
+
+        <!-- SECTION: THE IDEA -->
+        <section class="w-full mb-32 reveal-on-scroll max-w-[600px] mx-auto">
+            <div class="space-y-8 text-lg md:text-xl font-light leading-relaxed text-[#D1D5DB]">
+                <p>
+                    The world was built on linear supply chains — efficient, but fragile.
+                </p>
+                <p>
+                    The future requires systems that are circular, adaptive, and locally grounded.
+                </p>
+                <p class="text-white font-medium">
+                    We’re designing the foundation for that transition.
+                </p>
+            </div>
+        </section>
+
+        <!-- SECTION: WHAT WE BELIEVE -->
+        <section class="w-full mb-32 text-left reveal-on-scroll">
+            <div class="w-full flex justify-center md:justify-start">
+                <h6 class="text-xs font-bold tracking-[0.2em] uppercase text-[#D1D5DB] mb-12 opacity-60 border-b border-[#2B3A67] pb-4 inline-block">
+                    Core Principles
+                </h6>
+            </div>
+            
+            <!-- Principles Grid / List -->
+            <div class="flex flex-col w-full">
+                
+                <!-- Principle 1 -->
+                <div class="group flex flex-col md:flex-row md:items-baseline gap-2 md:gap-8 py-8 border-t border-[#2B3A67] border-opacity-30 hover:border-opacity-100 transition-colors duration-500">
+                    <span class="font-mono text-xs md:text-sm text-[#2B3A67] group-hover:text-white transition-colors duration-500 tracking-widest">01</span>
+                    <div>
+                        <h3 class="text-xl md:text-2xl font-medium text-white mb-2 tracking-tight group-hover:translate-x-1 transition-transform duration-500">Topology Matters</h3>
+                        <p class="text-[#D1D5DB] leading-relaxed font-light group-hover:text-white transition-colors duration-500">Linear systems deplete. Circular systems regenerate.</p>
+                    </div>
+                </div>
+
+                <!-- Principle 2 -->
+                <div class="group flex flex-col md:flex-row md:items-baseline gap-2 md:gap-8 py-8 border-t border-[#2B3A67] border-opacity-30 hover:border-opacity-100 transition-colors duration-500">
+                    <span class="font-mono text-xs md:text-sm text-[#2B3A67] group-hover:text-white transition-colors duration-500 tracking-widest">02</span>
+                    <div>
+                        <h3 class="text-xl md:text-2xl font-medium text-white mb-2 tracking-tight group-hover:translate-x-1 transition-transform duration-500">Information Scales</h3>
+                        <p class="text-[#D1D5DB] leading-relaxed font-light group-hover:text-white transition-colors duration-500">Let intelligence do the heavy lifting, faster than infrastructure.</p>
+                    </div>
+                </div>
+
+                <!-- Principle 3 -->
+                <div class="group flex flex-col md:flex-row md:items-baseline gap-2 md:gap-8 py-8 border-t border-[#2B3A67] border-opacity-30 hover:border-opacity-100 transition-colors duration-500">
+                    <span class="font-mono text-xs md:text-sm text-[#2B3A67] group-hover:text-white transition-colors duration-500 tracking-widest">03</span>
+                    <div>
+                        <h3 class="text-xl md:text-2xl font-medium text-white mb-2 tracking-tight group-hover:translate-x-1 transition-transform duration-500">Efficiency of Biology</h3>
+                        <p class="text-[#D1D5DB] leading-relaxed font-light group-hover:text-white transition-colors duration-500">Ambient conditions. Messy inputs. Precise outputs.</p>
+                    </div>
+                </div>
+
+                <!-- Principle 4 -->
+                <div class="group flex flex-col md:flex-row md:items-baseline gap-2 md:gap-8 py-8 border-t border-[#2B3A67] border-opacity-30 hover:border-opacity-100 transition-colors duration-500">
+                    <span class="font-mono text-xs md:text-sm text-[#2B3A67] group-hover:text-white transition-colors duration-500 tracking-widest">04</span>
+                    <div>
+                        <h3 class="text-xl md:text-2xl font-medium text-white mb-2 tracking-tight group-hover:translate-x-1 transition-transform duration-500">Local Resilience</h3>
+                        <p class="text-[#D1D5DB] leading-relaxed font-light group-hover:text-white transition-colors duration-500">Shorter loops. Faster learning. Stronger communities.</p>
+                    </div>
+                </div>
+
+                <!-- Decorative Bottom Border -->
+                <div class="w-full border-t border-[#2B3A67] border-opacity-30"></div>
+
+            </div>
+        </section>
+
+        <!-- SECTION: WHAT WE're BUILDING -->
+        <section class="w-full mb-32 reveal-on-scroll">
+             <div class="w-full flex justify-center md:justify-start">
+                <h6 class="text-xs font-bold tracking-[0.2em] uppercase text-[#D1D5DB] mb-8 opacity-60 border-b border-[#2B3A67] pb-4 inline-block">
+                    What We're Building
+                </h6>
+            </div>
+            
+            <div class="border-l-2 border-[#2B3A67] pl-8 text-left py-2">
+                <p class="text-2xl md:text-3xl font-medium text-white leading-tight">
+                    A programmable manufacturing layer for the circular economy.
+                </p>
+            </div>
+        </section>
+
+        <!-- SECTION: EMAIL CTA -->
+        <section class="w-full mb-20 reveal-on-scroll">
+            <div class="bg-[#0A0F1C] border border-[#2B3A67] p-8 md:p-12 rounded-sm text-center shadow-[0_0_50px_-15px_rgba(43,58,103,0.1)]">
+                
+                <!-- Form Container -->
+                <div id="form-container">
+                    <h4 class="text-xl text-white mb-8 brand-font tracking-wide">Stay close — we’re just getting started.</h4>
+                    
+                    <form id="email-form" class="flex flex-col md:flex-row gap-4 justify-center w-full">
+                        <input 
+                            id="email-input"
+                            type="email" 
+                            placeholder="Email address" 
+                            required
+                            class="minimal-input bg-transparent border border-[#2B3A67] text-white px-4 py-3 w-full md:w-72 placeholder-gray-600 transition-colors rounded-none focus:bg-[#0f172a]"
+                        >
+                        <button 
+                            id="submit-btn"
+                            type="submit" 
+                            class="minimal-btn border border-white text-white px-8 py-3 font-medium tracking-wide rounded-none whitespace-nowrap"
+                        >
+                            Enter the Loop
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Success Message (Hidden by Default) -->
+                <div id="success-message" class="hidden">
+                    <div class="text-white text-2xl mb-2 brand-font">Welcome to the loop.</div>
+                    <p class="text-[#D1D5DB] font-light">We'll be in touch soon.</p>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="w-full text-center reveal-on-scroll">
+            <p class="text-sm text-[#D1D5DB] opacity-40 font-light tracking-widest uppercase">
+                Lemnisca &copy; 2025 — Some journeys don’t have a finish line.
+            </p>
+        </footer>
+
+    </main>
+
+    <!-- Firebase & Logic -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
+        import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
+        import { getFirestore, collection, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
+
+        const firebaseConfig = JSON.parse(__firebase_config);
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'lemnisca';
+
+        let user = null;
+
+        // 1. Authenticate anonymously to allow writing to DB
+        signInAnonymously(auth)
+            .then(() => {
+                console.log("Anonymous auth successful");
+            })
+            .catch((error) => {
+                console.error("Auth failed", error);
+            });
+
+        onAuthStateChanged(auth, (u) => {
+            user = u;
+        });
+
+        // 2. Handle Form Submission
+        const form = document.getElementById('email-form');
+        const emailInput = document.getElementById('email-input');
+        const submitBtn = document.getElementById('submit-btn');
+        const formContainer = document.getElementById('form-container');
+        const successMessage = document.getElementById('success-message');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (!emailInput.value || !user) return;
+
+            // UI Loading State
+            const originalBtnText = submitBtn.innerText;
+            submitBtn.innerText = "Processing...";
+            submitBtn.disabled = true;
+
+            try {
+                // Save to Firestore
+                await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'subscribers'), {
+                    email: emailInput.value,
+                    timestamp: serverTimestamp(),
+                    uid: user.uid // Track who submitted (anonymous ID)
+                });
+
+                // UI Success State
+                formContainer.classList.add('fade-out');
+                
+                setTimeout(() => {
+                    formContainer.style.display = 'none';
+                    successMessage.classList.remove('hidden');
+                    successMessage.classList.add('fade-in');
+                }, 500);
+
+            } catch (error) {
+                console.error("Error adding document: ", error);
+                submitBtn.innerText = "Error. Try Again.";
+                submitBtn.disabled = false;
+            }
+        });
+
+        // 3. Scroll Reveal Logic (Existing)
+        document.addEventListener('DOMContentLoaded', () => {
+            const observerOptions = { root: null, rootMargin: '0px', threshold: 0.1 };
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.reveal-on-scroll').forEach(el => observer.observe(el));
+        });
+    </script>
+</body>
+</html>
