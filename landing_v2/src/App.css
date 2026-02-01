@@ -135,6 +135,7 @@ html, body, #root {
   min-height: 100vh;
   padding: 2rem 4rem;
   background-color: black;
+  position: relative;
 }
 
 .hero_header {
@@ -143,6 +144,8 @@ html, body, #root {
   width: 100%;
   justify-content: space-between;
   align-items: center;
+  position: relative;
+  z-index: 10;
 }
 
 .hero_header img {
@@ -169,26 +172,59 @@ html, body, #root {
 
 .hero_main {
   display: flex;
-  flex-direction: row;
   flex: 1;
   align-items: center;
-  justify-content: space-between;
-  margin-top: 2rem;
+  justify-content: center;
+  position: relative;
 }
 
-.hero_main_text {
+.hero_background_graphic {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 2700px;
+  opacity: 1;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.hero_background_graphic img {
+  width: 100%;
+  height: auto;
+}
+
+.hero_content {
+  text-align: center;
   color: white;
-  max-width: 55%;
+  position: relative;
+  z-index: 2;
+  max-width: 1000px;
+}
+
+.hero_eyebrow {
+  display: inline-block;
+  padding: 0.5rem 1.25rem;
+  border-radius: 2rem;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-weight: 500;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 2rem;
 }
 
 .hero_main_text_heading {
   font-family: var(--font-serif);
-  font-size: 4rem;
+  font-size: 5rem;
   font-weight: 300;
-  line-height: 1.05;
+  line-height: 1.1;
   margin: 0 0 2rem 0;
   text-transform: uppercase;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.05em;
   perspective: 1000px;
 }
 
@@ -199,23 +235,17 @@ html, body, #root {
 }
 
 .hero_main_text_subheading {
-  font-size: 0.8rem;
+  font-size: 1rem;
   font-weight: 300;
-  line-height: 1.6;
-  margin: 0 0 2.5rem 0;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: #999;
-  max-width: 80%;
+  line-height: 1.8;
+  margin: 0 auto 3rem;
+  letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.6);
+  max-width: 600px;
 }
 
 .hero_footer {
-  margin-top: 1rem;
-}
-
-.hero_main_graphic {
-  max-width: 40%;
-  height: auto;
+  margin-top: 0.5rem;
 }
 
 /* ==================== PROBLEM SECTION ==================== */
@@ -1072,26 +1102,18 @@ html, body, #root {
     padding: 1.5rem 2rem;
   }
   
-  .hero_main {
-    flex-direction: column;
-    text-align: center;
-  }
-  
-  .hero_main_text {
-    max-width: 100%;
-  }
-  
   .hero_main_text_heading {
-    font-size: 2.5rem;
+    font-size: 2.75rem;
   }
   
   .hero_main_text_subheading {
+    font-size: 0.9rem;
     max-width: 100%;
   }
   
-  .hero_main_graphic {
-    max-width: 70%;
-    margin-top: 2rem;
+  .hero_background_graphic {
+    width: 80%;
+    opacity: 0.1;
   }
   
   .problem {

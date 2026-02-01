@@ -23,10 +23,11 @@ function App() {
       
       // Set initial states
       gsap.set('.hero_header', { opacity: 0, y: -20 })
-      gsap.set('.hero_word', { opacity: 0, y: 80, rotateX: -40 })
+      gsap.set('.hero_eyebrow', { opacity: 0, y: 20 })
+      gsap.set('.hero_word', { opacity: 0, y: 40 })
       gsap.set('.hero_main_text_subheading', { opacity: 0, y: 30 })
       gsap.set('.hero_footer', { opacity: 0, y: 20 })
-      gsap.set('.hero_main_graphic', { opacity: 0, scale: 0.9, rotate: -5 })
+      gsap.set('.hero_background_graphic', { opacity: 0, scale: 0.8 })
       
       // Animate header
       heroTl.to('.hero_header', {
@@ -35,22 +36,36 @@ function App() {
         duration: 0.8,
       })
       
+      // Animate eyebrow
+      .to('.hero_eyebrow', {
+        opacity: 1,
+        y: 0,
+        duration: 0.6,
+      }, '-=0.3')
+      
       // Animate heading words with stagger
       .to('.hero_word', {
         opacity: 1,
         y: 0,
-        rotateX: 0,
-        duration: 1,
-        stagger: 0.08,
+        duration: 0.8,
+        stagger: 0.05,
         ease: 'power4.out',
-      }, '-=0.4')
+      }, '-=0.3')
+      
+      // Animate background graphic
+      .to('.hero_background_graphic', {
+        opacity: 0.5,
+        scale: 1,
+        duration: 1.5,
+        ease: 'power2.out',
+      }, '-=0.8')
       
       // Animate subheading
       .to('.hero_main_text_subheading', {
         opacity: 1,
         y: 0,
         duration: 0.8,
-      }, '-=0.5')
+      }, '-=0.8')
       
       // Animate CTA button
       .to('.hero_footer', {
@@ -58,20 +73,11 @@ function App() {
         y: 0,
         duration: 0.6,
       }, '-=0.4')
-      
-      // Animate graphic with rotation
-      .to('.hero_main_graphic', {
-        opacity: 1,
-        scale: 1,
-        rotate: 0,
-        duration: 1.4,
-        ease: 'power2.out',
-      }, '-=1.2')
 
-      // Subtle floating animation for the graphic
-      gsap.to('.hero_main_graphic', {
-        y: -10,
-        duration: 3,
+      // Subtle floating animation for the background graphic
+      gsap.to('.hero_background_graphic', {
+        y: -15,
+        duration: 4,
         repeat: -1,
         yoyo: true,
         ease: 'sine.inOut',
@@ -283,20 +289,21 @@ function App() {
         </div>
 
         <div className='hero_main'>
-          <div className='hero_main_text'>
+          <div className='hero_background_graphic'>
+            <img src={heroGraphic} alt="" />
+          </div>
+          <div className='hero_content'>
+            <span className='hero_eyebrow'>FROM LAB TO PRODUCTION</span>
             <h1 className='hero_main_text_heading'>
-              <span className='hero_word'>Rebuilding</span>
-              <span className='hero_word'>manufacturing</span>
-              <span className='hero_word'>for a</span>
-              <span className='hero_word'>constrained</span>
-              <span className='hero_word'>world</span>
+              <span className='hero_word'>Right-first-time</span>
+              <span className='hero_word'>scale-up</span>
+              <span className='hero_word'>for biomanufacturing</span>
             </h1>
             <p className='hero_main_text_subheading'>A science-first system where design, data, and fabrication feed back into each other — locally, continuously, endlessly.</p>
             <div className='hero_footer'>
-              <button className='btn-pill'>Explore →</button>
+              <button className='btn-primary'>Explore →</button>
             </div>
           </div>
-          <img className='hero_main_graphic' src={heroGraphic} alt="heroGraphic" />
         </div>
       </section>
 
