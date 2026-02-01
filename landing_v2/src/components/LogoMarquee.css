@@ -1,0 +1,39 @@
+.supported {
+  background-color: white;
+  padding: 3rem 0;
+  text-align: center;
+  overflow: hidden;
+  border-top: 1px solid #e5e5e5;
+}
+
+.supported_label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3rem;
+  color: #999;
+  margin: 0 0 2rem 0;
+  font-weight: 500;
+}
+
+.supported img {
+  height: 55px;
+  width: auto;
+  object-fit: contain;
+  filter: grayscale(100%);
+  opacity: 0.6;
+  transition: all 0.3s ease;
+  margin: 0 5rem;
+}
+
+.supported img:hover {
+  filter: grayscale(0%);
+  opacity: 1;
+}
+
+/* Individual logo sizes - adjust as needed */
+.supported img.logo-theia { height: 75px; }
+.supported img.logo-pointone { height: 85px; }
+.supported img.logo-scaler { height: 75px; }
+.supported img.logo-bbc { height: 85px; }
+.supported img.logo-itbt { height: 95px; border-radius: 3rem; }
+.supported img.logo-yokogawa { height: 160px; }
