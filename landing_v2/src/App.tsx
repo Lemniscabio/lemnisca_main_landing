@@ -78,8 +78,8 @@ function App() {
         delay: 2,
       })
 
-      // Problem section - staggered card reveal
-      gsap.fromTo('.problem_intro', 
+      // Problem section - all content fades in together
+      gsap.fromTo('.problem_intro, .problem_cards', 
         { opacity: 0, y: 60 },
         { 
           opacity: 1, 
@@ -89,147 +89,15 @@ function App() {
           scrollTrigger: {
             trigger: '.problem',
             start: 'top 80%',
+          },
+          onComplete: () => {
+            // After content appears, change icons one by one with 1s gap
+            setTimeout(() => setFailedBoxes(prev => [...prev, 1]), 500)
+            setTimeout(() => setFailedBoxes(prev => [...prev, 2]), 1500)
+            setTimeout(() => setFailedBoxes(prev => [...prev, 3]), 2500)
           }
         }
       )
-
-      // ========== PROBLEM SECTION LINE ANIMATION ==========
-      // Build two parallel trace paths - top and bottom halves tracing box borders
-      const buildTracePaths = () => {
-        const cards = document.querySelectorAll('.problem_card')
-        const wrapper = document.querySelector('.problem_cards_wrapper')
-        
-        if (!cards.length || !wrapper) return { top: '', bottom: '' }
-        
-        const wrapperRect = wrapper.getBoundingClientRect()
-        const getRelativePos = (el: Element) => {
-          const rect = el.getBoundingClientRect()
-          return {
-            left: rect.left - wrapperRect.left,
-            top: rect.top - wrapperRect.top,
-            right: rect.right - wrapperRect.left,
-            bottom: rect.bottom - wrapperRect.top,
-            midY: rect.top - wrapperRect.top + rect.height / 2
-          }
-        }
-        
-        const card1 = getRelativePos(cards[0])
-        const card2 = getRelativePos(cards[1])
-        const card3 = getRelativePos(cards[2])
-        
-        // Upper path: traces top edges and right sides going down, left sides going up
-        // Start left-mid box1 → up → across top → down right → connector → up left box2 → across top → down right → connector → up left box3 → across top → down to mid-right
-        const topPath = `
-          M ${card1.left} ${card1.midY}
-          L ${card1.left} ${card1.top}
-          L ${card1.right} ${card1.top}
-          L ${card1.right} ${card1.midY}
-          L ${card2.left} ${card2.midY}
-          L ${card2.left} ${card2.top}
-          L ${card2.right} ${card2.top}
-          L ${card2.right} ${card2.midY}
-          L ${card3.left} ${card3.midY}
-          L ${card3.left} ${card3.top}
-          L ${card3.right} ${card3.top}
-          L ${card3.right} ${card3.midY}
-        `
-        
-        // Lower path: traces bottom edges and right sides going up, left sides going down
-        // Start left-mid box1 → down → across bottom → up right → connector → down left box2 → across bottom → up right → connector → down left box3 → across bottom → up to mid-right
-        const bottomPath = `
-          M ${card1.left} ${card1.midY}
-          L ${card1.left} ${card1.bottom}
-          L ${card1.right} ${card1.bottom}
-          L ${card1.right} ${card1.midY}
-          L ${card2.left} ${card2.midY}
-          L ${card2.left} ${card2.bottom}
-          L ${card2.right} ${card2.bottom}
-          L ${card2.right} ${card2.midY}
-          L ${card3.left} ${card3.midY}
-          L ${card3.left} ${card3.bottom}
-          L ${card3.right} ${card3.bottom}
-          L ${card3.right} ${card3.midY}
-        `
-        
-        return { top: topPath, bottom: bottomPath }
-      }
-      
-      // Set initial states
-      gsap.set('.problem_card', { opacity: 0 })
-      gsap.set('.problem_connector', { opacity: 1 })
-      
-      // Create the scroll trigger
-      ScrollTrigger.create({
-        trigger: '.problem_cards',
-        start: 'top 75%',
-        once: true,
-        onEnter: () => {
-          const paths = buildTracePaths()
-          const traceTop = document.querySelector('.trace_top')
-          const traceBottom = document.querySelector('.trace_bottom')
-          
-          if (traceTop && traceBottom && paths.top && paths.bottom) {
-            traceTop.setAttribute('d', paths.top)
-            traceBottom.setAttribute('d', paths.bottom)
-            
-            const topLength = (traceTop as SVGPathElement).getTotalLength()
-            const bottomLength = (traceBottom as SVGPathElement).getTotalLength()
-            
-            // Timing settings
-            const boxDuration = 1      // Time to trace around a box
-            const connectorDuration = 0.4 // Time to cross connector (adjust this for speed)
-            const trailExitDuration = 0.5 // Time for trail to exit box
-            
-            const topTrail = topLength * 0.35
-            const bottomTrail = bottomLength * 0.35
-            
-            // Each box is ~33% of path, connector is the gap between
-            const box1End = 0.30      // End of box 1 border
-            const conn1End = 0.33     // End of connector 1
-            const box2End = 0.63      // End of box 2 border
-            const conn2End = 0.66     // End of connector 2
-            const box3End = 1.0       // End of box 3 border
-            
-            // Set initial state
-            gsap.set('.trace_top', { strokeDasharray: `${topTrail} ${topLength}`, strokeDashoffset: topTrail })
-            gsap.set('.trace_bottom', { strokeDasharray: `${bottomTrail} ${bottomLength}`, strokeDashoffset: bottomTrail })
-            
-            const traceTl = gsap.timeline()
-            
-            // === BOX 1 ===
-            gsap.set('.problem_card[data-card="1"]', { opacity: 1 })
-            traceTl
-              // Trace box 1
-              .to('.trace_top', { strokeDashoffset: topTrail - (topLength * box1End), duration: boxDuration, ease: 'none' }, 0)
-              .to('.trace_bottom', { strokeDashoffset: bottomTrail - (bottomLength * box1End), duration: boxDuration, ease: 'none',
-                onComplete: () => setFailedBoxes(prev => prev.includes(1) ? prev : [...prev, 1])
-              }, 0)
-              // Trail exits box 1 while crossing connector
-              .to('.trace_top', { strokeDashoffset: topTrail - (topLength * conn1End), duration: connectorDuration, ease: 'none' })
-              .to('.trace_bottom', { strokeDashoffset: bottomTrail - (bottomLength * conn1End), duration: connectorDuration, ease: 'none' }, '<')
-              // === BOX 2 ===
-              .add(() => { gsap.set('.problem_card[data-card="2"]', { opacity: 1 }) })
-              // Trace box 2
-              .to('.trace_top', { strokeDashoffset: topTrail - (topLength * box2End), duration: boxDuration, ease: 'none' })
-              .to('.trace_bottom', { strokeDashoffset: bottomTrail - (bottomLength * box2End), duration: boxDuration, ease: 'none',
-                onComplete: () => setFailedBoxes(prev => prev.includes(2) ? prev : [...prev, 2])
-              }, '<')
-              // Trail exits box 2 while crossing connector
-              .to('.trace_top', { strokeDashoffset: topTrail - (topLength * conn2End), duration: connectorDuration, ease: 'none' })
-              .to('.trace_bottom', { strokeDashoffset: bottomTrail - (bottomLength * conn2End), duration: connectorDuration, ease: 'none' }, '<')
-              // === BOX 3 ===
-              .add(() => { gsap.set('.problem_card[data-card="3"]', { opacity: 1 }) })
-              // Trace box 3
-              .to('.trace_top', { strokeDashoffset: topTrail - (topLength * box3End), duration: boxDuration, ease: 'none' })
-              .to('.trace_bottom', { strokeDashoffset: bottomTrail - (bottomLength * box3End), duration: boxDuration, ease: 'none',
-                onComplete: () => setFailedBoxes(prev => prev.includes(3) ? prev : [...prev, 3])
-              }, '<')
-              // Trail exits completely
-              .to('.trace_top', { strokeDashoffset: -topLength, duration: trailExitDuration, ease: 'none' })
-              .to('.trace_bottom', { strokeDashoffset: -bottomLength, duration: trailExitDuration, ease: 'none' }, '<')
-          }
-        }
-      })
 
       // Solution section - flow animation
       gsap.fromTo('.solution_header', 
@@ -438,44 +306,32 @@ function App() {
           <p className='problem_label'>Traditional scale-up follows the same path</p>
           <h2 className='problem_heading'>But it <span className='highlight'>falters</span> at every stage</h2>
         </div>
-        <div className='problem_cards_wrapper'>
-          {/* Two parallel trace paths - top and bottom */}
-          <svg className='problem_trace_svg' preserveAspectRatio="none">
-            <path className='trace_line trace_top' d="" fill="none" />
-            <path className='trace_line trace_bottom' d="" fill="none" />
-          </svg>
+        <div className='problem_cards'>
+          <div className='problem_card' data-card="1">
+            <div className={`problem_icon ${failedBoxes.includes(1) ? 'failed' : ''}`}>
+              <span className="icon-normal"><FlaskConical strokeWidth={1} /></span>
+              <span className="icon-failed"><FlaskConicalOff strokeWidth={1} /></span>
+            </div>
+            <h3>Low adaptability in the lab</h3>
+            <p>Manual processes can't keep pace with the complexity of modern bioprocesses</p>
+          </div>
           
-          <div className='problem_cards'>
-            <div className='problem_card' data-card="1">
-              <div className={`problem_icon ${failedBoxes.includes(1) ? 'failed' : ''}`}>
-                <span className="icon-normal"><FlaskConical strokeWidth={1} /></span>
-                <span className="icon-failed"><FlaskConicalOff strokeWidth={1} /></span>
-              </div>
-              <h3>Low adaptability in the lab</h3>
-              <p>Manual processes can't keep pace with the complexity of modern bioprocesses</p>
+          <div className='problem_card' data-card="2">
+            <div className={`problem_icon ${failedBoxes.includes(2) ? 'failed' : ''}`}>
+              <span className="icon-normal"><TrendingUp strokeWidth={1} /></span>
+              <span className="icon-failed"><TrendingDown strokeWidth={1} /></span>
             </div>
-            
-            <div className='problem_connector' data-connector="1"></div>
-            
-            <div className='problem_card' data-card="2">
-              <div className={`problem_icon ${failedBoxes.includes(2) ? 'failed' : ''}`}>
-                <span className="icon-normal"><TrendingUp strokeWidth={1} /></span>
-                <span className="icon-failed"><TrendingDown strokeWidth={1} /></span>
-              </div>
-              <h3>Inability to maintain performance at scale</h3>
-              <p>What works in the lab rarely translates directly to production environments</p>
+            <h3>Inability to maintain performance at scale</h3>
+            <p>What works in the lab rarely translates directly to production environments</p>
+          </div>
+          
+          <div className='problem_card' data-card="3">
+            <div className={`problem_icon ${failedBoxes.includes(3) ? 'failed' : ''}`}>
+              <span className="icon-normal"><Target strokeWidth={1} /></span>
+              <span className="icon-failed"><CircleAlert strokeWidth={1} /></span>
             </div>
-            
-            <div className='problem_connector' data-connector="2"></div>
-            
-            <div className='problem_card' data-card="3">
-              <div className={`problem_icon ${failedBoxes.includes(3) ? 'failed' : ''}`}>
-                <span className="icon-normal"><Target strokeWidth={1} /></span>
-                <span className="icon-failed"><CircleAlert strokeWidth={1} /></span>
-              </div>
-              <h3>Drift & variability at scale</h3>
-              <p>Production processes drift over time without continuous optimization</p>
-            </div>
+            <h3>Drift & variability at scale</h3>
+            <p>Production processes drift over time without continuous optimization</p>
           </div>
         </div>
       </section>
