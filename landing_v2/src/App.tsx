@@ -4,10 +4,10 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { FlaskConical, FlaskConicalOff, TrendingUp, TrendingDown, Target, CircleAlert, Linkedin } from 'lucide-react'
 import './App.css'
 import logo from "../src/assets/logo.svg"
-import heroGraphic from '../src/assets/hero_loop1.gif'
 import shilpaPhoto from '../src/assets/team/shilpa.png'
 import pushkarPhoto from '../src/assets/team/pushkar.png'
 import LogoMarquee from './components/LogoMarquee'
+import Threads from './components/hero_bg/Threads'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -27,7 +27,6 @@ function App() {
       gsap.set('.hero_word', { opacity: 0, y: 40 })
       gsap.set('.hero_main_text_subheading', { opacity: 0, y: 30 })
       gsap.set('.hero_footer', { opacity: 0, y: 20 })
-      gsap.set('.hero_background_graphic', { opacity: 0, scale: 0.8 })
       
       // Animate header
       heroTl.to('.hero_header', {
@@ -52,20 +51,12 @@ function App() {
         ease: 'power4.out',
       }, '-=0.3')
       
-      // Animate background graphic
-      .to('.hero_background_graphic', {
-        opacity: 0.5,
-        scale: 1,
-        duration: 1.5,
-        ease: 'power2.out',
-      }, '-=0.8')
-      
       // Animate subheading
       .to('.hero_main_text_subheading', {
         opacity: 1,
         y: 0,
         duration: 0.8,
-      }, '-=0.8')
+      }, '-=0.5')
       
       // Animate CTA button
       .to('.hero_footer', {
@@ -73,16 +64,6 @@ function App() {
         y: 0,
         duration: 0.6,
       }, '-=0.4')
-
-      // Subtle floating animation for the background graphic
-      gsap.to('.hero_background_graphic', {
-        y: -15,
-        duration: 4,
-        repeat: -1,
-        yoyo: true,
-        ease: 'sine.inOut',
-        delay: 2,
-      })
 
       // Problem section - all content fades in together
       gsap.fromTo('.problem_intro, .problem_cards', 
@@ -283,15 +264,15 @@ function App() {
 
       {/* HERO SECTION */}
       <section className='hero'>
+        <div className='hero_background_graphic'>
+          <Threads color={[1, 1, 1]} amplitude={1} distance={0} enableMouseInteraction={true} />
+        </div>
         <div className='hero_header'>
           <img src={logo} alt="lemnisca"/>
           <button>Enter the loop</button>
         </div>
 
         <div className='hero_main'>
-          <div className='hero_background_graphic'>
-            <img src={heroGraphic} alt="" />
-          </div>
           <div className='hero_content'>
             <span className='hero_eyebrow'>FROM LAB TO PRODUCTION</span>
             <h1 className='hero_main_text_heading'>
