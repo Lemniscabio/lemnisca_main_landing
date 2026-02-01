@@ -86,7 +86,7 @@ function App() {
         }
       )
 
-      // Solution section - flow animation
+      // Solution section - Timeline animation
       gsap.fromTo('.solution_header', 
         { opacity: 0, y: 40 },
         { 
@@ -101,36 +101,37 @@ function App() {
         }
       )
 
-      gsap.fromTo('.platform_flow > *', 
-        { opacity: 0, x: -30 },
-        { 
-          opacity: 1, 
-          x: 0, 
-          duration: 0.6,
-          stagger: 0.1,
-          ease: 'power2.out',
-          scrollTrigger: {
-            trigger: '.platform_flow',
-            start: 'top 80%',
-          }
+      // Timeline line progress animation
+      gsap.to('.timeline_line_progress', {
+        height: '100%',
+        ease: 'none',
+        scrollTrigger: {
+          trigger: '.timeline_container',
+          start: 'top 60%',
+          end: 'bottom 40%',
+          scrub: 1,
         }
-      )
+      })
 
-      gsap.fromTo('.solution_card', 
-        { opacity: 0, y: 50, scale: 0.95 },
-        { 
-          opacity: 1, 
-          y: 0, 
-          scale: 1,
-          duration: 0.7,
-          stagger: 0.1,
-          ease: 'power2.out',
-          scrollTrigger: {
-            trigger: '.solution_details',
-            start: 'top 85%',
+      // Stage activation based on scroll
+      const stages = document.querySelectorAll('.timeline_stage')
+      stages.forEach((stage, index) => {
+        const stageNum = index + 1
+        const progress = (stageNum - 0.5) / stages.length
+
+        ScrollTrigger.create({
+          trigger: '.timeline_container',
+          start: 'top 60%',
+          end: 'bottom 40%',
+          onUpdate: (self) => {
+            if (self.progress >= progress) {
+              stage.classList.add('active')
+            } else {
+              stage.classList.remove('active')
+            }
           }
-        }
-      )
+        })
+      })
 
       // Stats section - number count up effect
       gsap.fromTo('.stat_item', 
@@ -280,7 +281,7 @@ function App() {
               <span className='hero_word'>scale-up</span>
               <span className='hero_word'>for biomanufacturing</span>
             </h1>
-            <p className='hero_main_text_subheading'>A science-first system where design, data, and fabrication feed back into each other — locally, continuously, endlessly.</p>
+            <p className='hero_main_text_subheading'>A science-first system where design, data, and fabrication feed back into each other, locally, continuously, endlessly.</p>
             <div className='hero_footer'>
               <button className='btn-primary'>Explore →</button>
             </div>
@@ -324,57 +325,98 @@ function App() {
         </div>
       </section>
 
-      {/* SOLUTION SECTION */}
+      {/* SOLUTION SECTION - Vertical Timeline */}
       <section className='solution'>
         <div className='solution_header'>
           <span className='solution_eyebrow'>Our Approach</span>
-          <h2 className='solution_tagline'>Connecting R&D, scale-up and operations into one unified platform</h2>
+          <h2 className='solution_tagline'>A continuous system where each stage feeds the next</h2>
         </div>
-        <div className='solution_platform'>
-          <div className='platform_flow'>
-            <div className='platform_item'>
-              <span className='platform_label'>Bioprocess as a Service</span>
-            </div>
-            <div className='platform_arrow'>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <path d="M5 12h14M12 5l7 7-7 7"/>
-              </svg>
-            </div>
-            <div className='platform_group'>
-              <div className='platform_box wet'>Wet lab</div>
-              <div className='platform_box digital'>Digital twin</div>
-            </div>
-            <div className='platform_arrow'>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <path d="M5 12h14M12 5l7 7-7 7"/>
-              </svg>
-            </div>
-            <div className='platform_group'>
-              <div className='platform_box scaleup-box'>Scale-up prediction</div>
-              <div className='platform_box operations'>Operations</div>
-            </div>
+        
+        <div className='timeline_container'>
+          {/* The vertical spine */}
+          <div className='timeline_spine'>
+            <div className='timeline_line_bg'></div>
+            <div className='timeline_line_progress'></div>
           </div>
-        </div>
-        <div className='solution_details'>
-          <div className='solution_card'>
-            <div className='solution_card_number'>01</div>
-            <h3>Wet Lab Integration</h3>
-            <p>Automated data capture from your existing lab equipment and processes</p>
-          </div>
-          <div className='solution_card'>
-            <div className='solution_card_number'>02</div>
-            <h3>Digital Twin</h3>
-            <p>Physics-informed models that learn and adapt to your specific bioprocess</p>
-          </div>
-          <div className='solution_card'>
-            <div className='solution_card_number'>03</div>
-            <h3>Scale-up Prediction</h3>
-            <p>AI-driven predictions for optimal scale-up parameters and conditions</p>
-          </div>
-          <div className='solution_card'>
-            <div className='solution_card_number'>04</div>
-            <h3>Operations</h3>
-            <p>Real-time optimization and monitoring for production environments</p>
+          
+          {/* Timeline stages */}
+          <div className='timeline_stages'>
+            {/* Stage 1: Wet Lab */}
+            <div className='timeline_stage' data-stage="1">
+              <div className='stage_connector'></div>
+              <div className='stage_card'>
+                <div className='stage_icon'>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
+                    <path d="M9 3h6v2H9zM10 5v6l-4 8h12l-4-8V5"/>
+                    <circle cx="12" cy="16" r="1"/>
+                  </svg>
+                </div>
+                <div className='stage_content'>
+                  <span className='stage_number'>01</span>
+                  <h3>Wet Lab</h3>
+                  <p>Automated data capture from your existing lab equipment and processes. Real experiments, real data.</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Stage 2: Digital Twin (Core) */}
+            <div className='timeline_stage timeline_stage--core' data-stage="2">
+              <div className='stage_connector'></div>
+              <div className='stage_card'>
+                <div className='stage_icon'>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
+                    <rect x="3" y="3" width="7" height="7" rx="1"/>
+                    <rect x="14" y="3" width="7" height="7" rx="1"/>
+                    <rect x="3" y="14" width="7" height="7" rx="1"/>
+                    <rect x="14" y="14" width="7" height="7" rx="1"/>
+                    <path d="M10 6.5h4M6.5 10v4M17.5 10v4M10 17.5h4"/>
+                  </svg>
+                </div>
+                <div className='stage_content'>
+                  <span className='stage_number'>02</span>
+                  <h3>Digital Twin</h3>
+                  <p>Physics-informed models that learn and adapt to your specific bioprocess. The intelligence at the core of the system.</p>
+                </div>
+                <div className='stage_core_label'>System Core</div>
+              </div>
+            </div>
+
+            {/* Stage 3: Scale-up Prediction */}
+            <div className='timeline_stage' data-stage="3">
+              <div className='stage_connector'></div>
+              <div className='stage_card'>
+                <div className='stage_icon'>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
+                    <path d="M3 3v18h18"/>
+                    <path d="M7 14l4-4 4 4 5-6"/>
+                    <circle cx="20" cy="8" r="2"/>
+                  </svg>
+                </div>
+                <div className='stage_content'>
+                  <span className='stage_number'>03</span>
+                  <h3>Scale-up Prediction</h3>
+                  <p>AI-driven predictions for optimal scale-up parameters. From lab to production with confidence.</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Stage 4: Operations */}
+            <div className='timeline_stage' data-stage="4">
+              <div className='stage_connector'></div>
+              <div className='stage_card'>
+                <div className='stage_icon'>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
+                    <circle cx="12" cy="12" r="3"/>
+                    <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
+                  </svg>
+                </div>
+                <div className='stage_content'>
+                  <span className='stage_number'>04</span>
+                  <h3>Operations Support</h3>
+                  <p>Real-time optimization and monitoring for production environments. Continuous improvement, always.</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>

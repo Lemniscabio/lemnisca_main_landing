@@ -7,7 +7,7 @@ import logoPointOne from '../assets/partners_logo/pointOne.png'
 import logoScaler from '../assets/partners_logo/scaler.png'
 import logoBbc from '../assets/partners_logo/bbc2.jpg'
 import logoItbt from '../assets/partners_logo/itbt.jpg'
-import logoYokogawa from '../assets/partners_logo/yokogawa.jpg'
+import logoYokogawa from '../assets/partners_logo/yokogawa.png'
 
 function LogoMarquee() {
   return (
