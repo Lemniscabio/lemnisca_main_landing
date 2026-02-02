@@ -97,22 +97,33 @@ html, body, #root {
 }
 
 .btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
   background-color: white;
   border: none;
-  padding: 1.125rem 2.5rem;
+  padding: 1.25rem 2.75rem;
   color: var(--color-bg-dark);
   cursor: pointer;
-  font-size: 0.75rem;
+  font-size: 0.9rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   transition: all 0.4s var(--transition-smooth);
 }
 
+.btn-primary svg {
+  transition: transform 0.3s ease;
+}
+
 .btn-primary:hover {
   background-color: var(--color-text-primary);
   color: white;
   transform: translateY(-2px);
+}
+
+.btn-primary:hover svg {
+  transform: translateX(4px);
 }
 
 .btn-secondary {
@@ -155,7 +166,7 @@ html, body, #root {
 }
 
 .hero_header img {
-  height: 20px;
+  height: 28px;
 }
 
 .hero_header button {
@@ -268,11 +279,31 @@ html, body, #root {
 }
 
 .problem_label {
-  font-size: 0.7rem;
+  display: inline-block;
+  padding: 0.5rem 1.25rem;
+  border-radius: 2rem;
+  font-size: 0.65rem;
   text-transform: uppercase;
-  letter-spacing: 0.25em;
-  color: var(--color-text-muted);
-  margin: 0 0 1.5rem 0;
+  letter-spacing: 0.2em;
+  font-weight: 500;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 1.5rem;
+}
+
+.problem_eyebrow {
+  display: inline-block;
+  padding: 0.5rem 1.25rem;
+  border-radius: 2rem;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-weight: 500;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 1.5rem;
 }
 
 .problem_heading {
@@ -421,9 +452,9 @@ html, body, #root {
 .loop_diagram {
   position: relative;
   width: 100%;
-  max-width: 900px;
-  height: 500px;
-  margin: 0 auto 6rem;
+  max-width: 1000px;
+  height: 580px;
+  margin: 0 auto 4rem;
 }
 
 /* Connection Lines SVG */
@@ -460,39 +491,21 @@ html, body, #root {
 }
 
 .connect_trace--2 {
-  animation: traceFlowOut 3s ease-in-out infinite 0.75s;
+  animation: traceFlowIn 3s ease-in-out infinite;
 }
 
 .connect_trace--3 {
-  animation: traceFlowOut 3s ease-in-out infinite 1.5s;
+  animation: traceFlowIn 3s ease-in-out infinite;
 }
 
 .connect_trace--4 {
-  animation: traceFlowOut 3s ease-in-out infinite 2.25s;
+  animation: traceFlowIn 3s ease-in-out infinite;
 }
 
-/* Trace flowing INTO the Digital Twin (from Wet Lab) */
+/* Trace flowing INTO the Flight Simulator (from all nodes) */
 @keyframes traceFlowIn {
   0% {
     stroke-dashoffset: 230;
-    opacity: 0;
-  }
-  10% {
-    opacity: 1;
-  }
-  90% {
-    opacity: 1;
-  }
-  100% {
-    stroke-dashoffset: 0;
-    opacity: 0;
-  }
-}
-
-/* Trace flowing OUT from the Digital Twin */
-@keyframes traceFlowOut {
-  0% {
-    stroke-dashoffset: -230;
     opacity: 0;
   }
   10% {
@@ -513,8 +526,8 @@ html, body, #root {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 160px;
-  height: 160px;
+  width: 280px;
+  height: 280px;
   z-index: 10;
 }
 
@@ -538,20 +551,20 @@ html, body, #root {
 }
 
 .ring--outer {
-  width: 160px;
-  height: 160px;
+  width: 280px;
+  height: 280px;
   border-color: rgba(56, 175, 216, 0.15);
 }
 
 .ring--middle {
-  width: 120px;
-  height: 120px;
+  width: 240px;
+  height: 240px;
   border-color: rgba(56, 175, 216, 0.25);
 }
 
 .ring--inner {
-  width: 80px;
-  height: 80px;
+  width: 200px;
+  height: 200px;
   border-color: rgba(56, 175, 216, 0.35);
   background: white;
   animation: calmPulse 4s ease-in-out infinite;
@@ -573,6 +586,8 @@ html, body, #root {
   transform: translate(-50%, -50%);
   text-align: center;
   z-index: 2;
+  width: 180px;
+  padding: 0.5rem;
 }
 
 .core_label {
@@ -586,11 +601,18 @@ html, body, #root {
 }
 
 .loop_core_content h3 {
-  font-size: 1rem;
+  font-size: 1.1rem;
   font-weight: 600;
-  margin: 0;
+  margin: 0 0 0.75rem 0;
   color: var(--color-text-primary);
   white-space: nowrap;
+}
+
+.loop_core_content p {
+  font-size: 0.7rem;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+  margin: 0;
 }
 
 /* Orbital Nodes */
@@ -600,28 +622,28 @@ html, body, #root {
 }
 
 .loop_node--tl {
-  top: 5%;
-  left: 2%;
+  top: 2%;
+  left: 0;
 }
 
 .loop_node--tr {
-  top: 5%;
-  right: 2%;
+  top: 2%;
+  right: 0;
 }
 
 .loop_node--bl {
-  bottom: 5%;
-  left: 2%;
+  bottom: 2%;
+  left: 0;
 }
 
 .loop_node--br {
-  bottom: 5%;
-  right: 2%;
+  bottom: 2%;
+  right: 0;
 }
 
 .node_card {
-  max-width: 240px;
-  padding: 1.25rem;
+  width: 280px;
+  padding: 1.75rem;
   background: white;
   border: 1px solid var(--color-border);
   transition: all 0.3s ease;
@@ -643,10 +665,10 @@ html, body, #root {
 }
 
 .node_icon {
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   color: #38AFD8;
-  margin-bottom: 0.75rem;
+  margin-bottom: 1rem;
 }
 
 .loop_node--tl .node_icon,
@@ -660,154 +682,22 @@ html, body, #root {
 }
 
 .node_card h4 {
-  font-size: 0.95rem;
+  font-size: 1.1rem;
   font-weight: 600;
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 0.75rem 0;
   color: var(--color-text-primary);
 }
 
 .node_card p {
-  font-size: 0.8rem;
-  color: var(--color-text-secondary);
-  line-height: 1.55;
-  margin: 0;
-}
-
-/* ========== BENTO GRID ========== */
-.bento_grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: auto auto;
-  gap: 1.5rem;
-  max-width: 1100px;
-  margin: 0 auto;
-}
-
-/* Layout: 
-   Row 1: Wet Lab | Digital Twin (spans 2 cols)
-   Row 2: Simulation | Scale-up | Operations
-*/
-.bento_card--wetlab {
-  grid-column: 1;
-  grid-row: 1;
-}
-
-.bento_card--digitaltwin {
-  grid-column: 2 / 4;
-  grid-row: 1;
-}
-
-.bento_card--simulation {
-  grid-column: 1;
-  grid-row: 2;
-}
-
-.bento_card--scaleup {
-  grid-column: 2;
-  grid-row: 2;
-}
-
-.bento_card--operations {
-  grid-column: 3;
-  grid-row: 2;
-}
-
-.bento_card {
-  padding: 2.5rem;
-  background: var(--color-bg-cream);
-  border: 1px solid var(--color-border);
-  transition: all 0.3s ease;
-  position: relative;
-}
-
-.bento_card:hover {
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
-  transform: translateY(-2px);
-}
-
-.bento_number {
-  display: block;
-  font-family: var(--font-serif);
-  font-size: 3rem;
-  font-weight: 300;
-  color: rgba(0, 0, 0, 0.08);
-  line-height: 1;
-  margin-bottom: 1rem;
-}
-
-.bento_badge {
-  position: absolute;
-  top: 1.5rem;
-  right: 1.5rem;
-  padding: 0.35rem 0.75rem;
-  font-size: 0.6rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  font-weight: 600;
-  background: #38AFD8;
-  color: white;
-  border-radius: 2rem;
-}
-
-.bento_badge--partner {
-  background: rgba(0, 0, 0, 0.05);
-  color: var(--color-text-muted);
-}
-
-.bento_card h3 {
-  font-family: var(--font-serif);
-  font-size: 1.5rem;
-  font-weight: 500;
-  margin: 0 0 0.5rem 0;
-  color: var(--color-text-primary);
-}
-
-.bento_tagline {
-  display: block;
   font-size: 0.85rem;
-  color: #38AFD8;
-  margin-bottom: 1.25rem;
-  font-weight: 600;
-}
-
-.bento_card p {
-  font-size: 0.9rem;
   color: var(--color-text-secondary);
-  line-height: 1.7;
+  line-height: 1.6;
   margin: 0;
 }
 
-/* Digital Twin featured card */
-.bento_card--digitaltwin {
-  background: linear-gradient(135deg, #38AFD8 0%, #2d8fb3 100%);
-  border-color: transparent;
-}
-
-.bento_card--digitaltwin h3 {
-  font-size: 1.75rem;
-  color: white;
-}
-
-.bento_card--digitaltwin .bento_number {
-  color: rgba(255, 255, 255, 0.2);
-}
-
-.bento_card--digitaltwin .bento_tagline {
-  color: rgba(255, 255, 255, 0.8);
-}
-
-.bento_card--digitaltwin p {
-  color: rgba(255, 255, 255, 0.85);
-}
-
-.bento_card--digitaltwin .bento_badge {
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
-}
-
-/* Operations card - same style as others now */
-.bento_card--operations {
-  background: white;
+/* ========== MOBILE BENTO GRID (hidden on desktop) ========== */
+.mobile_bento_grid {
+  display: none;
 }
 
 /* ========== EXPANDED DETAIL CARDS (legacy - keeping for reference) ========== */
@@ -1130,7 +1020,7 @@ html, body, #root {
 }
 
 .team_card:hover .team_card_hover {
-  max-height: 300px;
+  max-height: 500px;
   opacity: 1;
   margin-top: 1.25rem;
 }
@@ -1196,25 +1086,33 @@ html, body, #root {
   color: var(--color-text-muted);
 }
 
+.member_bio_text {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  line-height: 1.7;
+  margin: 0;
+  text-align: left;
+}
+
 /* ==================== PREDICTION SECTION ==================== */
 .prediction {
   background-color: var(--color-bg-dark);
-  padding: 8rem 4rem;
+  padding: 10rem 4rem;
   color: white;
 }
 
 .prediction_wrapper {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  gap: 6rem;
-  max-width: 1200px;
+  align-items: center;
+  gap: 8rem;
+  max-width: 1300px;
   margin: 0 auto;
 }
 
 .prediction_content {
   flex: 1;
-  max-width: 500px;
+  max-width: 550px;
 }
 
 .prediction_eyebrow {
@@ -1228,58 +1126,63 @@ html, body, #root {
   border: 1px solid rgba(255, 255, 255, 0.2);
   background: rgba(255, 255, 255, 0.05);
   color: var(--color-text-muted);
-  margin-bottom: 1.5rem;
-}
-
-.prediction_content h2 {
-  font-family: var(--font-serif);
-  font-size: 1.75rem;
-  font-weight: 400;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: white;
-  margin: 0 0 2rem 0;
-  line-height: 1.4;
+  margin-bottom: 2.5rem;
 }
 
 .prediction_stat {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  margin-bottom: 2rem;
+  margin-bottom: 3rem;
 }
 
 .prediction_from {
-  font-size: 1rem;
+  font-size: 0.85rem;
   color: var(--color-text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.2em;
+  margin-bottom: 0.5rem;
 }
 
 .big-number {
   font-family: var(--font-serif);
-  font-size: 8rem;
-  font-weight: 300;
+  font-size: 12rem;
+  font-weight: 200;
   color: white;
-  line-height: 1;
-  letter-spacing: -0.02em;
+  line-height: 0.85;
+  letter-spacing: -0.03em;
+  background: linear-gradient(180deg, white 0%, rgba(255,255,255,0.6) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.prediction_content h2 {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0 0 2rem 0;
+  line-height: 1.5;
 }
 
 .prediction_cta_text {
   font-size: 1rem;
   color: var(--color-text-muted);
-  line-height: 1.7;
+  line-height: 1.8;
   margin: 0;
 }
 
 .prediction_form {
   flex: 1;
-  max-width: 520px;
+  max-width: 480px;
 }
 
 .prediction_form h3 {
   font-family: var(--font-serif);
-  font-size: 1.75rem;
+  font-size: 1.5rem;
   font-weight: 400;
   margin: 0 0 2rem 0;
   color: white;
@@ -1315,7 +1218,6 @@ html, body, #root {
 .prediction_form select:focus {
   border-color: #555;
 }
-
 .prediction_form textarea {
   resize: vertical;
   min-height: 140px;
@@ -1358,8 +1260,32 @@ html, body, #root {
   align-self: flex-start;
 }
 
-.btn-submit:hover {
+.btn-submit:hover:not(:disabled) {
   background-color: #e0e0e0;
+}
+
+.btn-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.form_success {
+  padding: 3rem 2rem;
+  text-align: center;
+  border: 1px solid rgba(56, 175, 216, 0.3);
+  background: rgba(56, 175, 216, 0.05);
+}
+
+.form_success p {
+  color: #38AFD8;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.form_error {
+  color: var(--color-accent);
+  font-size: 0.85rem;
+  margin: 0;
 }
 
 .prediction_content {
@@ -1541,31 +1467,88 @@ html, body, #root {
     display: none;
   }
   
+  /* Mobile Bento Grid - show on mobile */
+  .mobile_bento_grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .mobile_bento_card {
+    padding: 2rem;
+    background: var(--color-bg-cream);
+    border: 1px solid var(--color-border);
+    position: relative;
+  }
+  
+  .mobile_bento_card--core {
+    background: linear-gradient(135deg, #38AFD8 0%, #2d8fb3 100%);
+    border-color: transparent;
+  }
+  
+  .mobile_bento_card--core h3,
+  .mobile_bento_card--core p {
+    color: white;
+  }
+  
+  .mobile_bento_card--core .mobile_bento_number {
+    color: rgba(255, 255, 255, 0.2);
+  }
+  
+  .mobile_bento_card--core .mobile_bento_tagline {
+    color: rgba(255, 255, 255, 0.8);
+  }
+  
+  .mobile_bento_number {
+    display: block;
+    font-family: var(--font-serif);
+    font-size: 2.5rem;
+    font-weight: 300;
+    color: rgba(0, 0, 0, 0.08);
+    line-height: 1;
+    margin-bottom: 0.75rem;
+  }
+  
+  .mobile_bento_badge {
+    position: absolute;
+    top: 1.25rem;
+    right: 1.25rem;
+    padding: 0.35rem 0.75rem;
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border-radius: 2rem;
+  }
+  
+  .mobile_bento_card h3 {
+    font-family: var(--font-serif);
+    font-size: 1.25rem;
+    font-weight: 500;
+    margin: 0 0 0.5rem 0;
+    color: var(--color-text-primary);
+  }
+  
+  .mobile_bento_tagline {
+    display: block;
+    font-size: 0.8rem;
+    color: #38AFD8;
+    margin-bottom: 1rem;
+    font-weight: 600;
+  }
+  
+  .mobile_bento_card p {
+    font-size: 0.85rem;
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+    margin: 0;
+  }
+  
   /* Detail cards responsive */
   .approach_details {
     grid-template-columns: 1fr;
-  }
-  
-  /* Bento grid responsive */
-  .bento_grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .bento_card--wetlab,
-  .bento_card--digitaltwin,
-  .bento_card--simulation,
-  .bento_card--scaleup,
-  .bento_card--operations {
-    grid-column: 1;
-    grid-row: auto;
-  }
-  
-  .bento_card {
-    padding: 2rem;
-  }
-  
-  .bento_card--digitaltwin h3 {
-    font-size: 1.5rem;
   }
   
   .detail_card {

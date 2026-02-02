@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { FlaskConical, FlaskConicalOff, TrendingUp, TrendingDown, Target, CircleAlert, Linkedin } from 'lucide-react'
+import { FlaskConical, FlaskConicalOff, TrendingUp, TrendingDown, Target, CircleAlert, Linkedin, ArrowRight } from 'lucide-react'
 import './App.css'
 import logo from "../src/assets/logo.svg"
 import shilpaPhoto from '../src/assets/team/shilpa.png'
@@ -14,6 +14,48 @@ gsap.registerPlugin(ScrollTrigger)
 function App() {
   const mainRef = useRef<HTMLDivElement>(null)
   const [failedBoxes, setFailedBoxes] = useState<number[]>([])
+  
+  // Form state
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    organisation: '',
+    heardFrom: '',
+    message: '',
+  })
+  const [formStatus, setFormStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
+  const [formError, setFormError] = useState('')
+
+  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }))
+  }
+
+  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setFormStatus('loading')
+    setFormError('')
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        setFormStatus('success')
+        setFormData({ name: '', email: '', organisation: '', heardFrom: '', message: '' })
+      } else {
+        setFormStatus('error')
+        setFormError(data.message || 'Something went wrong')
+      }
+    } catch {
+      setFormStatus('error')
+      setFormError('Failed to submit. Please try again.')
+    }
+  }
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -145,22 +187,6 @@ function App() {
         }
       )
 
-      // Detail cards animation
-      gsap.fromTo('.detail_card', 
-        { opacity: 0, y: 60 },
-        { 
-          opacity: 1, 
-          y: 0, 
-          duration: 0.8,
-          stagger: 0.15,
-          ease: 'power3.out',
-          scrollTrigger: {
-            trigger: '.approach_details',
-            start: 'top 80%',
-          }
-        }
-      )
-
       // Stats section - number count up effect
       gsap.fromTo('.stat_item', 
         { opacity: 0, y: 40 },
@@ -207,7 +233,7 @@ function App() {
         }
       )
 
-      gsap.fromTo('.team_member', 
+      gsap.fromTo('.team_card', 
         { opacity: 0, y: 60 },
         { 
           opacity: 1, 
@@ -217,7 +243,7 @@ function App() {
           ease: 'power3.out',
           scrollTrigger: {
             trigger: '.team_grid',
-            start: 'top 85%',
+            start: 'top 90%',
           }
         }
       )
@@ -311,7 +337,7 @@ function App() {
             </h1>
             <p className='hero_main_text_subheading'>A science-first system where design, data, and fabrication feed back into each other, locally, continuously, endlessly.</p>
             <div className='hero_footer'>
-              <a href="#problem"><button className='btn-primary'>Explore →</button></a>
+              <a href="#problem"><button className='btn-primary'>Explore <ArrowRight size={18} /></button></a>
             </div>
           </div>
         </div>
@@ -320,7 +346,7 @@ function App() {
       {/* PROBLEM SECTION */}
       <section className='problem' id='problem'>
         <div className='problem_intro'>
-          <p className='problem_label'>Traditional scale-up follows the same path</p>
+          <span className='problem_eyebrow'>The Problem</span>
           <h2 className='problem_heading'>But it <span className='highlight'>falters</span> at every stage</h2>
         </div>
         <div className='problem_cards'>
@@ -329,8 +355,8 @@ function App() {
               <span className="icon-normal"><FlaskConical strokeWidth={1} /></span>
               <span className="icon-failed"><FlaskConicalOff strokeWidth={1} /></span>
             </div>
-            <h3>Low adaptability in the lab</h3>
-            <p>Manual processes can't keep pace with the complexity of modern bioprocesses</p>
+            <h3>R&D</h3>
+            <p>Bioprocesses fail to achieve commercially meaningful productivity</p>
           </div>
           
           <div className='problem_card' data-card="2">
@@ -338,8 +364,8 @@ function App() {
               <span className="icon-normal"><TrendingUp strokeWidth={1} /></span>
               <span className="icon-failed"><TrendingDown strokeWidth={1} /></span>
             </div>
-            <h3>Inability to maintain performance at scale</h3>
-            <p>What works in the lab rarely translates directly to production environments</p>
+            <h3>Scale-up</h3>
+            <p>Bioprocess performance dips at scale</p>
           </div>
           
           <div className='problem_card' data-card="3">
@@ -347,8 +373,8 @@ function App() {
               <span className="icon-normal"><Target strokeWidth={1} /></span>
               <span className="icon-failed"><CircleAlert strokeWidth={1} /></span>
             </div>
-            <h3>Drift & variability at scale</h3>
-            <p>Production processes drift over time without continuous optimization</p>
+            <h3>Manufacturing</h3>
+            <p>Bioprocess performance drifts over time</p>
           </div>
         </div>
       </section>
@@ -363,18 +389,18 @@ function App() {
         {/* Radial Diagram */}
         <div className='loop_diagram'>
           {/* Curved connection lines SVG */}
-          <svg className='loop_connections' viewBox="0 0 800 500" preserveAspectRatio="xMidYMid meet">
+          <svg className='loop_connections' viewBox="0 0 1000 580" preserveAspectRatio="xMidYMid meet">
             {/* Base paths - always visible */}
-            <path className='connect_curve' d="M 140 100 Q 250 150 340 220" />
-            <path className='connect_curve' d="M 660 100 Q 550 150 460 220" />
-            <path className='connect_curve' d="M 140 400 Q 250 350 340 280" />
-            <path className='connect_curve' d="M 660 400 Q 550 350 460 280" />
+            <path className='connect_curve' d="M 280 120 Q 380 200 430 260" />
+            <path className='connect_curve' d="M 720 120 Q 620 200 570 260" />
+            <path className='connect_curve' d="M 280 460 Q 380 380 430 320" />
+            <path className='connect_curve' d="M 720 460 Q 620 380 570 320" />
             
             {/* Glowing trace paths - animated */}
-            <path className='connect_trace connect_trace--1' d="M 140 100 Q 250 150 340 220" />
-            <path className='connect_trace connect_trace--2' d="M 660 100 Q 550 150 460 220" />
-            <path className='connect_trace connect_trace--3' d="M 140 400 Q 250 350 340 280" />
-            <path className='connect_trace connect_trace--4' d="M 660 400 Q 550 350 460 280" />
+            <path className='connect_trace connect_trace--1' d="M 280 120 Q 380 200 430 260" />
+            <path className='connect_trace connect_trace--2' d="M 720 120 Q 620 200 570 260" />
+            <path className='connect_trace connect_trace--3' d="M 280 460 Q 380 380 430 320" />
+            <path className='connect_trace connect_trace--4' d="M 720 460 Q 620 380 570 320" />
           </svg>
 
           {/* Center Core - Digital Twin */}
@@ -386,7 +412,8 @@ function App() {
             </div>
             <div className='loop_core_content'>
               <span className='core_label'>CORE</span>
-              <h3>Digital Twin</h3>
+              <h3>Flight Simulator</h3>
+              <p>The flight simulator learns bioprocess behavior from data using AI-ML while being grounded by rules of metabolism and reactor physics</p>
             </div>
           </div>
 
@@ -400,7 +427,7 @@ function App() {
                 </svg>
               </div>
               <h4>Wet Lab</h4>
-              <p>High quality data from real experiments. The foundation that feeds the Digital Twin.</p>
+              <p>Every fermentation run produces raw empirical data that feeds directly into the flight simulator.</p>
             </div>
           </div>
 
@@ -413,8 +440,8 @@ function App() {
                   <path d="M7 8l3 3-3 3M12 14h5"/>
                 </svg>
               </div>
-              <h4>Simulation Engine</h4>
-              <p>Best recipe discovery. Run thousands of virtual experiments in minutes.</p>
+              <h4>Virtual R&D lab</h4>
+              <p>Discovers the best recipe by running thousands of virtual experiments in minutes.</p>
             </div>
           </div>
 
@@ -428,7 +455,7 @@ function App() {
                 </svg>
               </div>
               <h4>Scale-up Guidance</h4>
-              <p>De-risk transfer from lab to production with quantified confidence.</p>
+              <p>Discovers operating ranges that maintain performance at scale.</p>
             </div>
           </div>
 
@@ -440,50 +467,51 @@ function App() {
                   <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
                 </svg>
               </div>
-              <h4>Operations Support</h4>
-              <p>Stable production with real-time optimization. Data flows back to refine the model.</p>
+              <h4>Manufacturing support</h4>
+              <p>Predicts bioprocess outcomes in real-time to aid control of drifting processes.</p>
             </div>
           </div>
         </div>
 
-        {/* Bento Grid Detail Cards */}
-        <div className='bento_grid'>
-          <div className='bento_card bento_card--wetlab'>
-            <span className='bento_number'>01</span>
+        {/* Mobile Bento Grid - visible only on mobile */}
+        <div className='mobile_bento_grid'>
+          <div className='mobile_bento_card'>
+            <span className='mobile_bento_number'>01</span>
             <h3>Wet Lab</h3>
-            <span className='bento_tagline'>High quality data</span>
-            <p>Every fermentation run produces a constellation of measurable parameters—raw empirical data that feeds directly into the Digital Twin.</p>
+            <span className='mobile_bento_tagline'>High quality data</span>
+            <p>Every fermentation run produces raw empirical data that feeds directly into the flight simulator.</p>
           </div>
 
-          <div className='bento_card bento_card--digitaltwin'>
-            <span className='bento_number'>02</span>
-            <span className='bento_badge'>Core</span>
-            <h3>Digital Twin</h3>
-            <span className='bento_tagline'>Predictive model</span>
-            <p>A living representation that evolves with every experiment. It learns the unique characteristics of your bioprocess and carries that knowledge across scales.</p>
+          <div className='mobile_bento_card mobile_bento_card--core'>
+            <span className='mobile_bento_number'>02</span>
+            <span className='mobile_bento_badge'>Core</span>
+            <h3>Flight Simulator</h3>
+            <span className='mobile_bento_tagline'>Predictive model</span>
+            <p>The flight simulator learns bioprocess behavior from data using AI-ML while being grounded by rules of metabolism and reactor physics.</p>
           </div>
 
-          <div className='bento_card bento_card--simulation'>
-            <span className='bento_number'>03</span>
-            <h3>Simulation Engine</h3>
-            <span className='bento_tagline'>Best recipe</span>
-            <p>Run thousands of virtual experiments in minutes. Discover optimal recipes with quantified confidence.</p>
+          <div className='mobile_bento_card'>
+            <span className='mobile_bento_number'>03</span>
+            <h3>Virtual R&D Lab</h3>
+            <span className='mobile_bento_tagline'>Best recipe</span>
+            <p>Discovers the best recipe by running thousands of virtual experiments in minutes.</p>
           </div>
 
-          <div className='bento_card bento_card--scaleup'>
-            <span className='bento_number'>04</span>
+          <div className='mobile_bento_card'>
+            <span className='mobile_bento_number'>04</span>
             <h3>Scale-up Guidance</h3>
-            <span className='bento_tagline'>De-risk transfer</span>
-            <p>Bridge the gap between bench and production. Physics-informed predictions with quantified confidence.</p>
+            <span className='mobile_bento_tagline'>De-risk transfer</span>
+            <p>Discovers operating ranges that maintain performance at scale.</p>
           </div>
 
-          <div className='bento_card bento_card--operations'>
-            <span className='bento_number'>05</span>
-            <h3>Operations Support</h3>
-            <span className='bento_tagline'>Stable production</span>
-            <p>Real-time monitoring and optimization. Production data flows back to the Digital Twin, closing the loop.</p>
+          <div className='mobile_bento_card'>
+            <span className='mobile_bento_number'>05</span>
+            <h3>Manufacturing Support</h3>
+            <span className='mobile_bento_tagline'>Stable production</span>
+            <p>Predicts bioprocess outcomes in real-time to aid control of drifting processes.</p>
           </div>
         </div>
+
       </section>
 
       {/* STATS SECTION */}
@@ -521,7 +549,9 @@ function App() {
             <h2>Ready to transform your bioprocess scale-up?</h2>
             <p>Let's discuss how we can accelerate your path from lab to production.</p>
           </div>
-          <button className='btn-primary'>Book a call →</button>
+          <a href="https://calendly.com/pushkarpendse/30min" target="_blank" rel="noopener noreferrer">
+            <button className='btn-primary'>Book a call <ArrowRight size={18} /></button>
+          </a>
         </div>
       </section>
 
@@ -541,12 +571,7 @@ function App() {
               <p className='member_role'>CEO & Co-founder</p>
               <div className='team_card_hover'>
                 <div className='click_indicator'><Linkedin size={20} /></div>
-                <ul className='member_bio'>
-                  <li>PhD in Chemical Engineering</li>
-                  <li>12+ years in manufacturing & R&D</li>
-                  <li>Led manufacturing AI projects delivering &gt;$3M annual savings</li>
-                  <li>Industry 4.0 consulting with Fortune 500 manufacturers</li>
-                </ul>
+                <p className='member_bio_text'>Dr. Pushkar Pendse is a leader in AI-driven biomanufacturing with over a decade of global experience across pharma, biotech, and advanced manufacturing. A PhD in Complex Systems Modelling, he specializes in hybrid process models that combine first-principles engineering with machine learning. In prior roles, he delivered multi-million-dollar gains through predictive maintenance, process optimization, and digital transformation programs for global manufacturers. Today, he is CEO and Co-founder of Lemnisca Bio, building AI-native digital twins to make precision fermentation scalable, reliable, and production-ready.</p>
               </div>
             </div>
           </a>
@@ -559,12 +584,7 @@ function App() {
               <p className='member_role'>CTO & Co-founder</p>
               <div className='team_card_hover'>
                 <div className='click_indicator'><Linkedin size={20} /></div>
-                <ul className='member_bio'>
-                  <li>PhD in Chemical Engineering</li>
-                  <li>12+ years in R&D, manufacturing & business development</li>
-                  <li>Built APAC office of Yokogawa Insilico Biotechnology</li>
-                  <li>Scaled team 0→5 people, $0→$250K revenue in 3 years</li>
-                </ul>
+                <p className='member_bio_text'>Dr. Shilpa Nargund is a chemical and metabolic engineer with 16+ years of experience at the intersection of bioprocess engineering and AI-driven modeling. A PhD in Chemical Engineering, she specializes in integrating wet-lab experimentation with data and computation to make biological manufacturing predictable. In a previous leadership role, she built Asia-Pacific operations from the ground up, scaling the team from 0 to 5 and revenue from $0 to $250K. Today, she is CTO and Co-founder of Lemnisca Bio, building an AI-native platform for scalable biomanufacturing.</p>
               </div>
             </div>
           </a>
@@ -579,34 +599,77 @@ function App() {
         <div className='prediction_wrapper'>
           <div className='prediction_content'>
             <span className='prediction_eyebrow'>Our Vision</span>
-            <h2>We're building the future of bioprocess scale-up</h2>
             <div className='prediction_stat'>
               <span className='prediction_from'>From 10x to</span>
               <span className='big-number'>100x</span>
             </div>
+            <h2>We're building the future of bioprocess scale-up</h2>
             <p className='prediction_cta_text'>Interested in transforming your bioprocess? Join us as an early partner and shape the future of manufacturing.</p>
           </div>
           <div className='prediction_form'>
             <h3>Work with us!</h3>
-            <form>
-              <input type="text" placeholder="First Name" />
-              <input type="text" placeholder="Last Name" />
-              <div className='form_row'>
-                <input type="email" placeholder="Email" />
-                <input type="tel" placeholder="Phone Number" />
+            {formStatus === 'success' ? (
+              <div className='form_success'>
+                <p>Thank you for reaching out! We'll be in touch soon.</p>
               </div>
-              <input type="text" placeholder="Organisation" />
-              <textarea placeholder="Your message" rows={4}></textarea>
-              <select defaultValue="">
-                <option value="" disabled>How did you hear about us?</option>
-                <option value="linkedin">LinkedIn</option>
-                <option value="referral">Referral</option>
-                <option value="search">Search Engine</option>
-                <option value="event">Event/Conference</option>
-                <option value="other">Other</option>
-              </select>
-              <button type="submit" className='btn-submit'>Let's collaborate</button>
-            </form>
+            ) : (
+              <form onSubmit={handleFormSubmit}>
+                <input 
+                  type="text" 
+                  name="name"
+                  placeholder="Name *" 
+                  value={formData.name}
+                  onChange={handleFormChange}
+                  required
+                />
+                <input 
+                  type="email" 
+                  name="email"
+                  placeholder="Email *" 
+                  value={formData.email}
+                  onChange={handleFormChange}
+                  required
+                />
+                <input 
+                  type="text" 
+                  name="organisation"
+                  placeholder="Organisation *" 
+                  value={formData.organisation}
+                  onChange={handleFormChange}
+                  required
+                />
+                <textarea 
+                  name="message"
+                  placeholder="Your message (optional)" 
+                  rows={4}
+                  value={formData.message}
+                  onChange={handleFormChange}
+                ></textarea>
+                <select 
+                  name="heardFrom"
+                  value={formData.heardFrom}
+                  onChange={handleFormChange}
+                  required
+                >
+                  <option value="" disabled>How did you hear about us? *</option>
+                  <option value="linkedin">LinkedIn</option>
+                  <option value="referral">Referral</option>
+                  <option value="search">Search Engine</option>
+                  <option value="event">Event/Conference</option>
+                  <option value="other">Other</option>
+                </select>
+                {formStatus === 'error' && (
+                  <p className='form_error'>{formError}</p>
+                )}
+                <button 
+                  type="submit" 
+                  className='btn-submit'
+                  disabled={formStatus === 'loading'}
+                >
+                  {formStatus === 'loading' ? 'Submitting...' : "Let's collaborate"}
+                </button>
+              </form>
+            )}
           </div>
         </div>
       </section>
