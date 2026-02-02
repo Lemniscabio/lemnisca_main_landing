@@ -600,11 +600,11 @@ function App() {
           <div className='prediction_content'>
             <span className='prediction_eyebrow'>Our Vision</span>
             <div className='prediction_stat'>
-              <span className='prediction_from'>From 10x to</span>
-              <span className='big-number'>100x</span>
+              <span className='prediction_from'>From Linear to</span>
+              <span className='big-number'>Circular</span>
             </div>
-            <h2>We're building the future of bioprocess scale-up</h2>
-            <p className='prediction_cta_text'>Interested in transforming your bioprocess? Join us as an early partner and shape the future of manufacturing.</p>
+            <h2>Making biology predictable so the circular economy can scale</h2>
+            <p className='prediction_cta_text'>Biology is the ultimate manufacturing engine. Lemnisca exists to democratize the biomanufacturing engine by bridging the gap between innovation & industrial reality.</p>
           </div>
           <div className='prediction_form'>
             <h3>Work with us!</h3>

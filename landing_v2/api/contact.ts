@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { connectToDatabase } from './lib/mongodb.ts';
+import { connectToDatabase } from './lib/mongodb.js';
 
 interface ContactFormData {
   name: string;
