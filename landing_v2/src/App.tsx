@@ -6,7 +6,7 @@ import './App.css'
 import logo from "../src/assets/logo.svg"
 import shilpaPhoto from '../src/assets/team/shilpa.png'
 import pushkarPhoto from '../src/assets/team/pushkar.png'
-import LogoMarquee from './components/LogoMarquee'
+import LogoMarquee from './components/partners_marquee/LogoMarquee'
 import Threads from './components/hero_bg/Threads'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -270,7 +270,7 @@ function App() {
         </div>
         <div className='hero_header'>
           <img src={logo} alt="lemnisca"/>
-          <button>Enter the loop</button>
+          <a href="#prediction"><button>Enter the loop</button></a>
         </div>
 
         <div className='hero_main'>
@@ -283,14 +283,14 @@ function App() {
             </h1>
             <p className='hero_main_text_subheading'>A science-first system where design, data, and fabrication feed back into each other, locally, continuously, endlessly.</p>
             <div className='hero_footer'>
-              <button className='btn-primary'>Explore →</button>
+              <a href="#problem"><button className='btn-primary'>Explore →</button></a>
             </div>
           </div>
         </div>
       </section>
 
       {/* PROBLEM SECTION */}
-      <section className='problem'>
+      <section className='problem' id='problem'>
         <div className='problem_intro'>
           <p className='problem_label'>Traditional scale-up follows the same path</p>
           <h2 className='problem_heading'>But it <span className='highlight'>falters</span> at every stage</h2>
@@ -449,7 +449,7 @@ function App() {
       </section>
 
       {/* CTA SECTION */}
-      <section className='cta'>
+      <section className='cta' id='cta'>
         <div className='cta_content'>
           <div className='cta_text'>
             <span className='cta_eyebrow'>Partner With Us</span>
@@ -510,7 +510,7 @@ function App() {
       <LogoMarquee />
 
       {/* PREDICTION SECTION */}
-      <section className='prediction'>
+      <section className='prediction' id='prediction'>
         <div className='prediction_wrapper'>
           <div className='prediction_content'>
             <span className='prediction_eyebrow'>Our Vision</span>
@@ -522,7 +522,7 @@ function App() {
             <p className='prediction_cta_text'>Interested in transforming your bioprocess? Join us as an early partner and shape the future of manufacturing.</p>
           </div>
           <div className='prediction_form'>
-            <h3>Get early access</h3>
+            <h3>Work with us!</h3>
             <form>
               <input type="text" placeholder="First Name" />
               <input type="text" placeholder="Last Name" />
@@ -552,8 +552,9 @@ function App() {
           <div className='footer_bottom'>
             <p>© {new Date().getFullYear()} Lemnisca. All rights reserved.</p>
             <div className='footer_legal_links'>
-              <a href="#contact">Book a call</a>
-              <a href="#explore">Explore</a>
+              <a href="#cta">Book a call</a>
+              <a href="#problem">Explore</a>
+              <a href="#prediction">Enter the loop</a>
             </div>
           </div>
         </div>
