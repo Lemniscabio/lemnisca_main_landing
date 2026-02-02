@@ -187,22 +187,6 @@ function App() {
         }
       )
 
-      // Stats section - number count up effect
-      gsap.fromTo('.stat_item', 
-        { opacity: 0, y: 40 },
-        { 
-          opacity: 1, 
-          y: 0, 
-          duration: 0.8,
-          stagger: 0.2,
-          ease: 'power3.out',
-          scrollTrigger: {
-            trigger: '.stats',
-            start: 'top 80%',
-          }
-        }
-      )
-
       // CTA section
       gsap.fromTo('.cta_content', 
         { opacity: 0, y: 30 },
@@ -512,33 +496,6 @@ function App() {
           </div>
         </div>
 
-      </section>
-
-      {/* STATS SECTION */}
-      <section className='stats'>
-        <div className='stats_header'>
-          <span className='stats_eyebrow'>Impact</span>
-          <h2 className='stats_title'>Measurable results from day one</h2>
-        </div>
-        <div className='stats_grid'>
-          <div className='stat_item'>
-            <span className='stat_number'>3x</span>
-            <span className='stat_label'>Faster development cycles</span>
-            <span className='stat_desc'>Accelerate your path from lab to production</span>
-          </div>
-          <div className='stat_divider'></div>
-          <div className='stat_item'>
-            <span className='stat_number'>4 weeks</span>
-            <span className='stat_label'>Average time to first prediction</span>
-            <span className='stat_desc'>Start seeing insights almost immediately</span>
-          </div>
-          <div className='stat_divider'></div>
-          <div className='stat_item'>
-            <span className='stat_number'>80%</span>
-            <span className='stat_label'>Reduction in failed batches</span>
-            <span className='stat_desc'>Minimize waste and maximize yield</span>
-          </div>
-        </div>
       </section>
 
       {/* CTA SECTION */}
