@@ -381,15 +381,15 @@ html, body, #root {
 
 /* ==================== SOLUTION SECTION ==================== */
 .solution {
-  background-color: var(--color-bg-cream);
-  padding: 10rem 4rem;
+  background-color: white;
+  padding: 8rem 4rem;
   color: var(--color-text-primary);
 }
 
 .solution_header {
   text-align: center;
-  margin-bottom: 5rem;
-  max-width: 800px;
+  margin-bottom: 4rem;
+  max-width: 700px;
   margin-left: auto;
   margin-right: auto;
 }
@@ -417,212 +417,494 @@ html, body, #root {
   letter-spacing: -0.01em;
 }
 
-/* Timeline Container */
-.timeline_container {
+/* ========== RADIAL LOOP DIAGRAM ========== */
+.loop_diagram {
   position: relative;
+  width: 100%;
   max-width: 900px;
-  margin: 0 auto;
-  padding: 3rem 0;
+  height: 500px;
+  margin: 0 auto 6rem;
 }
 
-/* The vertical spine */
-.timeline_spine {
-  position: absolute;
-  left: 50%;
-  top: 0;
-  bottom: 0;
-  width: 2px;
-  transform: translateX(-50%);
-}
-
-.timeline_line_bg {
+/* Connection Lines SVG */
+.loop_connections {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: var(--color-border);
+  pointer-events: none;
+  z-index: 1;
 }
 
-.timeline_line_progress {
+/* Base connection lines - always visible */
+.connect_curve {
+  fill: none;
+  stroke: rgba(56, 175, 216, 0.25);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+
+/* Glowing trace animation */
+.connect_trace {
+  fill: none;
+  stroke: #38AFD8;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-dasharray: 30 200;
+  filter: drop-shadow(0 0 4px rgba(56, 175, 216, 0.8));
+}
+
+.connect_trace--1 {
+  animation: traceFlowIn 3s ease-in-out infinite;
+}
+
+.connect_trace--2 {
+  animation: traceFlowOut 3s ease-in-out infinite 0.75s;
+}
+
+.connect_trace--3 {
+  animation: traceFlowOut 3s ease-in-out infinite 1.5s;
+}
+
+.connect_trace--4 {
+  animation: traceFlowOut 3s ease-in-out infinite 2.25s;
+}
+
+/* Trace flowing INTO the Digital Twin (from Wet Lab) */
+@keyframes traceFlowIn {
+  0% {
+    stroke-dashoffset: 230;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 0;
+  }
+}
+
+/* Trace flowing OUT from the Digital Twin */
+@keyframes traceFlowOut {
+  0% {
+    stroke-dashoffset: -230;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 0;
+  }
+}
+
+/* Center Core */
+.loop_core {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 0%;
-  background: #38AFD8;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 160px;
+  height: 160px;
+  z-index: 10;
 }
 
-/* Timeline stages */
-.timeline_stages {
-  display: flex;
-  flex-direction: column;
-  gap: 4rem;
-  position: relative;
+.loop_core_rings {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+}
+
+.ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 1px solid;
+  transition: all 0.4s ease;
+}
+
+.ring--outer {
+  width: 160px;
+  height: 160px;
+  border-color: rgba(56, 175, 216, 0.15);
+}
+
+.ring--middle {
+  width: 120px;
+  height: 120px;
+  border-color: rgba(56, 175, 216, 0.25);
+}
+
+.ring--inner {
+  width: 80px;
+  height: 80px;
+  border-color: rgba(56, 175, 216, 0.35);
+  background: white;
+  animation: calmPulse 4s ease-in-out infinite;
+}
+
+@keyframes calmPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(56, 175, 216, 0);
+  }
+  50% {
+    box-shadow: 0 0 30px 10px rgba(56, 175, 216, 0.2);
+  }
+}
+
+.loop_core_content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
   z-index: 2;
 }
 
-.timeline_stage {
-  display: flex;
-  align-items: center;
-  position: relative;
+.core_label {
+  display: block;
+  font-size: 0.55rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: #38AFD8;
+  margin-bottom: 0.25rem;
+  font-weight: 500;
 }
 
-.timeline_stage:nth-child(odd) {
-  flex-direction: row;
-  padding-right: 54%;
+.loop_core_content h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--color-text-primary);
+  white-space: nowrap;
 }
 
-.timeline_stage:nth-child(even) {
-  flex-direction: row-reverse;
-  padding-left: 54%;
-}
-
-/* Connector dot on the spine */
-.stage_connector {
+/* Orbital Nodes */
+.loop_node {
   position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: var(--color-bg-cream);
-  border: 2px solid var(--color-border);
-  transition: all 0.5s ease;
-  z-index: 3;
+  z-index: 5;
 }
 
-.timeline_stage.active .stage_connector {
-  background: var(--color-text-primary);
-  border-color: var(--color-text-primary);
-  box-shadow: 0 0 0 6px rgba(26, 26, 26, 0.15);
-  transform: translate(-50%, -50%) scale(1.2);
+.loop_node--tl {
+  top: 5%;
+  left: 2%;
 }
 
-/* Stage card */
-.stage_card {
-  display: flex;
-  align-items: flex-start;
-  gap: 2rem;
-  padding: 2.5rem;
+.loop_node--tr {
+  top: 5%;
+  right: 2%;
+}
+
+.loop_node--bl {
+  bottom: 5%;
+  left: 2%;
+}
+
+.loop_node--br {
+  bottom: 5%;
+  right: 2%;
+}
+
+.node_card {
+  max-width: 240px;
+  padding: 1.25rem;
   background: white;
   border: 1px solid var(--color-border);
-  transition: all 0.6s ease;
-  position: relative;
-  filter: grayscale(100%) opacity(0.5);
+  transition: all 0.3s ease;
 }
 
-.timeline_stage:nth-child(odd) .stage_card {
-  flex-direction: row;
-}
-
-.timeline_stage:nth-child(even) .stage_card {
-  flex-direction: row-reverse;
+.loop_node--tl .node_card,
+.loop_node--bl .node_card {
   text-align: right;
 }
 
-.timeline_stage.active .stage_card {
-  filter: grayscale(0%) opacity(1);
+.loop_node--tr .node_card,
+.loop_node--br .node_card {
+  text-align: left;
 }
 
-/* Stage icon */
-.stage_icon {
-  width: 56px;
-  height: 56px;
-  min-width: 56px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--color-text-muted);
-  transition: all 0.5s ease;
+.node_card:hover {
+  border-color: rgba(56, 175, 216, 0.5);
+  box-shadow: 0 4px 20px rgba(56, 175, 216, 0.1);
 }
 
-.stage_icon svg {
+.node_icon {
+  width: 24px;
+  height: 24px;
+  color: #38AFD8;
+  margin-bottom: 0.75rem;
+}
+
+.loop_node--tl .node_icon,
+.loop_node--bl .node_icon {
+  margin-left: auto;
+}
+
+.node_icon svg {
   width: 100%;
   height: 100%;
 }
 
-/* Stage content */
-.stage_content {
-  flex: 1;
+.node_card h4 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+  color: var(--color-text-primary);
 }
 
-.stage_number {
+.node_card p {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  line-height: 1.55;
+  margin: 0;
+}
+
+/* ========== BENTO GRID ========== */
+.bento_grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: auto auto;
+  gap: 1.5rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* Layout: 
+   Row 1: Wet Lab | Digital Twin (spans 2 cols)
+   Row 2: Simulation | Scale-up | Operations
+*/
+.bento_card--wetlab {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.bento_card--digitaltwin {
+  grid-column: 2 / 4;
+  grid-row: 1;
+}
+
+.bento_card--simulation {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.bento_card--scaleup {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.bento_card--operations {
+  grid-column: 3;
+  grid-row: 2;
+}
+
+.bento_card {
+  padding: 2.5rem;
+  background: var(--color-bg-cream);
+  border: 1px solid var(--color-border);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.bento_card:hover {
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+.bento_number {
   display: block;
-  font-size: 0.7rem;
+  font-family: var(--font-serif);
+  font-size: 3rem;
+  font-weight: 300;
+  color: rgba(0, 0, 0, 0.08);
+  line-height: 1;
+  margin-bottom: 1rem;
+}
+
+.bento_badge {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  background: #38AFD8;
+  color: white;
+  border-radius: 2rem;
+}
+
+.bento_badge--partner {
+  background: rgba(0, 0, 0, 0.05);
   color: var(--color-text-muted);
+}
+
+.bento_card h3 {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin: 0 0 0.5rem 0;
+  color: var(--color-text-primary);
+}
+
+.bento_tagline {
+  display: block;
+  font-size: 0.85rem;
+  color: #38AFD8;
+  margin-bottom: 1.25rem;
+  font-weight: 600;
+}
+
+.bento_card p {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* Digital Twin featured card */
+.bento_card--digitaltwin {
+  background: linear-gradient(135deg, #38AFD8 0%, #2d8fb3 100%);
+  border-color: transparent;
+}
+
+.bento_card--digitaltwin h3 {
+  font-size: 1.75rem;
+  color: white;
+}
+
+.bento_card--digitaltwin .bento_number {
+  color: rgba(255, 255, 255, 0.2);
+}
+
+.bento_card--digitaltwin .bento_tagline {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.bento_card--digitaltwin p {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.bento_card--digitaltwin .bento_badge {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+/* Operations card - same style as others now */
+.bento_card--operations {
+  background: white;
+}
+
+/* ========== EXPANDED DETAIL CARDS (legacy - keeping for reference) ========== */
+.approach_details {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.detail_card {
+  padding: 3rem;
+  background: white;
+  border: 1px solid var(--color-border);
+  transition: all 0.3s ease;
+}
+
+.detail_card:hover {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+}
+
+.detail_number {
+  display: block;
+  font-family: var(--font-serif);
+  font-size: 4rem;
+  font-weight: 300;
+  color: rgba(0, 0, 0, 0.06);
+  line-height: 1;
+  margin-bottom: 1rem;
+}
+
+.detail_card h3 {
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  font-weight: 400;
+  margin: 0 0 0.5rem 0;
+  color: var(--color-text-primary);
+}
+
+.detail_subtitle {
+  display: block;
+  font-size: 0.9rem;
+  color: #38AFD8;
+  margin-bottom: 2rem;
+}
+
+.detail_capabilities {
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.capabilities_label {
+  display: block;
+  font-size: 0.65rem;
+  text-transform: uppercase;
   letter-spacing: 0.15em;
-  margin-bottom: 0.75rem;
+  color: var(--color-text-muted);
+  margin-bottom: 1rem;
   font-weight: 500;
 }
 
-.stage_content h3 {
-  font-size: 1.35rem;
-  font-weight: 600;
-  margin: 0 0 1rem 0;
-  color: var(--color-text-primary);
-  letter-spacing: 0.02em;
+.detail_capabilities ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
-.stage_content p {
+.detail_capabilities li {
+  position: relative;
+  padding-left: 1rem;
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  margin-bottom: 0.5rem;
+  line-height: 1.5;
+}
+
+.detail_capabilities li::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: #38AFD8;
+}
+
+.detail_description {
   font-size: 0.95rem;
   color: var(--color-text-secondary);
   line-height: 1.8;
   margin: 0;
 }
 
-/* Core stage (Digital Twin) - emphasized */
-.timeline_stage--core .stage_card {
-  padding: 3rem;
-}
-
-.timeline_stage--core .stage_icon {
-  width: 64px;
-  height: 64px;
-  min-width: 64px;
-}
-
-.timeline_stage--core .stage_content h3 {
-  font-size: 1.5rem;
-}
-
-.timeline_stage--core .stage_connector {
-  width: 20px;
-  height: 20px;
-}
-
-.timeline_stage--core.active .stage_connector {
-  box-shadow: 0 0 0 8px rgba(26, 26, 26, 0.2);
-}
-
-.stage_core_label {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  font-size: 0.6rem;
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-  color: var(--color-text-muted);
-  padding: 0.35rem 0.75rem;
-  border: 1px solid var(--color-border);
-  opacity: 0;
-  transition: all 0.5s ease;
-}
-
-.timeline_stage--core:nth-child(even) .stage_core_label {
-  right: auto;
-  left: 1rem;
-}
-
-.timeline_stage--core.active .stage_core_label {
-  opacity: 1;
-}
-
 /* ==================== STATS SECTION ==================== */
 .stats {
   background-color: white;
   padding: 8rem 4rem;
+  border-top: 1px solid var(--color-border);
 }
 
 .stats_header {
@@ -1198,6 +1480,14 @@ html, body, #root {
     padding: 1.5rem 2rem;
   }
   
+  .hero_content {
+    margin-top: -10vh;
+  }
+  
+  .hero_footer {
+    margin-top: 10rem;
+  }
+  
   .hero_main_text_heading {
     font-size: 2.75rem;
   }
@@ -1246,42 +1536,48 @@ html, body, #root {
     font-size: 1.75rem;
   }
   
-  /* Timeline responsive */
-  .timeline_container {
-    max-width: 100%;
+  /* Loop diagram responsive - hide on mobile */
+  .loop_diagram {
+    display: none;
   }
   
-  .timeline_stage:nth-child(odd),
-  .timeline_stage:nth-child(even) {
-    flex-direction: column;
-    padding-left: 4rem;
-    padding-right: 0;
+  /* Detail cards responsive */
+  .approach_details {
+    grid-template-columns: 1fr;
   }
   
-  .timeline_spine {
-    left: 1.5rem;
+  /* Bento grid responsive */
+  .bento_grid {
+    grid-template-columns: 1fr;
   }
   
-  .stage_connector {
-    left: 1.5rem;
+  .bento_card--wetlab,
+  .bento_card--digitaltwin,
+  .bento_card--simulation,
+  .bento_card--scaleup,
+  .bento_card--operations {
+    grid-column: 1;
+    grid-row: auto;
   }
   
-  .timeline_stage:nth-child(even) .stage_card {
-    flex-direction: row;
-    text-align: left;
-  }
-  
-  .timeline_stage--core:nth-child(even) .stage_core_label {
-    right: 1rem;
-    left: auto;
-  }
-  
-  .stage_card {
-    padding: 1.5rem;
-  }
-  
-  .timeline_stage--core .stage_card {
+  .bento_card {
     padding: 2rem;
+  }
+  
+  .bento_card--digitaltwin h3 {
+    font-size: 1.5rem;
+  }
+  
+  .detail_card {
+    padding: 2rem;
+  }
+  
+  .detail_number {
+    font-size: 3rem;
+  }
+  
+  .detail_card h3 {
+    font-size: 1.5rem;
   }
   
   .stats {
@@ -1370,7 +1666,7 @@ html, body, #root {
   }
   
   .footer_logo_large {
-    font-size: 18vw;
+    font-size: 15vw;
   }
 }
 

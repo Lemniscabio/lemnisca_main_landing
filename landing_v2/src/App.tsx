@@ -86,7 +86,7 @@ function App() {
         }
       )
 
-      // Solution section - Timeline animation
+      // Solution section - Radial diagram animation
       gsap.fromTo('.solution_header', 
         { opacity: 0, y: 40 },
         { 
@@ -101,37 +101,65 @@ function App() {
         }
       )
 
-      // Timeline line progress animation
-      gsap.to('.timeline_line_progress', {
-        height: '100%',
-        ease: 'none',
-        scrollTrigger: {
-          trigger: '.timeline_container',
-          start: 'top 60%',
-          end: 'bottom 40%',
-          scrub: 1,
-        }
-      })
-
-      // Stage activation based on scroll
-      const stages = document.querySelectorAll('.timeline_stage')
-      stages.forEach((stage, index) => {
-        const stageNum = index + 1
-        const progress = (stageNum - 0.5) / stages.length
-
-        ScrollTrigger.create({
-          trigger: '.timeline_container',
-          start: 'top 60%',
-          end: 'bottom 40%',
-          onUpdate: (self) => {
-            if (self.progress >= progress) {
-              stage.classList.add('active')
-            } else {
-              stage.classList.remove('active')
-            }
+      // Loop diagram animation
+      gsap.fromTo('.loop_core', 
+        { opacity: 0, scale: 0.8 },
+        { 
+          opacity: 1, 
+          scale: 1, 
+          duration: 1.2,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: '.loop_diagram',
+            start: 'top 70%',
           }
-        })
-      })
+        }
+      )
+
+      gsap.fromTo('.loop_node', 
+        { opacity: 0, scale: 0.9 },
+        { 
+          opacity: 1, 
+          scale: 1, 
+          duration: 0.8,
+          stagger: 0.15,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: '.loop_diagram',
+            start: 'top 65%',
+          }
+        }
+      )
+
+      gsap.fromTo('.loop_connections', 
+        { opacity: 0 },
+        { 
+          opacity: 1, 
+          duration: 1,
+          delay: 0.3,
+          ease: 'power2.out',
+          scrollTrigger: {
+            trigger: '.loop_diagram',
+            start: 'top 65%',
+          }
+        }
+      )
+
+      // Detail cards animation
+      gsap.fromTo('.detail_card', 
+        { opacity: 0, y: 60 },
+        { 
+          opacity: 1, 
+          y: 0, 
+          duration: 0.8,
+          stagger: 0.15,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: '.approach_details',
+            start: 'top 80%',
+          }
+        }
+      )
 
       // Stats section - number count up effect
       gsap.fromTo('.stat_item', 
@@ -325,98 +353,135 @@ function App() {
         </div>
       </section>
 
-      {/* SOLUTION SECTION - Vertical Timeline */}
+      {/* SOLUTION SECTION - Radial Loop Diagram */}
       <section className='solution'>
         <div className='solution_header'>
           <span className='solution_eyebrow'>Our Approach</span>
-          <h2 className='solution_tagline'>A continuous system where each stage feeds the next</h2>
+          <h2 className='solution_tagline'>Breaking linear chains. Building continuous loops.</h2>
         </div>
         
-        <div className='timeline_container'>
-          {/* The vertical spine */}
-          <div className='timeline_spine'>
-            <div className='timeline_line_bg'></div>
-            <div className='timeline_line_progress'></div>
+        {/* Radial Diagram */}
+        <div className='loop_diagram'>
+          {/* Curved connection lines SVG */}
+          <svg className='loop_connections' viewBox="0 0 800 500" preserveAspectRatio="xMidYMid meet">
+            {/* Base paths - always visible */}
+            <path className='connect_curve' d="M 140 100 Q 250 150 340 220" />
+            <path className='connect_curve' d="M 660 100 Q 550 150 460 220" />
+            <path className='connect_curve' d="M 140 400 Q 250 350 340 280" />
+            <path className='connect_curve' d="M 660 400 Q 550 350 460 280" />
+            
+            {/* Glowing trace paths - animated */}
+            <path className='connect_trace connect_trace--1' d="M 140 100 Q 250 150 340 220" />
+            <path className='connect_trace connect_trace--2' d="M 660 100 Q 550 150 460 220" />
+            <path className='connect_trace connect_trace--3' d="M 140 400 Q 250 350 340 280" />
+            <path className='connect_trace connect_trace--4' d="M 660 400 Q 550 350 460 280" />
+          </svg>
+
+          {/* Center Core - Digital Twin */}
+          <div className='loop_core'>
+            <div className='loop_core_rings'>
+              <div className='ring ring--outer'></div>
+              <div className='ring ring--middle'></div>
+              <div className='ring ring--inner'></div>
+            </div>
+            <div className='loop_core_content'>
+              <span className='core_label'>CORE</span>
+              <h3>Digital Twin</h3>
+            </div>
           </div>
-          
-          {/* Timeline stages */}
-          <div className='timeline_stages'>
-            {/* Stage 1: Wet Lab */}
-            <div className='timeline_stage' data-stage="1">
-              <div className='stage_connector'></div>
-              <div className='stage_card'>
-                <div className='stage_icon'>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
-                    <path d="M9 3h6v2H9zM10 5v6l-4 8h12l-4-8V5"/>
-                    <circle cx="12" cy="16" r="1"/>
-                  </svg>
-                </div>
-                <div className='stage_content'>
-                  <span className='stage_number'>01</span>
-                  <h3>Wet Lab</h3>
-                  <p>Automated data capture from your existing lab equipment and processes. Real experiments, real data.</p>
-                </div>
-              </div>
-            </div>
 
-            {/* Stage 2: Digital Twin (Core) */}
-            <div className='timeline_stage timeline_stage--core' data-stage="2">
-              <div className='stage_connector'></div>
-              <div className='stage_card'>
-                <div className='stage_icon'>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
-                    <rect x="3" y="3" width="7" height="7" rx="1"/>
-                    <rect x="14" y="3" width="7" height="7" rx="1"/>
-                    <rect x="3" y="14" width="7" height="7" rx="1"/>
-                    <rect x="14" y="14" width="7" height="7" rx="1"/>
-                    <path d="M10 6.5h4M6.5 10v4M17.5 10v4M10 17.5h4"/>
-                  </svg>
-                </div>
-                <div className='stage_content'>
-                  <span className='stage_number'>02</span>
-                  <h3>Digital Twin</h3>
-                  <p>Physics-informed models that learn and adapt to your specific bioprocess. The intelligence at the core of the system.</p>
-                </div>
-                <div className='stage_core_label'>System Core</div>
+          {/* Orbital Nodes */}
+          <div className='loop_node loop_node--tl' data-connection="tl">
+            <div className='node_card'>
+              <div className='node_icon'>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <path d="M9 3h6v2H9zM10 5v6l-4 8h12l-4-8V5"/>
+                  <circle cx="12" cy="16" r="1"/>
+                </svg>
               </div>
+              <h4>Wet Lab</h4>
+              <p>High quality data from real experiments. The foundation that feeds the Digital Twin.</p>
             </div>
+          </div>
 
-            {/* Stage 3: Scale-up Prediction */}
-            <div className='timeline_stage' data-stage="3">
-              <div className='stage_connector'></div>
-              <div className='stage_card'>
-                <div className='stage_icon'>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
-                    <path d="M3 3v18h18"/>
-                    <path d="M7 14l4-4 4 4 5-6"/>
-                    <circle cx="20" cy="8" r="2"/>
-                  </svg>
-                </div>
-                <div className='stage_content'>
-                  <span className='stage_number'>03</span>
-                  <h3>Scale-up Prediction</h3>
-                  <p>AI-driven predictions for optimal scale-up parameters. From lab to production with confidence.</p>
-                </div>
+          <div className='loop_node loop_node--tr' data-connection="tr">
+            <div className='node_card'>
+              <div className='node_icon'>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <rect x="2" y="3" width="20" height="14" rx="2"/>
+                  <path d="M8 21h8M12 17v4"/>
+                  <path d="M7 8l3 3-3 3M12 14h5"/>
+                </svg>
               </div>
+              <h4>Simulation Engine</h4>
+              <p>Best recipe discovery. Run thousands of virtual experiments in minutes.</p>
             </div>
+          </div>
 
-            {/* Stage 4: Operations */}
-            <div className='timeline_stage' data-stage="4">
-              <div className='stage_connector'></div>
-              <div className='stage_card'>
-                <div className='stage_icon'>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
-                    <circle cx="12" cy="12" r="3"/>
-                    <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
-                  </svg>
-                </div>
-                <div className='stage_content'>
-                  <span className='stage_number'>04</span>
-                  <h3>Operations Support</h3>
-                  <p>Real-time optimization and monitoring for production environments. Continuous improvement, always.</p>
-                </div>
+          <div className='loop_node loop_node--bl' data-connection="bl">
+            <div className='node_card'>
+              <div className='node_icon'>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <path d="M3 3v18h18"/>
+                  <path d="M7 14l4-4 4 4 5-6"/>
+                  <circle cx="20" cy="8" r="2"/>
+                </svg>
               </div>
+              <h4>Scale-up Guidance</h4>
+              <p>De-risk transfer from lab to production with quantified confidence.</p>
             </div>
+          </div>
+
+          <div className='loop_node loop_node--br' data-connection="br">
+            <div className='node_card'>
+              <div className='node_icon'>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <circle cx="12" cy="12" r="3"/>
+                  <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
+                </svg>
+              </div>
+              <h4>Operations Support</h4>
+              <p>Stable production with real-time optimization. Data flows back to refine the model.</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Bento Grid Detail Cards */}
+        <div className='bento_grid'>
+          <div className='bento_card bento_card--wetlab'>
+            <span className='bento_number'>01</span>
+            <h3>Wet Lab</h3>
+            <span className='bento_tagline'>High quality data</span>
+            <p>Every fermentation run produces a constellation of measurable parameters—raw empirical data that feeds directly into the Digital Twin.</p>
+          </div>
+
+          <div className='bento_card bento_card--digitaltwin'>
+            <span className='bento_number'>02</span>
+            <span className='bento_badge'>Core</span>
+            <h3>Digital Twin</h3>
+            <span className='bento_tagline'>Predictive model</span>
+            <p>A living representation that evolves with every experiment. It learns the unique characteristics of your bioprocess and carries that knowledge across scales.</p>
+          </div>
+
+          <div className='bento_card bento_card--simulation'>
+            <span className='bento_number'>03</span>
+            <h3>Simulation Engine</h3>
+            <span className='bento_tagline'>Best recipe</span>
+            <p>Run thousands of virtual experiments in minutes. Discover optimal recipes with quantified confidence.</p>
+          </div>
+
+          <div className='bento_card bento_card--scaleup'>
+            <span className='bento_number'>04</span>
+            <h3>Scale-up Guidance</h3>
+            <span className='bento_tagline'>De-risk transfer</span>
+            <p>Bridge the gap between bench and production. Physics-informed predictions with quantified confidence.</p>
+          </div>
+
+          <div className='bento_card bento_card--operations'>
+            <span className='bento_number'>05</span>
+            <h3>Operations Support</h3>
+            <span className='bento_tagline'>Stable production</span>
+            <p>Real-time monitoring and optimization. Production data flows back to the Digital Twin, closing the loop.</p>
           </div>
         </div>
       </section>

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Renderer, Program, Mesh, Triangle, Color } from 'ogl';
 
 import './Threads.css';
@@ -32,7 +32,7 @@ uniform vec2 uMouse;
 
 #define PI 3.1415926538
 
-const int u_line_count = 40;
+const int u_line_count = 30;
 const float u_line_width = 7.0;
 const float u_line_blur = 10.0;
 
@@ -136,9 +136,17 @@ const Threads: React.FC<ThreadsProps> = ({
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const animationFrameId = useRef<number>(0);
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
+
+  // Check mobile only on mount - no resize listener
+  useEffect(() => {
+    setIsMobile(window.innerWidth < 768);
+  }, []);
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    // Don't render WebGL on mobile
+    if (isMobile || !containerRef.current) return;
+    
     const container = containerRef.current;
 
     const renderer = new Renderer({ alpha: true });
@@ -166,15 +174,12 @@ const Threads: React.FC<ThreadsProps> = ({
 
     const mesh = new Mesh(gl, { geometry, program });
 
-    function resize() {
-      const { clientWidth, clientHeight } = container;
-      renderer.setSize(clientWidth, clientHeight);
-      program.uniforms.iResolution.value.r = clientWidth;
-      program.uniforms.iResolution.value.g = clientHeight;
-      program.uniforms.iResolution.value.b = clientWidth / clientHeight;
-    }
-    window.addEventListener('resize', resize);
-    resize();
+    // Set size once on mount - no resize listener
+    const { clientWidth, clientHeight } = container;
+    renderer.setSize(clientWidth, clientHeight);
+    program.uniforms.iResolution.value.r = clientWidth;
+    program.uniforms.iResolution.value.g = clientHeight;
+    program.uniforms.iResolution.value.b = clientWidth / clientHeight;
 
     let currentMouse = [0.5, 0.5];
     let targetMouse = [0.5, 0.5];
@@ -185,9 +190,11 @@ const Threads: React.FC<ThreadsProps> = ({
       const y = 1.0 - (e.clientY - rect.top) / rect.height;
       targetMouse = [x, y];
     }
+
     function handleMouseLeave() {
       targetMouse = [0.5, 0.5];
     }
+
     if (enableMouseInteraction) {
       container.addEventListener('mousemove', handleMouseMove);
       container.addEventListener('mouseleave', handleMouseLeave);
@@ -213,7 +220,6 @@ const Threads: React.FC<ThreadsProps> = ({
 
     return () => {
       if (animationFrameId.current) cancelAnimationFrame(animationFrameId.current);
-      window.removeEventListener('resize', resize);
 
       if (enableMouseInteraction) {
         container.removeEventListener('mousemove', handleMouseMove);
@@ -222,7 +228,11 @@ const Threads: React.FC<ThreadsProps> = ({
       if (container.contains(gl.canvas)) container.removeChild(gl.canvas);
       gl.getExtension('WEBGL_lose_context')?.loseContext();
     };
-  }, [color, amplitude, distance, enableMouseInteraction]);
+  }, [color, amplitude, distance, enableMouseInteraction, isMobile]);
+
+  if (isMobile) {
+    return <div ref={containerRef} className="threads-container threads-container--mobile" {...rest} />;
+  }
 
   return <div ref={containerRef} className="threads-container" {...rest} />;
 };
