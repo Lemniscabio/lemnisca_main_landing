@@ -9,6 +9,8 @@ interface ContactFormData {
   message?: string;
 }
 
+const MAX_MESSAGE_LENGTH = 500;
+
 function isValidEmail(email: string): boolean {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
@@ -40,9 +42,28 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ success: false, message: 'Please tell us how you heard about us' });
     }
 
+    // Validate message length
+    if (message && message.trim().length > MAX_MESSAGE_LENGTH) {
+      return res.status(400).json({ 
+        success: false, 
+        message: `Message must be ${MAX_MESSAGE_LENGTH} characters or less` 
+      });
+    }
+
     // Connect to MongoDB
     const { db } = await connectToDatabase();
     const collection = db.collection('contacts');
+
+    // Check for duplicate email
+    const normalizedEmail = email.trim().toLowerCase();
+    const existingContact = await collection.findOne({ email: normalizedEmail });
+    
+    if (existingContact) {
+      return res.status(409).json({ 
+        success: false, 
+        message: 'This email has already been submitted. We will be in touch soon!' 
+      });
+    }
 
     // Insert document
     await collection.insertOne({

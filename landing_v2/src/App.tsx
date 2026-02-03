@@ -26,6 +26,8 @@ function App() {
   const [formStatus, setFormStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [formError, setFormError] = useState('')
 
+  const MAX_MESSAGE_LENGTH = 500
+
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }))
   }
@@ -319,7 +321,7 @@ function App() {
               <span className='hero_word'>scale-up</span>
               <span className='hero_word'>for biomanufacturing</span>
             </h1>
-            <p className='hero_main_text_subheading'>A science-first system where design, data, and fabrication feed back into each other, locally, continuously, endlessly.</p>
+            <p className='hero_main_text_subheading'>Biology meets AI to make biomanufacturing predictable.</p>
             <div className='hero_footer'>
               <a href="#problem"><button className='btn-primary'>Explore <ArrowRight size={18} /></button></a>
             </div>
@@ -331,7 +333,7 @@ function App() {
       <section className='problem' id='problem'>
         <div className='problem_intro'>
           <span className='problem_eyebrow'>The Problem</span>
-          <h2 className='problem_heading'>But it <span className='highlight'>falters</span> at every stage</h2>
+          <h2 className='problem_heading'>Bioprocesses <span className='highlight'>falter</span> at every stage</h2>
         </div>
         <div className='problem_cards'>
           <div className='problem_card' data-card="1">
@@ -367,7 +369,7 @@ function App() {
       <section className='solution'>
         <div className='solution_header'>
           <span className='solution_eyebrow'>Our Approach</span>
-          <h2 className='solution_tagline'>Breaking linear chains. Building continuous loops.</h2>
+          <h2 className='solution_tagline'>Building flight simulators for bioprocesses</h2>
         </div>
         
         {/* Radial Diagram */}
@@ -601,7 +603,11 @@ function App() {
                   rows={4}
                   value={formData.message}
                   onChange={handleFormChange}
+                  maxLength={MAX_MESSAGE_LENGTH}
                 ></textarea>
+                <div className='message_char_count'>
+                  {formData.message.length}/{MAX_MESSAGE_LENGTH}
+                </div>
                 <select 
                   name="heardFrom"
                   value={formData.heardFrom}
