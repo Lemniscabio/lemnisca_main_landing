@@ -3,9 +3,9 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { FlaskConical, FlaskConicalOff, TrendingUp, TrendingDown, Target, CircleAlert, Linkedin, ArrowRight } from 'lucide-react'
 import './App.css'
-import logo from "../src/assets/logo.svg"
-import shilpaPhoto from '../src/assets/team/shilpa.png'
-import pushkarPhoto from '../src/assets/team/pushkar.png'
+import logo from "../src/assets/Landing_assets/logo.svg"
+import shilpaPhoto from '../src/assets/Landing_assets/team/shilpa.png'
+import pushkarPhoto from '../src/assets/Landing_assets/team/pushkar.png'
 import LogoMarquee from './components/partners_marquee/LogoMarquee'
 import Threads from './components/hero_bg/Threads'
 
