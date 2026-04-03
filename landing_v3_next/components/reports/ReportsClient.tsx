@@ -500,10 +500,13 @@ function ReportsClient() {
             className="sidebar-export-btn"
             onClick={() => {
               setIsExporting(true)
+              const originalTitle = document.title
+              document.title = `${report.company.name}_Fermentation_Report_${new Date().toISOString().split('T')[0]}`
               setTimeout(() => {
                 Highcharts.charts.forEach(chart => chart?.reflow())
                 setTimeout(() => {
                   window.print()
+                  document.title = originalTitle
                   setIsExporting(false)
                 }, 100)
               }, 600)

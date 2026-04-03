@@ -24,6 +24,9 @@ export interface BatchMeta {
   supplements: string
   closureReason: string
   color: string
+  batchMediumVol: number    // mL — initial batch medium volume
+  totalFeedVol: number      // mL — total glucose feed volume over entire run
+  supplementVol: number     // mL — total supplement additions (tocopherol, IPM, AA+YNB)
 }
 
 const BATCH_COLORS: Record<string, string> = {
@@ -36,12 +39,12 @@ const BATCH_COLORS: Record<string, string> = {
 }
 
 export const batchMeta: BatchMeta[] = [
-  { id: 'B01', equipment: 'KLF2000', spectrophotometer: 'Hitachi 1900U', scale: 1.5, duration: 82, plannedDuration: 96, finalOD: 201, finalWCW: 585, supplements: 'None', closureReason: 'Cell death + white cells at 82h', color: BATCH_COLORS.B01 },
-  { id: 'B02', equipment: 'KLF2000', spectrophotometer: 'Hitachi 1900U', scale: 1.5, duration: 96, plannedDuration: 96, finalOD: 195, finalWCW: 571.6, supplements: 'None', closureReason: 'Completed; white cells + partial cell death in late stages', color: BATCH_COLORS.B02 },
-  { id: 'B03', equipment: 'KLF2000', spectrophotometer: 'Hitachi 1900U', scale: 1.5, duration: 84, plannedDuration: 96, finalOD: 231.6, finalWCW: 785.37, supplements: 'None', closureReason: 'Pigment loss (white cells) + cell death at 84h', color: BATCH_COLORS.B03 },
-  { id: 'B04', equipment: 'Sartorius BIOSTAT B', spectrophotometer: 'LABMAN (LMSP-V325)', scale: 2, duration: 74, plannedDuration: 96, finalOD: 310, finalWCW: 1149, supplements: 'Amino acid+YNB (520mL), Tocopherol (9×50mL)', closureReason: 'White cells + cell death at 74h', color: BATCH_COLORS.B04 },
-  { id: 'B05', equipment: 'Sartorius BIOSTAT B', spectrophotometer: 'LABMAN (LMSP-V325)', scale: 1, duration: 120, plannedDuration: 120, finalOD: 296, finalWCW: 1021, supplements: 'Tocopherol (200mL), IPM (200mL at 24h)', closureReason: 'Late-phase decline after ~108h; pigment loss', color: BATCH_COLORS.B05 },
-  { id: 'B06', equipment: 'Sartorius BIOSTAT B', spectrophotometer: 'LABMAN (LMSP-V325)', scale: 1, duration: 120, plannedDuration: 120, finalOD: 282, finalWCW: 983, supplements: 'Tocopherol (200mL), IPM (200mL at 24h), glucose pulse 90mL', closureReason: 'Slight decline after ~114h; culture stability largely maintained', color: BATCH_COLORS.B06 },
+  { id: 'B01', equipment: 'KLF2000', spectrophotometer: 'Hitachi 1900U', scale: 1.5, duration: 82, plannedDuration: 96, finalOD: 201, finalWCW: 585, supplements: 'None', closureReason: 'Cell death + white cells at 82h', color: BATCH_COLORS.B01, batchMediumVol: 1600, totalFeedVol: 780, supplementVol: 0 },
+  { id: 'B02', equipment: 'KLF2000', spectrophotometer: 'Hitachi 1900U', scale: 1.5, duration: 96, plannedDuration: 96, finalOD: 195, finalWCW: 571.6, supplements: 'None', closureReason: 'Completed; white cells + partial cell death in late stages', color: BATCH_COLORS.B02, batchMediumVol: 1600, totalFeedVol: 900, supplementVol: 0 },
+  { id: 'B03', equipment: 'KLF2000', spectrophotometer: 'Hitachi 1900U', scale: 1.5, duration: 84, plannedDuration: 96, finalOD: 231.6, finalWCW: 785.37, supplements: 'None', closureReason: 'Pigment loss (white cells) + cell death at 84h', color: BATCH_COLORS.B03, batchMediumVol: 1600, totalFeedVol: 810, supplementVol: 0 },
+  { id: 'B04', equipment: 'Sartorius BIOSTAT B', spectrophotometer: 'LABMAN (LMSP-V325)', scale: 2, duration: 74, plannedDuration: 96, finalOD: 310, finalWCW: 1149, supplements: 'Amino acid+YNB (520mL), Tocopherol (9×50mL)', closureReason: 'White cells + cell death at 74h', color: BATCH_COLORS.B04, batchMediumVol: 1700, totalFeedVol: 1580.5, supplementVol: 970 },
+  { id: 'B05', equipment: 'Sartorius BIOSTAT B', spectrophotometer: 'LABMAN (LMSP-V325)', scale: 1, duration: 120, plannedDuration: 120, finalOD: 296, finalWCW: 1021, supplements: 'Tocopherol (200mL), IPM (200mL at 24h)', closureReason: 'Late-phase decline after ~108h; pigment loss', color: BATCH_COLORS.B05, batchMediumVol: 1600, totalFeedVol: 2250, supplementVol: 400 },
+  { id: 'B06', equipment: 'Sartorius BIOSTAT B', spectrophotometer: 'LABMAN (LMSP-V325)', scale: 1, duration: 120, plannedDuration: 120, finalOD: 282, finalWCW: 983, supplements: 'Tocopherol (200mL), IPM (200mL at 24h), glucose pulse 90mL', closureReason: 'Slight decline after ~114h; culture stability largely maintained', color: BATCH_COLORS.B06, batchMediumVol: 1600, totalFeedVol: 2500, supplementVol: 490 },
 ]
 
 export const batchData: Record<string, BatchDataPoint[]> = {

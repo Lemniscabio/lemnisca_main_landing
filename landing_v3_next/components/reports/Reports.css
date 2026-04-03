@@ -1742,34 +1742,77 @@
     animation: none !important;
   }
 
-  /* Prevent awkward page breaks */
+  /* ── Page break hierarchy ─────────────────────────────────────────── */
+
+  /* Major sections start on a new page */
   .report-section {
-    margin-bottom: 60px !important;
+    margin-bottom: 40px !important;
     page-break-before: always;
   }
-  
+
+  /* Overview follows cover page — don't add extra break */
   .report-section#overview {
-    page-break-before: avoid; /* Cover page is right before this */
+    page-break-before: avoid;
   }
 
-  h1, h2, h3, h4, h5 {
-    page-break-after: avoid;
-    color: #000 !important;
-    margin-top: 32px !important;
-    margin-bottom: 16px !important;
+  /* Each hypothesis accordion starts on a new page */
+  .hypothesis-accordion {
+    page-break-before: always;
   }
-  
+
+  /* First hypothesis doesn't need a break (section header already has one) */
+  .hypothesis-accordion:first-child {
+    page-break-before: avoid;
+  }
+
+  /* ── Keep related content together ──────────────────────────────── */
+
+  /* Never break inside these blocks */
+  .evidence-chart,
+  .evidence-table,
+  .evidence-text,
+  .kpi-card,
+  .rec-card,
+  .analysis-summary,
+  .problem-statement,
+  .exec-summary {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* Keep hypothesis header glued to its expanded content */
+  .hypothesis-list-item {
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+  }
+
+  /* Keep headings attached to the content that follows */
+  h1, h2, h3, h4, h5 {
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+    color: #000 !important;
+    margin-top: 24px !important;
+    margin-bottom: 12px !important;
+  }
+
   h2.section-title {
     font-size: 28px !important;
     font-weight: 800 !important;
     border-bottom: 2px solid var(--r-primary) !important;
     padding-bottom: 8px !important;
   }
-  
+
   .hyp-title {
     font-size: 20px !important;
     font-weight: 700 !important;
     color: var(--r-primary) !important;
+  }
+
+  /* Keep evidence title + description + chart together */
+  .evidence-chart-header,
+  .evidence-title {
+    page-break-after: avoid !important;
+    break-after: avoid !important;
   }
 
   p {
@@ -1777,27 +1820,36 @@
     widows: 3;
   }
 
-  /* Force Highcharts and Containers to render fully */
-  * { 
-    transition: none !important; 
-    animation: none !important; 
+  /* ── Chart sizing for print ────────────────────────────────────── */
+
+  /* Kill all animations */
+  * {
+    transition: none !important;
+    animation: none !important;
   }
 
   .chart-container, .highcharts-container, .highcharts-root {
-    page-break-inside: avoid;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
     width: 100% !important;
   }
 
+  /* Reduce chart height to fit better on A4 */
   .chart-container {
-    height: 420px !important;
-    margin-top: 16px;
-    margin-bottom: 32px;
+    height: 320px !important;
+    max-height: 320px !important;
+    margin-top: 12px;
+    margin-bottom: 24px;
   }
 
-  /* Handle accordion layouts for print - Stack vertically */
-  .analysis-section {
-    display: block !important;
-    margin-bottom: 24px !important;
+  /* ── Stack two-column layouts vertically ────────────────────────── */
+
+  .analysis-section,
+  .analysis-section.layout-lr,
+  .analysis-section.layout-rl {
+    display: flex !important;
+    flex-direction: column !important;
+    margin-bottom: 16px !important;
   }
 
   .analysis-text,
@@ -1805,20 +1857,71 @@
     position: static !important;
     width: 100% !important;
     display: block !important;
-    page-break-inside: avoid;
+  }
+
+  /* Text evidence always comes first, then charts — regardless of layout-lr/rl */
+  .analysis-text {
+    order: 1 !important;
   }
 
   .analysis-visual {
-    margin-top: 32px !important;
+    order: 2 !important;
+    margin-top: 16px !important;
   }
-  
+
+  /* ── KPI grid — stack vertically ────────────────────────────────── */
+
   .kpi-grid {
-    display: block !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
   }
-  
+
   .kpi-card {
-    margin-bottom: 16px !important;
+    margin-bottom: 8px !important;
     border-left: 4px solid var(--r-primary) !important;
-    padding-left: 16px !important;
+    padding: 8px 0 8px 16px !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* ── Recommendations — keep each card intact ────────────────────── */
+
+  .recommendations-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 24px !important;
+  }
+
+  .rec-card {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    border-left: 4px solid var(--r-primary) !important;
+    padding: 16px !important;
+  }
+
+  /* ── Reduce whitespace ─────────────────────────────────────────── */
+
+  .section-header {
+    margin-bottom: 16px !important;
+  }
+
+  .section-badge {
+    margin-bottom: 8px !important;
+  }
+
+  .hypothesis-expanded-content {
+    padding-top: 8px !important;
+    margin-bottom: 0 !important;
+  }
+
+  .evidence-desc {
+    margin-bottom: 8px !important;
+  }
+
+  /* Footer stays at the end, no break before */
+  .reports-footer {
+    page-break-before: avoid !important;
+    margin-top: 40px !important;
   }
 }

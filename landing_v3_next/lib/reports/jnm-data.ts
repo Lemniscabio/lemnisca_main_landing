@@ -43,9 +43,21 @@ export const jnmReport: ReportData = {
           chartId: 'wcw',
         },
         {
+          type: 'chart',
+          title: 'Reactor Volume Reconstruction V(t)',
+          description: 'Estimated reactor volume over time: V(t) = batch medium + cumulative feed + supplements − sampling losses (~3 mL/sample). B04–B06 show significant volume increases from higher absolute feed rates and supplement additions.',
+          chartId: 'reactorVolume',
+        },
+        {
+          type: 'chart',
+          title: 'Total DCW Mass (Volume-Corrected)',
+          description: 'Total dry cell weight mass = DCW (g/L) × V(t). This is the true productivity metric — concentration alone is misleading in fed-batch. B04 produces the highest total biomass despite shorter duration.',
+          chartId: 'totalDCWMass',
+        },
+        {
           type: 'text',
           title: 'Key Method',
-          description: 'V(t) = V_initial + cumulative_feed + supplements − sampling. All batches had 1500 mL batch medium. DCW = 0.25 × WCW. Total DCW mass = DCW (g/L) × V(t). Batches B04, B05, and B06 are the most important and are the primary focus.',
+          description: 'V(t) = V_initial + cumulative_feed + supplements − sampling. DCW = 0.25 × WCW. Total DCW mass = DCW (g/L) × V(t). Batches B04, B05, and B06 are the most important and are the primary focus.',
         },
       ],
     },
@@ -91,6 +103,12 @@ export const jnmReport: ReportData = {
           chartId: 'po2',
         },
         {
+          type: 'chart',
+          title: 'pO₂ + μ Cross-Correlation (Dual Axis)',
+          description: 'Overlay of dissolved oxygen (solid) and specific growth rate μ (dashed) per batch. Visual correlation ≠ causation: pO₂ remains above C_critical (10–15%) in all batches, so DO is not growth-limiting. B06 excluded (no pO₂ probe data).',
+          chartId: 'po2MuDualAxis',
+        },
+        {
           type: 'text',
           title: 'Cross-Correlation Finding',
           description: 'Although there appears to be correlation between DO and growth rate in B03, there is no causation. C_critical for S. cerevisiae is 10–15% air saturation — DO values above 20% are NOT limiting. B03 achieved the best pO₂ profile and drove growth consistently to 65 g/L DCW without oxygen limitation, keeping pO₂ in the productive 30–50% range.',
@@ -109,6 +127,12 @@ export const jnmReport: ReportData = {
           title: 'Carbon Balance — Biomass Yield (Yx/s) by Batch',
           description: 'Yield tiers: "Elite" (0.42–0.48 g/g) = perfectly tuned, no Crabtree. "Solid" (0.38–0.42 g/g) = minor ethanol leaks. B04 performs best, likely producing the least ethanol.',
           chartId: 'carbonBalance',
+        },
+        {
+          type: 'chart',
+          title: 'Full Carbon Balance — Glucose In vs Theoretical Max vs Actual DCW',
+          description: 'Grouped bar comparing total glucose fed (g), theoretical maximum DCW at elite Yx/s (0.48 g/g), and actual DCW produced per batch. Assumes 500 g/L glucose feed concentration. The gap between theoretical and actual represents carbon lost to ethanol, CO₂, and maintenance.',
+          chartId: 'fullCarbonBalance',
         },
         {
           type: 'text',
@@ -131,6 +155,12 @@ export const jnmReport: ReportData = {
           chartId: 'feedRate',
         },
         {
+          type: 'chart',
+          title: 'Glucose Mass Balance — Fed vs Consumed (B04–B06)',
+          description: 'Cumulative glucose fed over time (solid) vs estimated glucose consumed for biomass production (dashed, using avg Yx/s ≈ 0.30). The gap represents glucose lost to ethanol, CO₂, and maintenance. B05/B06 show large surplus — cells could not metabolize all glucose fed.',
+          chartId: 'glucoseMassBalance',
+        },
+        {
           type: 'text',
           title: 'Maintenance Energy Tax',
           description: 'At qs = 0.05 g/g/h (B05/B06 late-phase), maintenance consumes ~20% of glucose — cells were "eating to survive" not "eating to grow." B05 suffered high initial stress (10h lag) + extended duration (120h) = maximum maintenance rent paid. B06 spike at 30h (~0.31 g/g/h) likely triggered ethanol and diauxic shift for the rest of the run.',
@@ -149,6 +179,12 @@ export const jnmReport: ReportData = {
           title: 'Supplement Impact — Batch Duration & Final Biomass',
           description: 'Comparison of batch outcomes by supplement strategy. B01–B03 (no supplements) died at 82–96h. B04 (amino acids + tocopherol, no IPM) died at 74h. B05/B06 (tocopherol + IPM) survived to 120h.',
           chartId: 'supplementComparison',
+        },
+        {
+          type: 'chart',
+          title: 'OD600 / WCW Ratio Over Time',
+          description: 'OD-to-WCW ratio tracks cell morphology changes. A dropping ratio indicates cells becoming denser/heavier (pigment accumulation, stress granules). B01–B03 (Hitachi spectrophotometer) show different baseline ratios from B04–B06 (LABMAN), reflecting instrument calibration differences.',
+          chartId: 'odWcwRatio',
         },
         {
           type: 'table',
