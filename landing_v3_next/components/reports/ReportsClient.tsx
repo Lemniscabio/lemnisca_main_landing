@@ -32,6 +32,8 @@ import {
 import { jnmReport, batchMeta } from '@/lib/reports/jnm-data'
 import { chartRegistry } from '@/lib/reports/chart-configs'
 import type { ReportData, Evidence, KPI } from '@/lib/reports/types'
+import { getReferenceCatalog } from '@/lib/reports/avira-references'
+import type { ReferenceItem } from '@/lib/reports/avira-references'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -85,6 +87,10 @@ function ReportsClient() {
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([WELCOME_MSG])
   const [chatInput, setChatInput] = useState('')
   const [chatTyping, setChatTyping] = useState(false)
+  const [attachedRefs, setAttachedRefs] = useState<{ id: string; label: string }[]>([])
+  const [showAutocomplete, setShowAutocomplete] = useState(false)
+  const [autocompleteItems, setAutocompleteItems] = useState<ReferenceItem[]>([])
+  const refCatalog = useRef<ReferenceItem[]>(getReferenceCatalog())
   const [expandedChart, setExpandedChart] = useState<{ evidence: Evidence; chartConfig: Highcharts.Options; rect: DOMRect } | null>(null)
   const [expandedHypotheses, setExpandedHypotheses] = useState<Set<string>>(new Set())
   const [isExporting, setIsExporting] = useState(false)
@@ -194,22 +200,121 @@ function ReportsClient() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [chatMessages])
 
-  const handleChatSend = () => {
+  const handleChatSend = async () => {
     const text = chatInput.trim()
     if (!text || chatTyping) return
+
     setChatMessages((prev) => [...prev, { role: 'user', content: text }])
     setChatInput('')
     setChatTyping(true)
-    setTimeout(() => {
-      setChatMessages((prev) => [
-        ...prev,
-        {
-          role: 'ai',
-          content: `I understand you're asking about **"${text}"**. This is a placeholder response — real AI integration will connect to the AVIRA analysis engine to answer questions about this report's data, hypotheses, and recommendations.`,
-        },
-      ])
-      setChatTyping(false)
-    }, 1200)
+    const refs = attachedRefs.map((r) => r.id)
+    setAttachedRefs([])
+
+    // Add placeholder AI message for streaming
+    setChatMessages((prev) => [...prev, { role: 'ai', content: '' }])
+
+    try {
+      const res = await fetch('/api/avira', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: chatMessages.slice(-20),
+          question: text,
+          references: refs,
+        }),
+      })
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: 'Request failed' }))
+        setChatMessages((prev) => {
+          const updated = [...prev]
+          updated[updated.length - 1] = { role: 'ai', content: `**Error:** ${err.error || 'Something went wrong. Please try again.'}` }
+          return updated
+        })
+        setChatTyping(false)
+        return
+      }
+
+      const reader = res.body?.getReader()
+      const decoder = new TextDecoder()
+      let accumulated = ''
+
+      if (reader) {
+        while (true) {
+          const { done, value } = await reader.read()
+          if (done) break
+          accumulated += decoder.decode(value, { stream: true })
+          const current = accumulated
+          setChatMessages((prev) => {
+            const updated = [...prev]
+            updated[updated.length - 1] = { role: 'ai', content: current }
+            return updated
+          })
+        }
+      }
+    } catch {
+      setChatMessages((prev) => {
+        const updated = [...prev]
+        updated[updated.length - 1] = { role: 'ai', content: '**Error:** Could not reach AVIRA. Please check your connection and try again.' }
+        return updated
+      })
+    }
+
+    setChatTyping(false)
+  }
+
+  const handleSelectReference = (item: ReferenceItem) => {
+    const newInput = chatInput.replace(/#\S*$/, '')
+    setChatInput(newInput)
+    setAttachedRefs((prev) => {
+      if (prev.some((r) => r.id === item.id)) return prev
+      return [...prev, { id: item.id, label: item.label }]
+    })
+    setShowAutocomplete(false)
+  }
+
+  const handleRemoveRef = (refId: string) => {
+    setAttachedRefs((prev) => prev.filter((r) => r.id !== refId))
+  }
+
+  const handleAttachToAvira = (refId: string, label: string) => {
+    if (!aviraOpen) {
+      setSidebarCollapsed(true)
+      setAviraOpen(true)
+    }
+    setAttachedRefs((prev) => {
+      if (prev.some((r) => r.id === refId)) return prev
+      return [...prev, { id: refId, label }]
+    })
+  }
+
+  const handleScrollToChart = (chartId: string) => {
+    const el = document.querySelector(`[data-chart-id="${chartId}"]`) as HTMLElement
+      || document.getElementById(chartId)
+    if (!el) return
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    el.classList.add('avira-highlight')
+    setTimeout(() => el.classList.remove('avira-highlight'), 2000)
+  }
+
+  function renderAIMessage(content: string): React.ReactNode {
+    const parts = content.split(/(\[See:\s*[^\]]+\]\([^)]+\))/)
+    return parts.map((part, i) => {
+      const linkMatch = part.match(/\[See:\s*([^\]]+)\]\(([^)]+)\)/)
+      if (linkMatch) {
+        const [, title, chartId] = linkMatch
+        return (
+          <button
+            key={i}
+            className="avira-chart-link"
+            onClick={() => handleScrollToChart(chartId)}
+          >
+            {title} ↗
+          </button>
+        )
+      }
+      return <span key={i} dangerouslySetInnerHTML={{ __html: renderMarkdown(part) }} />
+    })
   }
 
   const handleExpandChart = (evidence: Evidence, e: React.MouseEvent) => {
@@ -365,19 +470,30 @@ function ReportsClient() {
         } as Highcharts.Options : chartConfig
 
         return (
-          <div key={idx} className="evidence-chart glass-card">
+          <div key={idx} className="evidence-chart glass-card" data-chart-id={evidence.chartId}>
             <div className="evidence-chart-header">
               <h4 className="evidence-title">{evidence.title}</h4>
-              {!isExporting && (
-                <button
-                  className="chart-expand-pill"
-                  onClick={(e) => handleExpandChart(evidence, e)}
-                  aria-label="Expand chart"
-                >
-                  <Maximize2 size={12} />
-                  <span>Expand</span>
-                </button>
-              )}
+              <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                {!isExporting && (
+                  <button
+                    className="ask-avira-btn"
+                    onClick={(e) => { e.stopPropagation(); handleAttachToAvira(evidence.chartId || evidence.title, evidence.title) }}
+                    aria-label={`Ask AVIRA about ${evidence.title}`}
+                  >
+                    <MessageSquare size={13} />
+                  </button>
+                )}
+                {!isExporting && (
+                  <button
+                    className="chart-expand-pill"
+                    onClick={(e) => handleExpandChart(evidence, e)}
+                    aria-label="Expand chart"
+                  >
+                    <Maximize2 size={12} />
+                    <span>Expand</span>
+                  </button>
+                )}
+              </div>
             </div>
             <p className="evidence-desc">{evidence.description}</p>
             <div className="chart-container">
@@ -389,7 +505,10 @@ function ReportsClient() {
       case 'table':
         return (
           <div key={idx} className="evidence-table glass-card">
-            <h4 className="evidence-title">{evidence.title}</h4>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h4 className="evidence-title">{evidence.title}</h4>
+              <button className="ask-avira-btn" onClick={() => handleAttachToAvira(evidence.title, evidence.title)} aria-label={`Ask AVIRA about ${evidence.title}`}><MessageSquare size={13} /></button>
+            </div>
             <p className="evidence-desc">{evidence.description}</p>
             <div className="table-wrapper">
               <table>
@@ -416,7 +535,10 @@ function ReportsClient() {
       case 'text':
         return (
           <div key={idx} className="evidence-text glass-card">
-            <h4 className="evidence-title">{evidence.title}</h4>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h4 className="evidence-title">{evidence.title}</h4>
+              <button className="ask-avira-btn" onClick={() => handleAttachToAvira(evidence.title, evidence.title)} aria-label={`Ask AVIRA about ${evidence.title}`}><MessageSquare size={13} /></button>
+            </div>
             <p className="evidence-desc">{evidence.description}</p>
           </div>
         )
@@ -529,7 +651,7 @@ function ReportsClient() {
           <h2 className="print-subtitle">{report.subtitle}</h2>
           <div className="print-cover-bottom">
             <p><strong>Prepared for:</strong> {report.company.name}</p>
-            <p><strong>Generated on:</strong> {new Date().toLocaleDateString()}</p>
+            <p suppressHydrationWarning><strong>Generated on:</strong> {new Date().toLocaleDateString()}</p>
           </div>
         </div>
 
@@ -802,10 +924,11 @@ function ReportsClient() {
               {msg.role === 'ai' && (
                 <div className="msg-avatar"><Bot size={14} /></div>
               )}
-              <div
-                className="msg-bubble"
-                dangerouslySetInnerHTML={{ __html: renderMarkdown(msg.content) }}
-              />
+              <div className="msg-bubble">
+                {msg.role === 'ai' ? renderAIMessage(msg.content) : (
+                  <span dangerouslySetInnerHTML={{ __html: renderMarkdown(msg.content) }} />
+                )}
+              </div>
             </div>
           ))}
           {chatTyping && (
@@ -821,15 +944,57 @@ function ReportsClient() {
           <div ref={messagesEndRef} />
         </div>
 
-        <div className="avira-input-area">
+        <div className="avira-input-area" style={{ position: 'relative' }}>
+          {showAutocomplete && (
+            <div className="avira-autocomplete">
+              {autocompleteItems.slice(0, 8).map((item) => (
+                <button
+                  key={item.id}
+                  className="avira-autocomplete-item"
+                  onClick={() => handleSelectReference(item)}
+                >
+                  <span className={`avira-ref-cat avira-ref-cat-${item.category}`}>{item.category}</span>
+                  <span className="avira-autocomplete-label">{item.label}</span>
+                </button>
+              ))}
+            </div>
+          )}
+          {attachedRefs.length > 0 && (
+            <div className="avira-ref-pills">
+              {attachedRefs.map((ref) => (
+                <span key={ref.id} className="avira-ref-pill">
+                  #{ref.id}
+                  <button onClick={() => handleRemoveRef(ref.id)} className="avira-ref-pill-x" aria-label={`Remove ${ref.id}`}>
+                    <X size={12} />
+                  </button>
+                </span>
+              ))}
+            </div>
+          )}
           <textarea
             className="avira-input"
-            placeholder="Ask about this report..."
+            placeholder="Ask about this report... (use # to reference)"
             value={chatInput}
             onChange={(e) => {
-              setChatInput(e.target.value)
+              const val = e.target.value
+              setChatInput(val)
               e.target.style.height = 'auto'
               e.target.style.height = `${Math.min(e.target.scrollHeight, 120)}px`
+
+              // # autocomplete detection
+              const hashMatch = val.match(/#(\S*)$/)
+              if (hashMatch) {
+                const filter = hashMatch[1].toLowerCase()
+                const filtered = refCatalog.current.filter(
+                  (item) =>
+                    item.id.toLowerCase().includes(filter) ||
+                    item.label.toLowerCase().includes(filter)
+                )
+                setAutocompleteItems(filtered)
+                setShowAutocomplete(filtered.length > 0)
+              } else {
+                setShowAutocomplete(false)
+              }
             }}
             onKeyDown={(e) => {
               if (e.key === 'Enter' && !e.shiftKey) {
