@@ -8,6 +8,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@google/genai": "^1.48.0",
     "gsap": "^3.14.2",
     "highcharts": "^12.5.0",
     "highcharts-react-official": "^3.2.3",
