@@ -128,7 +128,7 @@ API key stored in `.env.local` as `GEMINI_API_KEY`.
 
 ## Dependencies
 
-- `@google/generative-ai` npm package for Gemini API
+- `@google/genai` npm package (latest Google Gen AI SDK)
 - `GEMINI_API_KEY` in `.env.local`
 
 ## Conversation History
