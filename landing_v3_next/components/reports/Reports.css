@@ -618,6 +618,7 @@
   padding: 12px 16px 16px;
   border-top: 1px solid var(--r-border);
   flex-shrink: 0;
+  position: relative;
 }
 
 .avira-input {
@@ -1454,6 +1455,158 @@
   font-size: 12px;
   color: var(--r-text-muted);
   margin: 0;
+}
+
+/* ─── AVIRA Reference Pills ───── */
+.avira-ref-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px 12px 0;
+}
+
+.avira-ref-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(99, 102, 241, 0.12);
+  color: #6366f1;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 12px;
+  white-space: nowrap;
+}
+
+.avira-ref-pill-x {
+  all: unset;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  opacity: 0.6;
+  transition: opacity 0.15s;
+}
+
+.avira-ref-pill-x:hover {
+  opacity: 1;
+}
+
+/* ─── AVIRA Autocomplete ───── */
+.avira-autocomplete {
+  position: absolute;
+  bottom: 100%;
+  left: 12px;
+  right: 12px;
+  background: white;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+  max-height: 280px;
+  overflow-y: auto;
+  z-index: 20;
+  padding: 6px;
+}
+
+.avira-autocomplete-item {
+  all: unset;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 12px;
+  color: #1e293b;
+  transition: background 0.15s;
+  box-sizing: border-box;
+}
+
+.avira-autocomplete-item:hover {
+  background: rgba(99, 102, 241, 0.06);
+}
+
+.avira-ref-cat {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 2px 6px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.avira-ref-cat-batch { background: #fef3c7; color: #92400e; }
+.avira-ref-cat-hypothesis { background: #ede9fe; color: #6d28d9; }
+.avira-ref-cat-chart { background: #dbeafe; color: #1e40af; }
+.avira-ref-cat-section { background: #d1fae5; color: #065f46; }
+
+.avira-autocomplete-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ─── AVIRA Scroll-to Highlight ───── */
+@keyframes avira-highlight-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); }
+  50% { box-shadow: 0 0 0 6px rgba(99, 102, 241, 0.15); }
+  100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
+}
+
+.avira-highlight {
+  animation: avira-highlight-pulse 0.7s ease-out 3;
+  outline: 2px solid rgba(99, 102, 241, 0.5);
+  outline-offset: 4px;
+  border-radius: 12px;
+}
+
+/* ─── AVIRA Chart Links ───── */
+.avira-chart-link {
+  all: unset;
+  cursor: pointer;
+  color: #6366f1;
+  font-weight: 600;
+  font-size: 12px;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color 0.15s;
+}
+
+.avira-chart-link:hover {
+  color: #4f46e5;
+}
+
+/* ─── Ask AVIRA Hover Button ───── */
+.ask-avira-btn {
+  all: unset;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  color: #6366f1;
+  background: rgba(99, 102, 241, 0.08);
+  opacity: 0;
+  transition: opacity 0.2s, background 0.15s;
+}
+
+.evidence-chart:hover .ask-avira-btn,
+.evidence-table:hover .ask-avira-btn,
+.evidence-text:hover .ask-avira-btn,
+.section-heading:hover .ask-avira-btn {
+  opacity: 1;
+}
+
+.ask-avira-btn:hover {
+  background: rgba(99, 102, 241, 0.16);
+}
+
+.section-ask {
+  margin-left: 8px;
+  vertical-align: middle;
 }
 
 /* ─── Responsive ───────────────────────────────────────────────────────────── */
