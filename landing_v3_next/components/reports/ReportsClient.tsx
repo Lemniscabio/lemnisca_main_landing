@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { useScrollspy } from './hooks/useScrollspy'
 import Highcharts from 'highcharts'
 import HighchartsReact from 'highcharts-react-official'
 import { gsap } from 'gsap'
@@ -83,9 +84,11 @@ function resolveChartConfig(evidence: Evidence): Highcharts.Options | undefined 
   return builder ? builder() : undefined
 }
 
+const NAV_IDS = ['overview', 'executive-summary', 'hypotheses', 'recommendations']
+
 function ReportsClient() {
   const report: ReportData = jnmReport
-  const [activeSection, setActiveSection] = useState('overview')
+  const { activeSection, registerSection, scrollTo } = useScrollspy(NAV_IDS)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [aviraOpen, setAviraOpen] = useState(false)
@@ -101,37 +104,7 @@ function ReportsClient() {
   const [isExporting, setIsExporting] = useState(false)
   const [hiddenSeries, setHiddenSeries] = useState<Set<string>>(new Set())
   const [chartKey, setChartKey] = useState(0)
-  const sectionsRef = useRef<Map<string, HTMLElement>>(new Map())
   const messagesEndRef = useRef<HTMLDivElement>(null)
-
-  // Classic scrollspy
-  useEffect(() => {
-    const navIds = ['overview', 'executive-summary', 'hypotheses', 'recommendations']
-    const offset = 120
-
-    const onScroll = () => {
-      const scrollY = window.scrollY + offset
-      const pageBottom = window.scrollY + window.innerHeight
-
-      if (pageBottom >= document.documentElement.scrollHeight - 20) {
-        setActiveSection(navIds[navIds.length - 1])
-        return
-      }
-
-      let current = navIds[0]
-      for (const id of navIds) {
-        const el = sectionsRef.current.get(id)
-        if (el && el.offsetTop <= scrollY) {
-          current = id
-        }
-      }
-      setActiveSection(current)
-    }
-
-    window.addEventListener('scroll', onScroll, { passive: true })
-    onScroll()
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
 
   // GSAP scroll-driven animations
   useEffect(() => {
@@ -474,19 +447,9 @@ function ReportsClient() {
     }
   }
 
-  const scrollTo = (id: string) => {
-    const el = sectionsRef.current.get(id)
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-      setSidebarOpen(false)
-    }
-  }
-
-  const registerSection = (id: string) => (el: HTMLElement | null) => {
-    if (el) {
-      el.setAttribute('data-section-id', id)
-      sectionsRef.current.set(id, el)
-    }
+  const handleNavClick = (id: string) => {
+    scrollTo(id)
+    setSidebarOpen(false)
   }
 
   const renderKpiIcon = (kpi: KPI) => {
@@ -646,7 +609,7 @@ function ReportsClient() {
               <button
                 key={sec.id}
                 className={`sidebar-nav-item ${activeSection === sec.id ? 'active' : ''}`}
-                onClick={() => scrollTo(sec.id)}
+                onClick={() => handleNavClick(sec.id)}
                 aria-current={activeSection === sec.id ? 'true' : undefined}
                 title={sidebarCollapsed ? sec.label : undefined}
               >
