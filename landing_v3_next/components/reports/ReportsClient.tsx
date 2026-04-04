@@ -2,10 +2,9 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { useScrollspy } from './hooks/useScrollspy'
+import { useReportAnimations } from './hooks/useReportAnimations'
 import Highcharts from 'highcharts'
 import HighchartsReact from 'highcharts-react-official'
-import { gsap } from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import {
   FlaskConical,
   TrendingUp,
@@ -40,8 +39,6 @@ import remarkMath from 'remark-math'
 import remarkGfm from 'remark-gfm'
 import rehypeKatex from 'rehype-katex'
 import 'katex/dist/katex.min.css'
-
-gsap.registerPlugin(ScrollTrigger)
 
 const ICON_MAP: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
   'flask-conical': FlaskConical,
@@ -106,72 +103,7 @@ function ReportsClient() {
   const [chartKey, setChartKey] = useState(0)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
-  // GSAP scroll-driven animations
-  useEffect(() => {
-    const mm = gsap.matchMedia()
-    mm.add('(prefers-reduced-motion: no-preference)', () => {
-      gsap.utils.toArray<HTMLElement>('.glass-card').forEach((card) => {
-        if (card.closest('#overview')) return
-        gsap.fromTo(
-          card,
-          { opacity: 0, y: 40, scale: 0.97 },
-          {
-            opacity: 1,
-            y: 0,
-            scale: 1,
-            duration: 0.6,
-            ease: 'power3.out',
-            scrollTrigger: {
-              trigger: card,
-              start: 'top 85%',
-              toggleActions: 'play none none none',
-            },
-          }
-        )
-      })
-
-      gsap.fromTo(
-        '.hypothesis-list-item',
-        { opacity: 0, x: -20 },
-        {
-          opacity: 1,
-          x: 0,
-          duration: 0.4,
-          stagger: 0.08,
-          ease: 'power3.out',
-          scrollTrigger: {
-            trigger: '.hypotheses-list',
-            start: 'top 80%',
-          },
-        }
-      )
-
-      gsap.fromTo(
-        '.rec-card',
-        { opacity: 0, y: 30, scale: 0.95 },
-        {
-          opacity: 1,
-          y: 0,
-          scale: 1,
-          duration: 0.5,
-          stagger: 0.12,
-          ease: 'power3.out',
-          scrollTrigger: {
-            trigger: '.recommendations-grid',
-            start: 'top 80%',
-          },
-        }
-      )
-    })
-
-    return () => mm.revert()
-  }, [])
-
-  // Scrollbar width
-  useEffect(() => {
-    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth
-    document.documentElement.style.setProperty('--r-scrollbar-width', `${scrollbarWidth}px`)
-  }, [])
+  useReportAnimations()
 
   // Auto-scroll chat
   useEffect(() => {
