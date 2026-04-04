@@ -278,7 +278,8 @@ export function makeSupplementComparisonChart(): Highcharts.Options {
       {
         type: 'bar' as const,
         name: 'Duration (h)',
-        data: data.map((d) => ({ y: d.duration, color: d.color + '99' })),
+        color: '#94a3b8',
+        data: data.map((d) => d.duration),
         yAxis: 0,
         borderRadius: 6,
         borderWidth: 0,
@@ -286,7 +287,8 @@ export function makeSupplementComparisonChart(): Highcharts.Options {
       {
         type: 'bar' as const,
         name: 'Final OD600',
-        data: data.map((d) => ({ y: d.finalOD, color: d.color })),
+        color: '#2563eb',
+        data: data.map((d) => d.finalOD),
         yAxis: 1,
         borderRadius: 6,
         borderWidth: 0,
@@ -456,9 +458,9 @@ export function makeFullCarbonBalanceChart(): Highcharts.Options {
   const THEORETICAL_YXS_MAX = 0.48 // g DCW / g glucose — elite tier
 
   const categories: string[] = []
-  const glucoseIn: { y: number; color: string }[] = []
-  const theoreticalDCW: { y: number; color: string }[] = []
-  const actualDCW: { y: number; color: string }[] = []
+  const glucoseIn: number[] = []
+  const theoreticalDCW: number[] = []
+  const actualDCW: number[] = []
 
   BATCH_IDS.forEach((id) => {
     const meta = batchMeta.find((b) => b.id === id)!
@@ -472,9 +474,9 @@ export function makeFullCarbonBalanceChart(): Highcharts.Options {
     const theoreticalMaxG = totalGlucoseG * THEORETICAL_YXS_MAX
 
     categories.push(id)
-    glucoseIn.push({ y: parseFloat(totalGlucoseG.toFixed(1)), color: '#94a3b8' })
-    theoreticalDCW.push({ y: parseFloat(theoreticalMaxG.toFixed(1)), color: '#22c55e' })
-    actualDCW.push({ y: parseFloat(actualDcwG.toFixed(1)), color: meta.color })
+    glucoseIn.push(parseFloat(totalGlucoseG.toFixed(1)))
+    theoreticalDCW.push(parseFloat(theoreticalMaxG.toFixed(1)))
+    actualDCW.push(parseFloat(actualDcwG.toFixed(1)))
   })
 
   return {
@@ -498,13 +500,15 @@ export function makeFullCarbonBalanceChart(): Highcharts.Options {
       {
         type: 'column' as const,
         name: 'Glucose Fed (g)',
+        color: '#94a3b8',
         data: glucoseIn,
         borderRadius: 4,
         borderWidth: 0,
       },
       {
         type: 'column' as const,
-        name: 'Theoretical Max DCW (g)',
+        name: 'Theoretical Max DCW @ Yx/s=0.48 (g)',
+        color: '#22c55e',
         data: theoreticalDCW,
         borderRadius: 4,
         borderWidth: 0,
@@ -512,6 +516,7 @@ export function makeFullCarbonBalanceChart(): Highcharts.Options {
       {
         type: 'column' as const,
         name: 'Actual DCW (g)',
+        color: '#f97316',
         data: actualDCW,
         borderRadius: 4,
         borderWidth: 0,
@@ -521,81 +526,68 @@ export function makeFullCarbonBalanceChart(): Highcharts.Options {
 }
 
 export function makeGlucoseMassBalanceChart(): Highcharts.Options {
-  // Stacked area: cumulative glucose fed over time, with consumed portion estimated from DCW growth
-  const GLUCOSE_CONC = 500 // g/L
-  const YXS_ASSUMED = 0.30 // average Yx/s across batches for consumed estimation
+  // Stacked column: per batch, show how total glucose fed was split between
+  // "converted to biomass" and "lost to ethanol / CO₂ / maintenance"
+  // Uses per-batch actual Yx/s values from PDF Analysis 5
+  const GLUCOSE_CONC = 500 // g/L (standard 50% w/v feed)
+  const yxsPerBatch: Record<string, number> = {
+    B01: 0.14, B02: 0.14, B03: 0.14, B04: 0.35, B05: 0.25, B06: 0.25,
+  }
 
-  const focusBatches = ['B04', 'B05', 'B06'] as const
-  const series: Highcharts.SeriesOptionsType[] = []
+  const categories: string[] = []
+  const convertedData: number[] = []
+  const lostData: number[] = []
 
-  focusBatches.forEach((id) => {
+  BATCH_IDS.forEach((id) => {
     const meta = batchMeta.find((b) => b.id === id)!
-    const data = batchData[id]
-    const volSeries = computeVolumeTimeSeries(id)
+    const totalGlucoseG = (meta.totalFeedVol / 1000) * GLUCOSE_CONC
+    const yx = yxsPerBatch[id]
+    const convertedG = totalGlucoseG * yx
+    const lostG = totalGlucoseG * (1 - yx)
 
-    let cumulativeFeed = 0
-    const totalGlucose: [number, number][] = []
-    const consumed: [number, number][] = []
-
-    for (let i = 0; i < data.length; i++) {
-      if (i > 0) {
-        const dt = data[i].time - data[i - 1].time
-        const fr = data[i - 1].feedRate ?? 0
-        if (id.match(/B0[123]/)) {
-          const prevVol = volSeries[i - 1][1]
-          cumulativeFeed += fr * (prevVol / 1000) * dt * (GLUCOSE_CONC / 1000)
-        } else {
-          cumulativeFeed += (fr / 1000) * dt * GLUCOSE_CONC
-        }
-      }
-      const dcwGperL = (0.25 * data[i].wcw) / 3
-      const volL = volSeries[i][1] / 1000
-      const totalDcwG = dcwGperL * volL
-      const glucoseConsumedG = totalDcwG / YXS_ASSUMED
-
-      totalGlucose.push([data[i].time, parseFloat(cumulativeFeed.toFixed(1))])
-      consumed.push([data[i].time, parseFloat(Math.min(glucoseConsumedG, cumulativeFeed).toFixed(1))])
-    }
-
-    series.push({
-      type: 'area' as const,
-      name: `${id} — Total Glucose Fed`,
-      color: meta.color,
-      fillOpacity: 0.15,
-      data: totalGlucose,
-      lineWidth: 2,
-    })
-    series.push({
-      type: 'area' as const,
-      name: `${id} — Consumed (est.)`,
-      color: meta.color,
-      fillOpacity: 0.4,
-      dashStyle: 'Dash' as Highcharts.DashStyleValue,
-      data: consumed,
-      lineWidth: 1.5,
-    })
+    categories.push(id)
+    convertedData.push(parseFloat(convertedG.toFixed(1)))
+    lostData.push(parseFloat(lostG.toFixed(1)))
   })
 
   return {
     ...sharedChartOptions,
     chart: {
       ...sharedChartOptions.chart as Highcharts.ChartOptions,
-      type: 'area',
+      type: 'column',
     },
     title: { text: undefined },
+    xAxis: {
+      ...sharedChartOptions.xAxis as Highcharts.XAxisOptions,
+      title: { text: undefined },
+      categories,
+    },
     yAxis: {
       title: { text: 'Glucose (g)', style: { color: '#64748b', fontSize: '12px' } },
       labels: { style: { color: '#64748b', fontSize: '11px' } },
       gridLineColor: 'rgba(0, 0, 0, 0.04)',
     },
     plotOptions: {
-      area: {
-        stacking: undefined,
-        lineWidth: 2,
-        marker: { radius: 2 },
+      column: {
+        stacking: 'normal',
+        borderRadius: 4,
+        borderWidth: 0,
       },
     },
-    series,
+    series: [
+      {
+        type: 'column' as const,
+        name: 'Lost to ethanol / CO₂ / maintenance',
+        color: '#fbbf24',
+        data: lostData,
+      },
+      {
+        type: 'column' as const,
+        name: 'Converted to biomass (actual Yx/s)',
+        color: '#22c55e',
+        data: convertedData,
+      },
+    ],
   }
 }
 
@@ -645,50 +637,52 @@ export const chartRegistry: Record<string, () => Highcharts.Options> = {
 }
 
 export function makeOURDecompositionChart(): Highcharts.Options {
-  // Simplified OUR decomposition for B04 (best data) using Pirt equation
-  // OUR = (μ / Y_XO2_max + mO₂) × X
-  // mO₂ = 1.0 mmol O₂/g DCW/h, Y_XO2_max ≈ 1.5 g DCW/mmol O₂
+  // 100% stacked column: maintenance% vs growth% at each timepoint for B04, B05, B06
+  // Pirt equation: OUR = (μ / Y_XO2_max + mO₂) × X
+  // mO₂ = 1.0 mmol O₂/g DCW/h (Pirt, 1965; Verduyn et al., 1991)
+  // Y_XO2_max = 1.5 g DCW / mmol O₂
   const mO2 = 1.0
   const Y_XO2_max = 1.5
-
   const focusBatches = ['B04', 'B05', 'B06'] as const
-  const series: Highcharts.SeriesOptionsType[] = []
+
+  // Build one column-group per batch, showing the maintenance% at key timepoints
+  // X-axis: batches. Each batch gets a group of time phases (early / mid / late)
+  const categories: string[] = []
+  const growthPct: number[] = []
+  const maintPct: number[] = []
 
   focusBatches.forEach((id) => {
     const meta = batchMeta.find((b) => b.id === id)!
     const data = batchData[id]
-    const growthOUR: [number, number][] = []
-    const maintOUR: [number, number][] = []
 
-    for (let i = 1; i < data.length; i++) {
-      const dt = data[i].time - data[i - 1].time
-      if (dt <= 0 || data[i].od600 <= 0 || data[i - 1].od600 <= 0) continue
+    // Compute growth% and maintenance% at three phases: early (first third), mid, late (last third)
+    const phases = [
+      { label: `${id}\nEarly`, indices: [1, Math.floor(data.length / 3)] },
+      { label: `${id}\nMid`,   indices: [Math.floor(data.length / 3), Math.floor(2 * data.length / 3)] },
+      { label: `${id}\nLate`,  indices: [Math.floor(2 * data.length / 3), data.length - 1] },
+    ]
 
-      const mu = (Math.log(data[i].od600) - Math.log(data[i - 1].od600)) / dt
-      const dcw = data[i].wcw * 0.25 / 1000 * 3 // rough g/L estimate
-      const growthComponent = (Math.max(mu, 0) / Y_XO2_max) * dcw
-      const maintComponent = mO2 * dcw
+    phases.forEach((phase) => {
+      const [from, to] = phase.indices
+      let totalGrowth = 0
+      let totalMaint = 0
 
-      growthOUR.push([data[i].time, parseFloat(growthComponent.toFixed(3))])
-      maintOUR.push([data[i].time, parseFloat(maintComponent.toFixed(3))])
-    }
+      for (let i = Math.max(1, from); i <= to && i < data.length; i++) {
+        const dt = data[i].time - data[i - 1].time
+        if (dt <= 0 || data[i].od600 <= 0 || data[i - 1].od600 <= 0) continue
+        const mu = Math.max(0, (Math.log(data[i].od600) - Math.log(data[i - 1].od600)) / dt)
+        const dcw = (0.25 * data[i].wcw) / 3
+        totalGrowth += (mu / Y_XO2_max) * dcw
+        totalMaint  += mO2 * dcw
+      }
 
-    series.push({
-      type: 'area' as const,
-      name: `${id} — Growth`,
-      color: meta.color,
-      fillOpacity: 0.3,
-      data: growthOUR,
-      stack: id,
-    })
-    series.push({
-      type: 'area' as const,
-      name: `${id} — Maintenance`,
-      color: meta.color,
-      fillOpacity: 0.1,
-      dashStyle: 'Dash' as Highcharts.DashStyleValue,
-      data: maintOUR,
-      stack: id,
+      const total = totalGrowth + totalMaint
+      const gPct = total > 0 ? parseFloat(((totalGrowth / total) * 100).toFixed(1)) : 0
+      const mPct = total > 0 ? parseFloat(((totalMaint  / total) * 100).toFixed(1)) : 0
+
+      categories.push(phase.label)
+      growthPct.push(gPct)
+      maintPct.push(mPct)
     })
   })
 
@@ -696,21 +690,54 @@ export function makeOURDecompositionChart(): Highcharts.Options {
     ...sharedChartOptions,
     chart: {
       ...sharedChartOptions.chart as Highcharts.ChartOptions,
-      type: 'area',
+      type: 'column',
     },
     title: { text: undefined },
-    yAxis: {
-      title: { text: 'OUR (mmol O₂/L/h)', style: { color: '#64748b', fontSize: '12px' } },
-      labels: { style: { color: '#64748b', fontSize: '11px' } },
-      gridLineColor: 'rgba(0, 0, 0, 0.04)',
-    },
-    plotOptions: {
-      area: {
-        stacking: undefined,
-        lineWidth: 2,
-        marker: { radius: 2 },
+    xAxis: {
+      ...sharedChartOptions.xAxis as Highcharts.XAxisOptions,
+      title: { text: undefined },
+      categories,
+      labels: {
+        style: { color: '#64748b', fontSize: '10px' },
       },
     },
-    series,
+    yAxis: {
+      title: { text: 'OUR share (%)', style: { color: '#64748b', fontSize: '12px' } },
+      labels: {
+        style: { color: '#64748b', fontSize: '11px' },
+        formatter: function () { return `${this.value}%` },
+      },
+      gridLineColor: 'rgba(0, 0, 0, 0.04)',
+      max: 100,
+    },
+    tooltip: {
+      ...sharedChartOptions.tooltip as Highcharts.TooltipOptions,
+      formatter: function () {
+        const ctx = this as unknown as { x: string; y: number; series: { name: string }; point: { color: string } }
+        return `<b>${ctx.x}</b><br/><span style="color:${ctx.point.color}">●</span> ${ctx.series.name}: <b>${ctx.y}%</b>`
+      },
+      shared: false,
+    },
+    plotOptions: {
+      column: {
+        stacking: 'normal',
+        borderRadius: 3,
+        borderWidth: 0,
+      },
+    },
+    series: [
+      {
+        type: 'column' as const,
+        name: 'Maintenance OUR',
+        color: '#f97316',
+        data: maintPct,
+      },
+      {
+        type: 'column' as const,
+        name: 'Growth OUR',
+        color: '#22c55e',
+        data: growthPct,
+      },
+    ],
   }
 }

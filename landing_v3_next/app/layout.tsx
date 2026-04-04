@@ -7,6 +7,7 @@ import { Inter, Playfair_Display } from 'next/font/google'
   export const metadata = {
     title: 'Lemnisca',
     description: 'Your site description here',
+    icons: { icon: '/favicon.ico' },
     openGraph: {
       title: 'Lemnisca',
       description: 'Your site description',

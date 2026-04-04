@@ -26,8 +26,10 @@ export function ChartExpandOverlay({
   onReset,
 }: ChartExpandOverlayProps) {
   const config = getExpandedConfig()
+  // Series whose names start with a batch ID (e.g. 'B01', 'B01 pO₂', 'B04 — Growth')
+  // already have Highcharts legend items — no need for custom filter buttons
   const hasBatchSeries = (expandedChart.chartConfig.series as any[])?.some((s: any) =>
-    ['B01', 'B02', 'B03', 'B04', 'B05', 'B06'].includes(s.name)
+    /^B0[1-6]/.test(s.name ?? '')
   )
 
   return (
