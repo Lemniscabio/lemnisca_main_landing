@@ -7,8 +7,8 @@ import { useAviraChat } from './hooks/useAviraChat'
 import { useAutocomplete } from './hooks/useAutocomplete'
 import { useExpandedChart } from './hooks/useExpandedChart'
 import { EvidenceRenderer } from './charts/EvidenceRenderer'
+import { ChartExpandOverlay } from './charts/ChartExpandOverlay'
 import Highcharts from 'highcharts'
-import HighchartsReact from 'highcharts-react-official'
 import {
   FlaskConical,
   TrendingUp,
@@ -29,10 +29,9 @@ import {
   PanelLeftOpen,
   Send,
   Bot,
-  RotateCcw,
   Download,
 } from 'lucide-react'
-import { jnmReport, batchMeta } from '@/lib/reports/jnm-data'
+import { jnmReport } from '@/lib/reports/jnm-data'
 import type { ReportData, KPI } from '@/lib/reports/types'
 import ReactMarkdown from 'react-markdown'
 import remarkMath from 'remark-math'
@@ -487,53 +486,15 @@ function ReportsClient() {
 
       {/* ───── Expanded Chart Overlay ───── */}
       {chartExpand.expandedChart && (
-        <>
-          <div className="chart-overlay-backdrop" onClick={chartExpand.collapse} />
-          <div className="chart-expanded glass-card">
-            <div className="chart-expanded-header">
-              <h3 className="chart-expanded-title">{chartExpand.expandedChart.evidence.title}</h3>
-              <div className="chart-expanded-controls">
-                <button className="chart-close-btn" onClick={chartExpand.collapse} aria-label="Close expanded chart">
-                  <X size={20} />
-                </button>
-              </div>
-            </div>
-            <div className="chart-expanded-body">
-              <HighchartsReact key={chartExpand.chartKey} highcharts={Highcharts} options={chartExpand.getExpandedConfig()} />
-            </div>
-            <div className="chart-expanded-footer">
-              <div className="chart-footer-left">
-                <p className="chart-expanded-desc">{chartExpand.expandedChart.evidence.description}</p>
-                {chartExpand.expandedChart.chartConfig?.series && !(chartExpand.expandedChart.chartConfig.series as any[])?.some(s =>
-                  ['B01','B02','B03','B04','B05','B06'].includes(s.name)
-                ) && (
-                  <div className="batch-toggles mini">
-                    <span className="batch-toggles-label">Filter:</span>
-                    {batchMeta.map((b) => (
-                      <button
-                        key={b.id}
-                        className={`batch-toggle ${chartExpand.hiddenSeries.has(b.id) ? 'off' : ''}`}
-                        style={{ '--batch-color': b.color } as React.CSSProperties}
-                        onClick={() => chartExpand.toggleBatch(b.id)}
-                      >
-                        <span className="batch-toggle-dot" />
-                        {b.id}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-              <button
-                className="chart-reset-btn"
-                onClick={chartExpand.resetFilters}
-                disabled={chartExpand.hiddenSeries.size === 0}
-              >
-                <RotateCcw size={14} />
-                <span>Reset</span>
-              </button>
-            </div>
-          </div>
-        </>
+        <ChartExpandOverlay
+          expandedChart={chartExpand.expandedChart}
+          chartKey={chartExpand.chartKey}
+          hiddenSeries={chartExpand.hiddenSeries}
+          getExpandedConfig={chartExpand.getExpandedConfig}
+          onCollapse={chartExpand.collapse}
+          onToggleBatch={chartExpand.toggleBatch}
+          onReset={chartExpand.resetFilters}
+        />
       )}
 
       {/* ───── AVIRA Right Sidebar ───── */}
