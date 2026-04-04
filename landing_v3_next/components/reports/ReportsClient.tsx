@@ -24,8 +24,6 @@ import {
   Lightbulb,
   Target,
   MessageSquare,
-  Menu,
-  X,
   PanelLeftClose,
   PanelLeftOpen,
   Download,
@@ -55,7 +53,6 @@ const NAV_IDS = ['overview', 'executive-summary', 'hypotheses', 'recommendations
 function ReportsClient() {
   const report: ReportData = jnmReport
   const { activeSection, registerSection, scrollTo } = useScrollspy(NAV_IDS)
-  const [sidebarOpen, setSidebarOpen] = useState(false)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [aviraOpen, setAviraOpen] = useState(false)
   const [aviraWidth, setAviraWidth] = useState(380)
@@ -114,7 +111,6 @@ function ReportsClient() {
 
   const handleNavClick = (id: string) => {
     scrollTo(id)
-    setSidebarOpen(false)
   }
 
   const renderKpiIcon = (kpi: KPI) => {
@@ -123,6 +119,14 @@ function ReportsClient() {
   }
 
   return (
+    <>
+    {/* Desktop-only notice for small screens */}
+    <div className="desktop-only-notice">
+      <div className="notice-icon">🖥️</div>
+      <h2>Desktop Only</h2>
+      <p>This report is optimized for desktop viewing. Please open it on a device with a screen width of at least 1024px.</p>
+    </div>
+
     <div
       className={`reports-page ${aviraOpen ? 'avira-open' : ''} ${isExporting ? 'is-exporting' : ''}`}
       style={{
@@ -133,27 +137,9 @@ function ReportsClient() {
       {/* Blurred background layer */}
       <div className="reports-bg" />
 
-      {/* Mobile sidebar toggle */}
-      <button
-        className="sidebar-toggle"
-        onClick={() => setSidebarOpen(!sidebarOpen)}
-        aria-label={sidebarOpen ? 'Close navigation' : 'Open navigation'}
-      >
-        {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
-      </button>
-
-      {/* Mobile sidebar backdrop */}
-      {sidebarOpen && (
-        <div
-          className="sidebar-backdrop"
-          onClick={() => setSidebarOpen(false)}
-          aria-hidden="true"
-        />
-      )}
-
       {/* Sidebar */}
       <aside
-        className={`reports-sidebar ${sidebarOpen ? 'open' : ''} ${sidebarCollapsed ? 'collapsed' : ''}`}
+        className={`reports-sidebar ${sidebarCollapsed ? 'collapsed' : ''}`}
         role="navigation"
         aria-label="Report sections"
       >
@@ -466,6 +452,7 @@ function ReportsClient() {
         onScrollToChart={handleScrollToChart}
       />
     </div>
+    </>
   )
 }
 

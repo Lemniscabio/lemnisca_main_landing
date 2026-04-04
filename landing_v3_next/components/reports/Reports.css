@@ -272,38 +272,6 @@
 
 /* .reports-sidebar.collapsed ~ .reports-main overrides are removed since we use dynamic variables */
 
-/* Sidebar backdrop — hidden on desktop, shown on mobile via media query */
-.sidebar-backdrop {
-  display: none;
-}
-
-/* ─── Mobile sidebar toggle ────────────────────────────────────────────────── */
-
-.sidebar-toggle {
-  display: none;
-  position: fixed;
-  top: 16px;
-  left: 16px;
-  z-index: 200;
-  width: 40px;
-  height: 40px;
-  border: none;
-  background: var(--r-card-bg);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-radius: var(--r-radius-sm);
-  cursor: pointer;
-  align-items: center;
-  justify-content: center;
-  box-shadow: var(--r-card-shadow);
-  color: var(--r-text);
-  transition: all 150ms ease;
-}
-
-.sidebar-toggle:active {
-  transform: scale(0.95);
-}
-
 /* ─── Main Content ─────────────────────────────────────────────────────────── */
 
 .reports-main {
@@ -1702,104 +1670,47 @@
 
 /* ─── Responsive ───────────────────────────────────────────────────────────── */
 
-@media (max-width: 1200px) {
-  .kpi-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+/* ─── Desktop Only ─────────────────────────────────────────────────────────── */
 
-  .analysis-section {
-    grid-template-columns: 1fr;
-  }
-
-  .analysis-section.layout-rl .analysis-text {
-    order: 1;
-  }
-
-  .analysis-section.layout-rl .analysis-visual {
-    order: 2;
-  }
-
-  .analysis-text,
-  .analysis-visual {
-    position: static;
-    align-self: stretch;
-  }
+.desktop-only-notice {
+  display: none;
 }
 
-@media (max-width: 900px) {
-  .reports-sidebar {
-    transform: translateX(-100%);
+@media (max-width: 768px) {
+  .reports-page {
+    display: none !important;
   }
 
-  .reports-sidebar.open {
-    transform: translateX(0);
-    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.1);
-  }
-
-  .sidebar-backdrop {
-    display: block;
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.3);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    z-index: 99;
-    animation: fadeIn 200ms ease-out;
-  }
-
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-
-  .sidebar-toggle {
+  .desktop-only-notice {
     display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 40px 24px;
+    text-align: center;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    font-family: Inter, sans-serif;
   }
 
-  .reports-main {
-    margin-left: 0;
-    margin-right: 0;
-    max-width: 100vw;
-    padding: calc(var(--r-topbar-height) + 24px) 20px 32px;
+  .desktop-only-notice .notice-icon {
+    font-size: 48px;
+    margin-bottom: 20px;
   }
 
-  .reports-topbar {
-    left: 0;
-    right: 0;
-    padding: 0 20px;
-  }
-
-  .recommendations-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .avira-sidebar {
-    --avira-width: 100vw;
-    width: 100vw;
-    z-index: 200;
-  }
-}
-
-@media (max-width: 600px) {
-  .kpi-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .section-title {
+  .desktop-only-notice h2 {
     font-size: 22px;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0 0 12px;
   }
 
-  .kpi-value {
-    font-size: 20px;
-  }
-
-  .topbar-report-label,
-  .topbar-sep {
-    display: none;
-  }
-
-  .avira-btn span {
-    display: none;
+  .desktop-only-notice p {
+    font-size: 15px;
+    color: #64748b;
+    max-width: 400px;
+    line-height: 1.6;
+    margin: 0;
   }
 }
 
@@ -2038,13 +1949,12 @@
   /* Hide UI elements unnecessary for the exported report */
   .reports-sidebar,
   .reports-topbar,
-  .sidebar-toggle,
   .avira-btn,
   .avira-sidebar,
   .chart-expand-pill,
   .reports-bg,
   .hyp-arrow,
-  .sidebar-backdrop {
+  .desktop-only-notice {
     display: none !important;
   }
 
