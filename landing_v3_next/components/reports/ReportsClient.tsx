@@ -8,6 +8,7 @@ import { useAutocomplete } from './hooks/useAutocomplete'
 import { useExpandedChart } from './hooks/useExpandedChart'
 import { EvidenceRenderer } from './charts/EvidenceRenderer'
 import { ChartExpandOverlay } from './charts/ChartExpandOverlay'
+import { AviraSidebar } from './avira/AviraSidebar'
 import Highcharts from 'highcharts'
 import {
   FlaskConical,
@@ -27,17 +28,10 @@ import {
   X,
   PanelLeftClose,
   PanelLeftOpen,
-  Send,
-  Bot,
   Download,
 } from 'lucide-react'
 import { jnmReport } from '@/lib/reports/jnm-data'
 import type { ReportData, KPI } from '@/lib/reports/types'
-import ReactMarkdown from 'react-markdown'
-import remarkMath from 'remark-math'
-import remarkGfm from 'remark-gfm'
-import rehypeKatex from 'rehype-katex'
-import 'katex/dist/katex.min.css'
 
 const ICON_MAP: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
   'flask-conical': FlaskConical,
@@ -55,14 +49,6 @@ const NAV_SECTIONS = [
   { id: 'hypotheses', label: 'Hypotheses & Analysis', icon: Lightbulb },
   { id: 'recommendations', label: 'Recommendations', icon: Target },
 ]
-
-function renderMarkdown(text: string): string {
-  return text
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/`(.+?)`/g, '<code>$1</code>')
-    .replace(/\n- (.+)/g, '<br/>• $1')
-    .replace(/\n/g, '<br/>')
-}
 
 const NAV_IDS = ['overview', 'executive-summary', 'hypotheses', 'recommendations']
 
@@ -116,46 +102,6 @@ function ReportsClient() {
       el.classList.add('avira-highlight')
       setTimeout(() => el.classList.remove('avira-highlight'), 2000)
     }, 150)
-  }
-
-  function renderAIMessage(content: string): React.ReactNode {
-    // Pre-process: convert [See: Title](chartId) to a special placeholder
-    // that won't be eaten by react-markdown's link parser
-    const CHART_LINK_RE = /\[See:\s*([^\]]+)\]\(([^)]+)\)/g
-    const chartLinks: { title: string; chartId: string }[] = []
-    const processed = content.replace(CHART_LINK_RE, (_match, title, chartId) => {
-      const idx = chartLinks.length
-      chartLinks.push({ title, chartId })
-      return `%%CHART_LINK_${idx}%%`
-    })
-
-    // Split on chart link placeholders and render
-    const segments = processed.split(/(%%CHART_LINK_\d+%%)/)
-    return segments.map((segment, i) => {
-      const placeholderMatch = segment.match(/%%CHART_LINK_(\d+)%%/)
-      if (placeholderMatch) {
-        const link = chartLinks[parseInt(placeholderMatch[1])]
-        return (
-          <button
-            key={i}
-            className="avira-chart-link"
-            onClick={() => handleScrollToChart(link.chartId)}
-          >
-            {link.title} ↗
-          </button>
-        )
-      }
-      if (!segment.trim()) return null
-      return (
-        <ReactMarkdown
-          key={i}
-          remarkPlugins={[remarkMath, remarkGfm]}
-          rehypePlugins={[rehypeKatex]}
-        >
-          {segment}
-        </ReactMarkdown>
-      )
-    })
   }
 
   const toggleAvira = () => {
@@ -498,119 +444,28 @@ function ReportsClient() {
       )}
 
       {/* ───── AVIRA Right Sidebar ───── */}
-      <aside
-        className={`avira-sidebar ${aviraOpen ? 'open' : ''}`}
-        aria-label="AVIRA assistant"
-        onMouseEnter={() => {
-          if (aviraOpen && window.innerWidth > 900) {
-            document.body.style.overflow = 'hidden'
-            document.body.style.paddingRight = 'var(--r-scrollbar-width, 0px)'
-          }
+      <AviraSidebar
+        open={aviraOpen}
+        messages={chat.messages}
+        input={chat.input}
+        typing={chat.typing}
+        messagesEndRef={chat.messagesEndRef}
+        attachedRefs={autocomplete.attachedRefs}
+        showAutocomplete={autocomplete.showAutocomplete}
+        autocompleteItems={autocomplete.autocompleteItems}
+        onClose={() => setAviraOpen(false)}
+        onInputChange={(val) => {
+          chat.setInput(val)
+          autocomplete.handleInputChange(val)
         }}
-        onMouseLeave={() => {
-          document.body.style.overflow = ''
-          document.body.style.paddingRight = ''
+        onSend={handleChatSend}
+        onSelectReference={(item) => {
+          const newInput = autocomplete.selectReference(item, chat.input)
+          chat.setInput(newInput)
         }}
-      >
-        <div className="avira-sidebar-header">
-          <Bot size={18} />
-          <span>AVIRA</span>
-          <button className="avira-close" onClick={() => setAviraOpen(false)} aria-label="Close AVIRA">
-            <X size={16} />
-          </button>
-        </div>
-
-        <div className="avira-messages">
-          {chat.messages.map((msg, i) => {
-            // Skip rendering the empty streaming placeholder
-            if (msg.role === 'ai' && msg.content === '' && chat.typing) return null
-            return (
-              <div key={i} className={`msg msg-${msg.role}`}>
-                {msg.role === 'ai' && (
-                  <div className="msg-avatar"><Bot size={14} /></div>
-                )}
-                <div className="msg-bubble">
-                  {msg.role === 'ai' ? renderAIMessage(msg.content) : (
-                    <span dangerouslySetInnerHTML={{ __html: renderMarkdown(msg.content) }} />
-                  )}
-                </div>
-              </div>
-            )
-          })}
-          {chat.typing && (chat.messages[chat.messages.length - 1]?.content === '' || chat.messages[chat.messages.length - 1]?.role !== 'ai') && (
-            <div className="msg msg-ai">
-              <div className="msg-avatar"><Bot size={14} /></div>
-              <div className="msg-bubble msg-typing">
-                <span className="typing-dot" />
-                <span className="typing-dot" />
-                <span className="typing-dot" />
-              </div>
-            </div>
-          )}
-          <div ref={chat.messagesEndRef} />
-        </div>
-
-        {autocomplete.attachedRefs.length > 0 && (
-          <div className="avira-ref-pills">
-            {autocomplete.attachedRefs.map((ref) => (
-              <span key={ref.id} className="avira-ref-pill">
-                #{ref.id}
-                <button onClick={() => autocomplete.removeRef(ref.id)} className="avira-ref-pill-x" aria-label={`Remove ${ref.id}`}>
-                  <X size={12} />
-                </button>
-              </span>
-            ))}
-          </div>
-        )}
-        <div className="avira-input-area" style={{ position: 'relative' }}>
-          {autocomplete.showAutocomplete && (
-            <div className="avira-autocomplete">
-              {autocomplete.autocompleteItems.slice(0, 8).map((item) => (
-                <button
-                  key={item.id}
-                  className="avira-autocomplete-item"
-                  onClick={() => {
-                    const newInput = autocomplete.selectReference(item, chat.input)
-                    chat.setInput(newInput)
-                  }}
-                >
-                  <span className={`avira-ref-cat avira-ref-cat-${item.category}`}>{item.category}</span>
-                  <span className="avira-autocomplete-label">{item.label}</span>
-                </button>
-              ))}
-            </div>
-          )}
-          <textarea
-            className="avira-input"
-            placeholder="Ask about this report... (use # to reference)"
-            value={chat.input}
-            onChange={(e) => {
-              const val = e.target.value
-              chat.setInput(val)
-              e.target.style.height = 'auto'
-              e.target.style.height = `${Math.min(e.target.scrollHeight, 120)}px`
-              autocomplete.handleInputChange(val)
-            }}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault()
-                handleChatSend()
-                const target = e.target as HTMLTextAreaElement
-                setTimeout(() => target.style.height = 'auto', 0)
-              }
-            }}
-            rows={1}
-          />
-          <button
-            className="avira-send"
-            onClick={handleChatSend}
-            disabled={!chat.input.trim() || chat.typing}
-            aria-label="Send message"
-          >
-            <Send size={16} />
-          </button>
-        </div>
-      </aside>
+        onRemoveRef={autocomplete.removeRef}
+        onScrollToChart={handleScrollToChart}
+      />
     </div>
   )
 }
