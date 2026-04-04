@@ -5,6 +5,7 @@ import { useScrollspy } from './hooks/useScrollspy'
 import { useReportAnimations } from './hooks/useReportAnimations'
 import { useAviraChat } from './hooks/useAviraChat'
 import { useAutocomplete } from './hooks/useAutocomplete'
+import { useExpandedChart } from './hooks/useExpandedChart'
 import Highcharts from 'highcharts'
 import HighchartsReact from 'highcharts-react-official'
 import {
@@ -32,7 +33,6 @@ import {
   Download,
 } from 'lucide-react'
 import { jnmReport, batchMeta } from '@/lib/reports/jnm-data'
-import { chartRegistry } from '@/lib/reports/chart-configs'
 import type { ReportData, Evidence, KPI } from '@/lib/reports/types'
 import ReactMarkdown from 'react-markdown'
 import remarkMath from 'remark-math'
@@ -65,12 +65,6 @@ function renderMarkdown(text: string): string {
     .replace(/\n/g, '<br/>')
 }
 
-function resolveChartConfig(evidence: Evidence): Highcharts.Options | undefined {
-  if (!evidence.chartId) return undefined
-  const builder = chartRegistry[evidence.chartId]
-  return builder ? builder() : undefined
-}
-
 const NAV_IDS = ['overview', 'executive-summary', 'hypotheses', 'recommendations']
 
 function ReportsClient() {
@@ -81,11 +75,9 @@ function ReportsClient() {
   const [aviraOpen, setAviraOpen] = useState(false)
   const chat = useAviraChat()
   const autocomplete = useAutocomplete()
-  const [expandedChart, setExpandedChart] = useState<{ evidence: Evidence; chartConfig: Highcharts.Options; rect: DOMRect } | null>(null)
+  const chartExpand = useExpandedChart()
   const [expandedHypotheses, setExpandedHypotheses] = useState<Set<string>>(new Set())
   const [isExporting, setIsExporting] = useState(false)
-  const [hiddenSeries, setHiddenSeries] = useState<Set<string>>(new Set())
-  const [chartKey, setChartKey] = useState(0)
 
   useReportAnimations()
 
@@ -167,121 +159,11 @@ function ReportsClient() {
     })
   }
 
-  const handleExpandChart = (evidence: Evidence, e: React.MouseEvent) => {
-    const card = (e.currentTarget as HTMLElement).closest('.evidence-chart')
-    if (!card) return
-    const rect = card.getBoundingClientRect()
-    const chartConfig = resolveChartConfig(evidence)
-    if (!chartConfig) return
-    setHiddenSeries(new Set())
-    setChartKey(prev => prev + 1)
-    setExpandedChart({ evidence, chartConfig, rect })
-  }
-
-  const handleCollapseChart = () => {
-    setExpandedChart(null)
-  }
-
   const toggleAvira = () => {
     if (!aviraOpen) {
       setSidebarCollapsed(true)
     }
     setAviraOpen(!aviraOpen)
-  }
-
-  const getExpandedChartConfig = (): Highcharts.Options | undefined => {
-    if (!expandedChart?.chartConfig) return undefined
-    const base = expandedChart.chartConfig
-
-    const series = (base.series as Highcharts.SeriesOptionsType[])?.map((s) => {
-      const seriesName = (s as { name?: string }).name || ''
-
-      let shouldHide = false
-      if (['B01', 'B02', 'B03', 'B04', 'B05', 'B06'].includes(seriesName)) {
-        shouldHide = hiddenSeries.has(seriesName)
-      } else {
-        const match = seriesName.match(/^(B0[1-6])/)
-        if (match) {
-          shouldHide = hiddenSeries.has(match[1])
-        }
-      }
-
-      const categories = Array.isArray(base.xAxis)
-        ? base.xAxis[0]?.categories
-        : (base.xAxis as Highcharts.XAxisOptions)?.categories
-
-      const sData = (s as { data?: unknown[] }).data
-
-      if (categories && sData) {
-        return {
-          ...s,
-          visible: true,
-          data: sData.map((point, index) => {
-            const batchId = categories[index]
-            const isHidden = batchId && hiddenSeries.has(batchId)
-
-            if (typeof point === 'number') {
-              return isHidden ? null : point
-            }
-            if (point && typeof point === 'object') {
-              return { ...point, y: isHidden ? null : (point as any).y }
-            }
-            return point
-          })
-        }
-      }
-
-      return {
-        ...s,
-        visible: !shouldHide,
-        events: {
-          ...(s as any).events,
-          legendItemClick: function (this: { name: string }, e: any) {
-            const name = this.name
-            const isBatch = ['B01', 'B02', 'B03', 'B04', 'B05', 'B06'].includes(name)
-            const match = name.match(/^(B0[1-6])/)
-
-            if (isBatch || match) {
-              e.preventDefault()
-              const batchId = match ? match[1] : name
-              setHiddenSeries((prev) => {
-                const next = new Set(prev)
-                if (next.has(batchId)) next.delete(batchId)
-                else next.add(batchId)
-                return next
-              })
-            }
-          }
-        }
-      } as Highcharts.SeriesOptionsType
-    })
-
-    return {
-      ...base,
-      chart: {
-        ...(base.chart as Record<string, unknown>),
-        height: 520,
-      },
-      legend: {
-        ...base.legend,
-        title: {
-          text: undefined
-        }
-      },
-      caption: {
-        text: 'Click legend items above to toggle batch visibility',
-        align: 'center',
-        style: { color: '#94a3b8', fontSize: '11.5px', fontStyle: 'italic' }
-      },
-      series,
-      plotOptions: {
-        ...base.plotOptions,
-        series: {
-          ...base.plotOptions?.series,
-          animation: false
-        }
-      }
-    }
   }
 
   const handleNavClick = (id: string) => {
@@ -297,7 +179,7 @@ function ReportsClient() {
   const renderEvidence = (evidence: Evidence, idx: number) => {
     switch (evidence.type) {
       case 'chart': {
-        const chartConfig = resolveChartConfig(evidence)
+        const chartConfig = chartExpand.resolveChartConfig(evidence)
         if (!chartConfig) return null
 
         const printConfig = isExporting ? {
@@ -326,7 +208,7 @@ function ReportsClient() {
                 {!isExporting && (
                   <button
                     className="chart-expand-pill"
-                    onClick={(e) => handleExpandChart(evidence, e)}
+                    onClick={(e) => chartExpand.expand(evidence, e)}
                     aria-label="Expand chart"
                   >
                     <Maximize2 size={12} />
@@ -677,25 +559,25 @@ function ReportsClient() {
       </main>
 
       {/* ───── Expanded Chart Overlay ───── */}
-      {expandedChart && (
+      {chartExpand.expandedChart && (
         <>
-          <div className="chart-overlay-backdrop" onClick={handleCollapseChart} />
+          <div className="chart-overlay-backdrop" onClick={chartExpand.collapse} />
           <div className="chart-expanded glass-card">
             <div className="chart-expanded-header">
-              <h3 className="chart-expanded-title">{expandedChart.evidence.title}</h3>
+              <h3 className="chart-expanded-title">{chartExpand.expandedChart.evidence.title}</h3>
               <div className="chart-expanded-controls">
-                <button className="chart-close-btn" onClick={handleCollapseChart} aria-label="Close expanded chart">
+                <button className="chart-close-btn" onClick={chartExpand.collapse} aria-label="Close expanded chart">
                   <X size={20} />
                 </button>
               </div>
             </div>
             <div className="chart-expanded-body">
-              <HighchartsReact key={chartKey} highcharts={Highcharts} options={getExpandedChartConfig()} />
+              <HighchartsReact key={chartExpand.chartKey} highcharts={Highcharts} options={chartExpand.getExpandedConfig()} />
             </div>
             <div className="chart-expanded-footer">
               <div className="chart-footer-left">
-                <p className="chart-expanded-desc">{expandedChart.evidence.description}</p>
-                {expandedChart.chartConfig?.series && !(expandedChart.chartConfig.series as any[])?.some(s =>
+                <p className="chart-expanded-desc">{chartExpand.expandedChart.evidence.description}</p>
+                {chartExpand.expandedChart.chartConfig?.series && !(chartExpand.expandedChart.chartConfig.series as any[])?.some(s =>
                   ['B01','B02','B03','B04','B05','B06'].includes(s.name)
                 ) && (
                   <div className="batch-toggles mini">
@@ -703,17 +585,9 @@ function ReportsClient() {
                     {batchMeta.map((b) => (
                       <button
                         key={b.id}
-                        className={`batch-toggle ${hiddenSeries.has(b.id) ? 'off' : ''}`}
+                        className={`batch-toggle ${chartExpand.hiddenSeries.has(b.id) ? 'off' : ''}`}
                         style={{ '--batch-color': b.color } as React.CSSProperties}
-                        onClick={() => {
-                          setHiddenSeries((prev) => {
-                            const next = new Set(prev)
-                            if (next.has(b.id)) next.delete(b.id)
-                            else next.add(b.id)
-                            return next
-                          })
-                          setChartKey(k => k + 1)
-                        }}
+                        onClick={() => chartExpand.toggleBatch(b.id)}
                       >
                         <span className="batch-toggle-dot" />
                         {b.id}
@@ -724,8 +598,8 @@ function ReportsClient() {
               </div>
               <button
                 className="chart-reset-btn"
-                onClick={() => { setHiddenSeries(new Set()); setChartKey(k => k + 1) }}
-                disabled={hiddenSeries.size === 0}
+                onClick={chartExpand.resetFilters}
+                disabled={chartExpand.hiddenSeries.size === 0}
               >
                 <RotateCcw size={14} />
                 <span>Reset</span>
