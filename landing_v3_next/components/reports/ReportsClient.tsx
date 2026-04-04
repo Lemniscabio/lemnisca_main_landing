@@ -1,8 +1,9 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { useScrollspy } from './hooks/useScrollspy'
 import { useReportAnimations } from './hooks/useReportAnimations'
+import { useAviraChat } from './hooks/useAviraChat'
 import Highcharts from 'highcharts'
 import HighchartsReact from 'highcharts-react-official'
 import {
@@ -57,16 +58,6 @@ const NAV_SECTIONS = [
   { id: 'recommendations', label: 'Recommendations', icon: Target },
 ]
 
-interface ChatMessage {
-  role: 'user' | 'ai'
-  content: string
-}
-
-const WELCOME_MSG: ChatMessage = {
-  role: 'ai',
-  content: 'Hello! I\'m AVIRA, your AI research assistant. Ask me anything about this fermentation analysis report — batch comparisons, growth rates, supplement effects, or recommendations.',
-}
-
 function renderMarkdown(text: string): string {
   return text
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
@@ -89,9 +80,7 @@ function ReportsClient() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [aviraOpen, setAviraOpen] = useState(false)
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([WELCOME_MSG])
-  const [chatInput, setChatInput] = useState('')
-  const [chatTyping, setChatTyping] = useState(false)
+  const chat = useAviraChat()
   const [attachedRefs, setAttachedRefs] = useState<{ id: string; label: string }[]>([])
   const [showAutocomplete, setShowAutocomplete] = useState(false)
   const [autocompleteItems, setAutocompleteItems] = useState<ReferenceItem[]>([])
@@ -101,81 +90,18 @@ function ReportsClient() {
   const [isExporting, setIsExporting] = useState(false)
   const [hiddenSeries, setHiddenSeries] = useState<Set<string>>(new Set())
   const [chartKey, setChartKey] = useState(0)
-  const messagesEndRef = useRef<HTMLDivElement>(null)
 
   useReportAnimations()
 
-  // Auto-scroll chat
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [chatMessages])
-
   const handleChatSend = async () => {
-    const text = chatInput.trim()
-    if (!text || chatTyping) return
-
-    setChatMessages((prev) => [...prev, { role: 'user', content: text }])
-    setChatInput('')
-    setChatTyping(true)
     const refs = attachedRefs.map((r) => r.id)
     setAttachedRefs([])
-
-    // Add placeholder AI message for streaming
-    setChatMessages((prev) => [...prev, { role: 'ai', content: '' }])
-
-    try {
-      const res = await fetch('/api/avira', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          messages: chatMessages.slice(-20),
-          question: text,
-          references: refs,
-        }),
-      })
-
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({ error: 'Request failed' }))
-        setChatMessages((prev) => {
-          const updated = [...prev]
-          updated[updated.length - 1] = { role: 'ai', content: `**Error:** ${err.error || 'Something went wrong. Please try again.'}` }
-          return updated
-        })
-        setChatTyping(false)
-        return
-      }
-
-      const reader = res.body?.getReader()
-      const decoder = new TextDecoder()
-      let accumulated = ''
-
-      if (reader) {
-        while (true) {
-          const { done, value } = await reader.read()
-          if (done) break
-          accumulated += decoder.decode(value, { stream: true })
-          const current = accumulated
-          setChatMessages((prev) => {
-            const updated = [...prev]
-            updated[updated.length - 1] = { role: 'ai', content: current }
-            return updated
-          })
-        }
-      }
-    } catch {
-      setChatMessages((prev) => {
-        const updated = [...prev]
-        updated[updated.length - 1] = { role: 'ai', content: '**Error:** Could not reach AVIRA. Please check your connection and try again.' }
-        return updated
-      })
-    }
-
-    setChatTyping(false)
+    await chat.send(refs)
   }
 
   const handleSelectReference = (item: ReferenceItem) => {
-    const newInput = chatInput.replace(/#\S*$/, '')
-    setChatInput(newInput)
+    const newInput = chat.input.replace(/#\S*$/, '')
+    chat.setInput(newInput)
     setAttachedRefs((prev) => {
       if (prev.some((r) => r.id === item.id)) return prev
       return [...prev, { id: item.id, label: item.label }]
@@ -854,9 +780,9 @@ function ReportsClient() {
         </div>
 
         <div className="avira-messages">
-          {chatMessages.map((msg, i) => {
+          {chat.messages.map((msg, i) => {
             // Skip rendering the empty streaming placeholder
-            if (msg.role === 'ai' && msg.content === '' && chatTyping) return null
+            if (msg.role === 'ai' && msg.content === '' && chat.typing) return null
             return (
               <div key={i} className={`msg msg-${msg.role}`}>
                 {msg.role === 'ai' && (
@@ -870,7 +796,7 @@ function ReportsClient() {
               </div>
             )
           })}
-          {chatTyping && (chatMessages[chatMessages.length - 1]?.content === '' || chatMessages[chatMessages.length - 1]?.role !== 'ai') && (
+          {chat.typing && (chat.messages[chat.messages.length - 1]?.content === '' || chat.messages[chat.messages.length - 1]?.role !== 'ai') && (
             <div className="msg msg-ai">
               <div className="msg-avatar"><Bot size={14} /></div>
               <div className="msg-bubble msg-typing">
@@ -880,7 +806,7 @@ function ReportsClient() {
               </div>
             </div>
           )}
-          <div ref={messagesEndRef} />
+          <div ref={chat.messagesEndRef} />
         </div>
 
         {attachedRefs.length > 0 && (
@@ -913,10 +839,10 @@ function ReportsClient() {
           <textarea
             className="avira-input"
             placeholder="Ask about this report... (use # to reference)"
-            value={chatInput}
+            value={chat.input}
             onChange={(e) => {
               const val = e.target.value
-              setChatInput(val)
+              chat.setInput(val)
               e.target.style.height = 'auto'
               e.target.style.height = `${Math.min(e.target.scrollHeight, 120)}px`
 
@@ -956,7 +882,7 @@ function ReportsClient() {
           <button
             className="avira-send"
             onClick={handleChatSend}
-            disabled={!chatInput.trim() || chatTyping}
+            disabled={!chat.input.trim() || chat.typing}
             aria-label="Send message"
           >
             <Send size={16} />
