@@ -1,9 +1,10 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import { useScrollspy } from './hooks/useScrollspy'
 import { useReportAnimations } from './hooks/useReportAnimations'
 import { useAviraChat } from './hooks/useAviraChat'
+import { useAutocomplete } from './hooks/useAutocomplete'
 import Highcharts from 'highcharts'
 import HighchartsReact from 'highcharts-react-official'
 import {
@@ -33,8 +34,6 @@ import {
 import { jnmReport, batchMeta } from '@/lib/reports/jnm-data'
 import { chartRegistry } from '@/lib/reports/chart-configs'
 import type { ReportData, Evidence, KPI } from '@/lib/reports/types'
-import { getReferenceCatalog } from '@/lib/reports/avira-references'
-import type { ReferenceItem } from '@/lib/reports/avira-references'
 import ReactMarkdown from 'react-markdown'
 import remarkMath from 'remark-math'
 import remarkGfm from 'remark-gfm'
@@ -81,10 +80,7 @@ function ReportsClient() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [aviraOpen, setAviraOpen] = useState(false)
   const chat = useAviraChat()
-  const [attachedRefs, setAttachedRefs] = useState<{ id: string; label: string }[]>([])
-  const [showAutocomplete, setShowAutocomplete] = useState(false)
-  const [autocompleteItems, setAutocompleteItems] = useState<ReferenceItem[]>([])
-  const refCatalog = useRef<ReferenceItem[]>(getReferenceCatalog())
+  const autocomplete = useAutocomplete()
   const [expandedChart, setExpandedChart] = useState<{ evidence: Evidence; chartConfig: Highcharts.Options; rect: DOMRect } | null>(null)
   const [expandedHypotheses, setExpandedHypotheses] = useState<Set<string>>(new Set())
   const [isExporting, setIsExporting] = useState(false)
@@ -94,23 +90,9 @@ function ReportsClient() {
   useReportAnimations()
 
   const handleChatSend = async () => {
-    const refs = attachedRefs.map((r) => r.id)
-    setAttachedRefs([])
+    const refs = autocomplete.attachedRefs.map((r) => r.id)
+    autocomplete.clearRefs()
     await chat.send(refs)
-  }
-
-  const handleSelectReference = (item: ReferenceItem) => {
-    const newInput = chat.input.replace(/#\S*$/, '')
-    chat.setInput(newInput)
-    setAttachedRefs((prev) => {
-      if (prev.some((r) => r.id === item.id)) return prev
-      return [...prev, { id: item.id, label: item.label }]
-    })
-    setShowAutocomplete(false)
-  }
-
-  const handleRemoveRef = (refId: string) => {
-    setAttachedRefs((prev) => prev.filter((r) => r.id !== refId))
   }
 
   const handleAttachToAvira = (refId: string, label: string) => {
@@ -118,10 +100,7 @@ function ReportsClient() {
       setSidebarCollapsed(true)
       setAviraOpen(true)
     }
-    setAttachedRefs((prev) => {
-      if (prev.some((r) => r.id === refId)) return prev
-      return [...prev, { id: refId, label }]
-    })
+    autocomplete.attachRef(refId, label)
   }
 
   const handleScrollToChart = (chartId: string) => {
@@ -809,12 +788,12 @@ function ReportsClient() {
           <div ref={chat.messagesEndRef} />
         </div>
 
-        {attachedRefs.length > 0 && (
+        {autocomplete.attachedRefs.length > 0 && (
           <div className="avira-ref-pills">
-            {attachedRefs.map((ref) => (
+            {autocomplete.attachedRefs.map((ref) => (
               <span key={ref.id} className="avira-ref-pill">
                 #{ref.id}
-                <button onClick={() => handleRemoveRef(ref.id)} className="avira-ref-pill-x" aria-label={`Remove ${ref.id}`}>
+                <button onClick={() => autocomplete.removeRef(ref.id)} className="avira-ref-pill-x" aria-label={`Remove ${ref.id}`}>
                   <X size={12} />
                 </button>
               </span>
@@ -822,13 +801,16 @@ function ReportsClient() {
           </div>
         )}
         <div className="avira-input-area" style={{ position: 'relative' }}>
-          {showAutocomplete && (
+          {autocomplete.showAutocomplete && (
             <div className="avira-autocomplete">
-              {autocompleteItems.slice(0, 8).map((item) => (
+              {autocomplete.autocompleteItems.slice(0, 8).map((item) => (
                 <button
                   key={item.id}
                   className="avira-autocomplete-item"
-                  onClick={() => handleSelectReference(item)}
+                  onClick={() => {
+                    const newInput = autocomplete.selectReference(item, chat.input)
+                    chat.setInput(newInput)
+                  }}
                 >
                   <span className={`avira-ref-cat avira-ref-cat-${item.category}`}>{item.category}</span>
                   <span className="avira-autocomplete-label">{item.label}</span>
@@ -845,29 +827,7 @@ function ReportsClient() {
               chat.setInput(val)
               e.target.style.height = 'auto'
               e.target.style.height = `${Math.min(e.target.scrollHeight, 120)}px`
-
-              // # autocomplete detection
-              const hashMatch = val.match(/#(\S*)$/)
-              if (hashMatch) {
-                const filter = hashMatch[1].toLowerCase()
-                if (filter === '') {
-                  // Show all items when just # is typed
-                  setAutocompleteItems(refCatalog.current)
-                  setShowAutocomplete(true)
-                } else {
-                  // Search across id, label, AND category (case-insensitive)
-                  const filtered = refCatalog.current.filter(
-                    (item) =>
-                      item.id.toLowerCase().includes(filter) ||
-                      item.label.toLowerCase().includes(filter) ||
-                      item.category.toLowerCase().includes(filter)
-                  )
-                  setAutocompleteItems(filtered)
-                  setShowAutocomplete(filtered.length > 0)
-                }
-              } else {
-                setShowAutocomplete(false)
-              }
+              autocomplete.handleInputChange(val)
             }}
             onKeyDown={(e) => {
               if (e.key === 'Enter' && !e.shiftKey) {
