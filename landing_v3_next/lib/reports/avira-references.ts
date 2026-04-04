@@ -22,13 +22,16 @@ export function getReferenceCatalog(): ReferenceItem[] {
     items.push({ id: h.id.toUpperCase(), label: `${h.id.toUpperCase()} — ${h.title}`, category: 'hypothesis' })
   }
 
-  // Charts (from evidence across all hypotheses)
-  const seenCharts = new Set<string>()
+  // Evidence items (charts, tables, text) from all hypotheses
+  const seenEvidence = new Set<string>()
   for (const h of jnmReport.hypotheses) {
     for (const ev of h.evidence) {
-      if (ev.chartId && !seenCharts.has(ev.chartId)) {
-        seenCharts.add(ev.chartId)
+      if (ev.chartId && !seenEvidence.has(ev.chartId)) {
+        seenEvidence.add(ev.chartId)
         items.push({ id: ev.chartId, label: ev.title, category: 'chart' })
+      } else if (!ev.chartId && !seenEvidence.has(ev.title)) {
+        seenEvidence.add(ev.title)
+        items.push({ id: ev.title, label: `${ev.title} (${h.id.toUpperCase()})`, category: ev.type === 'table' ? 'batch' : 'section' })
       }
     }
   }
@@ -73,6 +76,20 @@ export function resolveReference(refId: string): string | null {
     for (const ev of h.evidence) {
       if (ev.chartId === id) {
         return `[Chart: ${ev.title} (id=${ev.chartId}), from ${h.id.toUpperCase()}]\n${ev.description}`
+      }
+    }
+  }
+
+  // Evidence reference by title (for text/table evidence without chartId)
+  for (const h of jnmReport.hypotheses) {
+    for (const ev of h.evidence) {
+      if (ev.title === id) {
+        let text = `[Evidence: "${ev.title}" (${ev.type}), from ${h.id.toUpperCase()}: ${h.title}]\n${ev.description}`
+        if (ev.tableData) {
+          text += `\nTable: ${ev.tableData.headers.join(' | ')}\n`
+          text += ev.tableData.rows.map((r) => r.join(' | ')).join('\n')
+        }
+        return text
       }
     }
   }

@@ -610,6 +610,64 @@
   30% { transform: translateY(-4px); opacity: 1; }
 }
 
+/* Markdown content inside AI bubbles */
+.msg-ai .msg-bubble p {
+  margin: 0 0 8px;
+}
+
+.msg-ai .msg-bubble p:last-child {
+  margin-bottom: 0;
+}
+
+.msg-ai .msg-bubble ul,
+.msg-ai .msg-bubble ol {
+  margin: 4px 0 8px;
+  padding-left: 18px;
+}
+
+.msg-ai .msg-bubble li {
+  margin-bottom: 4px;
+}
+
+.msg-ai .msg-bubble h1,
+.msg-ai .msg-bubble h2,
+.msg-ai .msg-bubble h3,
+.msg-ai .msg-bubble h4 {
+  font-size: 13px;
+  font-weight: 700;
+  margin: 10px 0 4px;
+}
+
+.msg-ai .msg-bubble h1:first-child,
+.msg-ai .msg-bubble h2:first-child,
+.msg-ai .msg-bubble h3:first-child,
+.msg-ai .msg-bubble h4:first-child {
+  margin-top: 0;
+}
+
+.msg-ai .msg-bubble table {
+  border-collapse: collapse;
+  font-size: 11px;
+  margin: 8px 0;
+  width: 100%;
+}
+
+.msg-ai .msg-bubble th,
+.msg-ai .msg-bubble td {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  padding: 4px 8px;
+  text-align: left;
+}
+
+.msg-ai .msg-bubble th {
+  background: rgba(0, 0, 0, 0.03);
+  font-weight: 600;
+}
+
+.msg-ai .msg-bubble .katex {
+  font-size: 0.95em;
+}
+
 /* Input area */
 .avira-input-area {
   display: flex;
@@ -1462,7 +1520,9 @@
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  padding: 8px 12px 0;
+  padding: 6px 16px;
+  border-top: 1px solid var(--r-border);
+  flex-shrink: 0;
 }
 
 .avira-ref-pill {

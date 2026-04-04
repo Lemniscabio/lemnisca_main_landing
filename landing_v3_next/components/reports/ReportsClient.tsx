@@ -34,6 +34,11 @@ import { chartRegistry } from '@/lib/reports/chart-configs'
 import type { ReportData, Evidence, KPI } from '@/lib/reports/types'
 import { getReferenceCatalog } from '@/lib/reports/avira-references'
 import type { ReferenceItem } from '@/lib/reports/avira-references'
+import ReactMarkdown from 'react-markdown'
+import remarkMath from 'remark-math'
+import remarkGfm from 'remark-gfm'
+import rehypeKatex from 'rehype-katex'
+import 'katex/dist/katex.min.css'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -289,31 +294,66 @@ function ReportsClient() {
   }
 
   const handleScrollToChart = (chartId: string) => {
-    const el = document.querySelector(`[data-chart-id="${chartId}"]`) as HTMLElement
-      || document.getElementById(chartId)
-    if (!el) return
-    el.scrollIntoView({ behavior: 'smooth', block: 'center' })
-    el.classList.add('avira-highlight')
-    setTimeout(() => el.classList.remove('avira-highlight'), 2000)
+    // First, expand the hypothesis that contains this chart
+    const parentHyp = report.hypotheses.find((h) =>
+      h.evidence.some((ev) => ev.chartId === chartId)
+    )
+    if (parentHyp) {
+      setExpandedHypotheses((prev) => {
+        const next = new Set(prev)
+        next.add(parentHyp.id)
+        return next
+      })
+    }
+
+    // Wait for DOM to update after accordion expansion, then scroll
+    setTimeout(() => {
+      const el = document.querySelector(`[data-chart-id="${chartId}"]`) as HTMLElement
+        || document.getElementById(chartId)
+      if (!el) return
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      el.classList.add('avira-highlight')
+      setTimeout(() => el.classList.remove('avira-highlight'), 2000)
+    }, 150)
   }
 
   function renderAIMessage(content: string): React.ReactNode {
-    const parts = content.split(/(\[See:\s*[^\]]+\]\([^)]+\))/)
-    return parts.map((part, i) => {
-      const linkMatch = part.match(/\[See:\s*([^\]]+)\]\(([^)]+)\)/)
-      if (linkMatch) {
-        const [, title, chartId] = linkMatch
+    // Pre-process: convert [See: Title](chartId) to a special placeholder
+    // that won't be eaten by react-markdown's link parser
+    const CHART_LINK_RE = /\[See:\s*([^\]]+)\]\(([^)]+)\)/g
+    const chartLinks: { title: string; chartId: string }[] = []
+    const processed = content.replace(CHART_LINK_RE, (_match, title, chartId) => {
+      const idx = chartLinks.length
+      chartLinks.push({ title, chartId })
+      return `%%CHART_LINK_${idx}%%`
+    })
+
+    // Split on chart link placeholders and render
+    const segments = processed.split(/(%%CHART_LINK_\d+%%)/)
+    return segments.map((segment, i) => {
+      const placeholderMatch = segment.match(/%%CHART_LINK_(\d+)%%/)
+      if (placeholderMatch) {
+        const link = chartLinks[parseInt(placeholderMatch[1])]
         return (
           <button
             key={i}
             className="avira-chart-link"
-            onClick={() => handleScrollToChart(chartId)}
+            onClick={() => handleScrollToChart(link.chartId)}
           >
-            {title} ↗
+            {link.title} ↗
           </button>
         )
       }
-      return <span key={i} dangerouslySetInnerHTML={{ __html: renderMarkdown(part) }} />
+      if (!segment.trim()) return null
+      return (
+        <ReactMarkdown
+          key={i}
+          remarkPlugins={[remarkMath, remarkGfm]}
+          rehypePlugins={[rehypeKatex]}
+        >
+          {segment}
+        </ReactMarkdown>
+      )
     })
   }
 
@@ -919,19 +959,23 @@ function ReportsClient() {
         </div>
 
         <div className="avira-messages">
-          {chatMessages.map((msg, i) => (
-            <div key={i} className={`msg msg-${msg.role}`}>
-              {msg.role === 'ai' && (
-                <div className="msg-avatar"><Bot size={14} /></div>
-              )}
-              <div className="msg-bubble">
-                {msg.role === 'ai' ? renderAIMessage(msg.content) : (
-                  <span dangerouslySetInnerHTML={{ __html: renderMarkdown(msg.content) }} />
+          {chatMessages.map((msg, i) => {
+            // Skip rendering the empty streaming placeholder
+            if (msg.role === 'ai' && msg.content === '' && chatTyping) return null
+            return (
+              <div key={i} className={`msg msg-${msg.role}`}>
+                {msg.role === 'ai' && (
+                  <div className="msg-avatar"><Bot size={14} /></div>
                 )}
+                <div className="msg-bubble">
+                  {msg.role === 'ai' ? renderAIMessage(msg.content) : (
+                    <span dangerouslySetInnerHTML={{ __html: renderMarkdown(msg.content) }} />
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
-          {chatTyping && (
+            )
+          })}
+          {chatTyping && (chatMessages[chatMessages.length - 1]?.content === '' || chatMessages[chatMessages.length - 1]?.role !== 'ai') && (
             <div className="msg msg-ai">
               <div className="msg-avatar"><Bot size={14} /></div>
               <div className="msg-bubble msg-typing">
@@ -944,6 +988,18 @@ function ReportsClient() {
           <div ref={messagesEndRef} />
         </div>
 
+        {attachedRefs.length > 0 && (
+          <div className="avira-ref-pills">
+            {attachedRefs.map((ref) => (
+              <span key={ref.id} className="avira-ref-pill">
+                #{ref.id}
+                <button onClick={() => handleRemoveRef(ref.id)} className="avira-ref-pill-x" aria-label={`Remove ${ref.id}`}>
+                  <X size={12} />
+                </button>
+              </span>
+            ))}
+          </div>
+        )}
         <div className="avira-input-area" style={{ position: 'relative' }}>
           {showAutocomplete && (
             <div className="avira-autocomplete">
@@ -956,18 +1012,6 @@ function ReportsClient() {
                   <span className={`avira-ref-cat avira-ref-cat-${item.category}`}>{item.category}</span>
                   <span className="avira-autocomplete-label">{item.label}</span>
                 </button>
-              ))}
-            </div>
-          )}
-          {attachedRefs.length > 0 && (
-            <div className="avira-ref-pills">
-              {attachedRefs.map((ref) => (
-                <span key={ref.id} className="avira-ref-pill">
-                  #{ref.id}
-                  <button onClick={() => handleRemoveRef(ref.id)} className="avira-ref-pill-x" aria-label={`Remove ${ref.id}`}>
-                    <X size={12} />
-                  </button>
-                </span>
               ))}
             </div>
           )}
@@ -985,13 +1029,21 @@ function ReportsClient() {
               const hashMatch = val.match(/#(\S*)$/)
               if (hashMatch) {
                 const filter = hashMatch[1].toLowerCase()
-                const filtered = refCatalog.current.filter(
-                  (item) =>
-                    item.id.toLowerCase().includes(filter) ||
-                    item.label.toLowerCase().includes(filter)
-                )
-                setAutocompleteItems(filtered)
-                setShowAutocomplete(filtered.length > 0)
+                if (filter === '') {
+                  // Show all items when just # is typed
+                  setAutocompleteItems(refCatalog.current)
+                  setShowAutocomplete(true)
+                } else {
+                  // Search across id, label, AND category (case-insensitive)
+                  const filtered = refCatalog.current.filter(
+                    (item) =>
+                      item.id.toLowerCase().includes(filter) ||
+                      item.label.toLowerCase().includes(filter) ||
+                      item.category.toLowerCase().includes(filter)
+                  )
+                  setAutocompleteItems(filtered)
+                  setShowAutocomplete(filtered.length > 0)
+                }
               } else {
                 setShowAutocomplete(false)
               }
