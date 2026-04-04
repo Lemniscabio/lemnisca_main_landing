@@ -6,6 +6,7 @@ import { useReportAnimations } from './hooks/useReportAnimations'
 import { useAviraChat } from './hooks/useAviraChat'
 import { useAutocomplete } from './hooks/useAutocomplete'
 import { useExpandedChart } from './hooks/useExpandedChart'
+import { EvidenceRenderer } from './charts/EvidenceRenderer'
 import Highcharts from 'highcharts'
 import HighchartsReact from 'highcharts-react-official'
 import {
@@ -28,12 +29,11 @@ import {
   PanelLeftOpen,
   Send,
   Bot,
-  Maximize2,
   RotateCcw,
   Download,
 } from 'lucide-react'
 import { jnmReport, batchMeta } from '@/lib/reports/jnm-data'
-import type { ReportData, Evidence, KPI } from '@/lib/reports/types'
+import type { ReportData, KPI } from '@/lib/reports/types'
 import ReactMarkdown from 'react-markdown'
 import remarkMath from 'remark-math'
 import remarkGfm from 'remark-gfm'
@@ -174,99 +174,6 @@ function ReportsClient() {
   const renderKpiIcon = (kpi: KPI) => {
     const IconComp = kpi.icon ? ICON_MAP[kpi.icon] : Activity
     return IconComp ? <IconComp size={20} /> : null
-  }
-
-  const renderEvidence = (evidence: Evidence, idx: number) => {
-    switch (evidence.type) {
-      case 'chart': {
-        const chartConfig = chartExpand.resolveChartConfig(evidence)
-        if (!chartConfig) return null
-
-        const printConfig = isExporting ? {
-          ...chartConfig,
-          chart: { ...(chartConfig.chart as Record<string, unknown> || {}), animation: false },
-          plotOptions: {
-            ...(chartConfig.plotOptions || {}),
-            series: { ...(chartConfig.plotOptions?.series || {}), animation: false }
-          }
-        } as Highcharts.Options : chartConfig
-
-        return (
-          <div key={idx} className="evidence-chart glass-card" data-chart-id={evidence.chartId}>
-            <div className="evidence-chart-header">
-              <h4 className="evidence-title">{evidence.title}</h4>
-              <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-                {!isExporting && (
-                  <button
-                    className="ask-avira-btn"
-                    onClick={(e) => { e.stopPropagation(); handleAttachToAvira(evidence.chartId || evidence.title, evidence.title) }}
-                    aria-label={`Ask AVIRA about ${evidence.title}`}
-                  >
-                    <MessageSquare size={13} />
-                  </button>
-                )}
-                {!isExporting && (
-                  <button
-                    className="chart-expand-pill"
-                    onClick={(e) => chartExpand.expand(evidence, e)}
-                    aria-label="Expand chart"
-                  >
-                    <Maximize2 size={12} />
-                    <span>Expand</span>
-                  </button>
-                )}
-              </div>
-            </div>
-            <p className="evidence-desc">{evidence.description}</p>
-            <div className="chart-container">
-              <HighchartsReact highcharts={Highcharts} options={printConfig} />
-            </div>
-          </div>
-        )
-      }
-      case 'table':
-        return (
-          <div key={idx} className="evidence-table glass-card">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h4 className="evidence-title">{evidence.title}</h4>
-              <button className="ask-avira-btn" onClick={() => handleAttachToAvira(evidence.title, evidence.title)} aria-label={`Ask AVIRA about ${evidence.title}`}><MessageSquare size={13} /></button>
-            </div>
-            <p className="evidence-desc">{evidence.description}</p>
-            <div className="table-wrapper">
-              <table>
-                <thead>
-                  <tr>
-                    {evidence.tableData!.headers.map((h, i) => (
-                      <th key={i}>{h}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {evidence.tableData!.rows.map((row, ri) => (
-                    <tr key={ri}>
-                      {row.map((cell, ci) => (
-                        <td key={ci}>{cell}</td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )
-      case 'text':
-        return (
-          <div key={idx} className="evidence-text glass-card">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h4 className="evidence-title">{evidence.title}</h4>
-              <button className="ask-avira-btn" onClick={() => handleAttachToAvira(evidence.title, evidence.title)} aria-label={`Ask AVIRA about ${evidence.title}`}><MessageSquare size={13} /></button>
-            </div>
-            <p className="evidence-desc">{evidence.description}</p>
-          </div>
-        )
-      default:
-        return null
-    }
   }
 
   return (
@@ -504,13 +411,33 @@ function ReportsClient() {
 
                           {h.evidence
                             .filter((e) => e.type === 'text' || e.type === 'table')
-                            .map((e, idx) => renderEvidence(e, idx))}
+                            .map((e, idx) => (
+                              <EvidenceRenderer
+                                key={idx}
+                                evidence={e}
+                                idx={idx}
+                                isExporting={isExporting}
+                                resolveChartConfig={chartExpand.resolveChartConfig}
+                                onAttachToAvira={handleAttachToAvira}
+                                onExpandChart={chartExpand.expand}
+                              />
+                            ))}
                         </div>
 
                         <div className="analysis-visual">
                           {h.evidence
                             .filter((e) => e.type === 'chart')
-                            .map((e, idx) => renderEvidence(e, idx))}
+                            .map((e, idx) => (
+                              <EvidenceRenderer
+                                key={idx}
+                                evidence={e}
+                                idx={idx}
+                                isExporting={isExporting}
+                                resolveChartConfig={chartExpand.resolveChartConfig}
+                                onAttachToAvira={handleAttachToAvira}
+                                onExpandChart={chartExpand.expand}
+                              />
+                            ))}
                         </div>
                       </div>
                     </div>
