@@ -472,6 +472,37 @@
   transform: translateX(0);
 }
 
+/* Drag-to-resize handle on the left edge of the AVIRA sidebar */
+.avira-resize-handle {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  cursor: ew-resize;
+  z-index: 10;
+  transition: background 150ms ease;
+}
+
+.avira-resize-handle::after {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2px;
+  height: 40px;
+  border-radius: 2px;
+  background: transparent;
+  transition: background 200ms ease;
+}
+
+.avira-resize-handle:hover::after,
+.avira-resize-handle:active::after {
+  background: var(--r-primary-light);
+  opacity: 0.4;
+}
+
 /* Layout shift when AVIRA is open is handled via dynamic variables in Reports.tsx */
 
 .avira-sidebar-header {
@@ -1812,6 +1843,144 @@
 
 /* ─── Print & Export Mode ─────────────────────────────────────────────────── */
 
+/* ─── Methodology Section ─────────────────────────────────────────────────── */
+
+.methodology-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.methodology-card {
+  padding: 20px 24px;
+  border-radius: var(--r-radius-sm);
+  transition: box-shadow 200ms ease;
+}
+
+.methodology-card:hover {
+  box-shadow: var(--r-card-shadow-hover);
+}
+
+.methodology-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.methodology-chart-id {
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  background: var(--r-primary-bg);
+  color: var(--r-primary-light);
+  border-radius: 4px;
+  letter-spacing: 0.02em;
+}
+
+.methodology-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--r-text);
+  margin: 0;
+  flex: 1;
+}
+
+.methodology-hyp {
+  font-size: 11px;
+  color: var(--r-text-muted);
+  font-weight: 500;
+}
+
+.methodology-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.methodology-row {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 12px;
+  align-items: start;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.methodology-label {
+  font-weight: 600;
+  color: var(--r-text-secondary);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding-top: 2px;
+}
+
+.methodology-formula {
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 12px;
+  background: rgba(0, 0, 0, 0.03);
+  padding: 6px 10px;
+  border-radius: 6px;
+  color: var(--r-text);
+  word-break: break-word;
+}
+
+.methodology-constants {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.methodology-constant {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2px;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 6px;
+  border-left: 3px solid var(--r-primary-bg);
+}
+
+.constant-name {
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--r-text);
+}
+
+.constant-value {
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 12px;
+  color: var(--r-primary-light);
+}
+
+.constant-source {
+  font-size: 11px;
+  color: var(--r-text-muted);
+  font-style: italic;
+}
+
+.methodology-source-file {
+  font-weight: 600;
+  color: var(--r-primary-light);
+  font-size: 13px;
+}
+
+.methodology-detail {
+  color: var(--r-text-secondary);
+  font-size: 13px;
+}
+
+.methodology-notes {
+  color: var(--r-text-muted);
+  font-size: 12px;
+  font-style: italic;
+  border-left: 2px solid var(--r-border);
+  padding-left: 12px;
+}
+
 .print-cover-page {
   display: none;
 }
@@ -2011,14 +2180,24 @@
   h2.section-title {
     font-size: 28px !important;
     font-weight: 800 !important;
+    color: var(--r-primary) !important;
     border-bottom: 2px solid var(--r-primary) !important;
     padding-bottom: 8px !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
   .hyp-title {
     font-size: 20px !important;
     font-weight: 700 !important;
     color: var(--r-primary) !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .hyp-desc {
+    color: #333 !important;
+    font-size: 13px !important;
   }
 
   /* Keep evidence title + description + chart together */
@@ -2039,6 +2218,15 @@
   * {
     transition: none !important;
     animation: none !important;
+  }
+
+  /* Override GSAP inline animation initial states — elements stuck at opacity:0
+     because their ScrollTrigger never fired (not yet scrolled into view) */
+  .is-exporting .glass-card,
+  .is-exporting .hypothesis-list-item,
+  .is-exporting .rec-card {
+    opacity: 1 !important;
+    transform: none !important;
   }
 
   .chart-container, .highcharts-container, .highcharts-root {
@@ -2111,6 +2299,36 @@
     break-inside: avoid !important;
     border-left: 4px solid var(--r-primary) !important;
     padding: 16px !important;
+    background: #f8f9fb !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .rec-icon-wrap {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .rec-title {
+    color: var(--r-text) !important;
+    font-size: 18px !important;
+    font-weight: 700 !important;
+  }
+
+  .rec-source {
+    color: var(--r-primary-light) !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .rec-desc {
+    color: #333 !important;
+    font-size: 13px !important;
+  }
+
+  /* Ensure recommendations section is never orphaned */
+  .report-section#recommendations {
+    page-break-inside: avoid !important;
   }
 
   /* ── Reduce whitespace ─────────────────────────────────────────── */
@@ -2121,6 +2339,33 @@
 
   .section-badge {
     margin-bottom: 8px !important;
+    background: var(--r-primary-bg) !important;
+    color: var(--r-primary-light) !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    padding: 4px 12px !important;
+    border-radius: 100px !important;
+    display: inline-block !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.06em !important;
+  }
+
+  .section-desc {
+    color: #333 !important;
+    font-size: 14px !important;
+    margin-bottom: 16px !important;
+  }
+
+  h1.section-title {
+    font-size: 32px !important;
+    font-weight: 800 !important;
+    color: var(--r-primary) !important;
+    border-bottom: 2px solid var(--r-primary) !important;
+    padding-bottom: 8px !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
   .hypothesis-expanded-content {

@@ -1,5 +1,6 @@
 'use client'
 
+import { useRef, useCallback } from 'react'
 import { Bot, X, Send } from 'lucide-react'
 import type { ChatMessage } from '../hooks/useAviraChat'
 import type { ReferenceItem } from '@/lib/reports/avira-references'
@@ -29,7 +30,11 @@ interface AviraSidebarProps {
   onSelectReference: (item: ReferenceItem) => void
   onRemoveRef: (refId: string) => void
   onScrollToChart: (chartId: string) => void
+  onWidthChange: (width: number) => void
 }
+
+const MIN_WIDTH = 380
+const DEFAULT_WIDTH = 380
 
 export function AviraSidebar({
   open,
@@ -46,9 +51,50 @@ export function AviraSidebar({
   onSelectReference,
   onRemoveRef,
   onScrollToChart,
+  onWidthChange,
 }: AviraSidebarProps) {
+  const sidebarRef = useRef<HTMLElement>(null)
+  const isDragging = useRef(false)
+  const startX = useRef(0)
+  const startWidth = useRef(DEFAULT_WIDTH)
+
+  const onPointerDown = useCallback((e: React.PointerEvent) => {
+    if (!open) return
+    e.preventDefault()
+    isDragging.current = true
+    startX.current = e.clientX
+    startWidth.current = sidebarRef.current?.offsetWidth ?? DEFAULT_WIDTH
+
+    document.body.style.cursor = 'ew-resize'
+    document.body.style.userSelect = 'none'
+
+    const onMove = (ev: PointerEvent) => {
+      if (!isDragging.current) return
+      const delta = startX.current - ev.clientX // dragging left = positive delta = wider
+      const navWidth = 260 // collapsed or full sidebar nav — use full as conservative max
+      const maxWidth = Math.min(window.innerWidth * 0.30, window.innerWidth - navWidth - 80)
+      const newWidth = Math.min(Math.max(startWidth.current + delta, MIN_WIDTH), maxWidth)
+      if (sidebarRef.current) {
+        sidebarRef.current.style.width = `${newWidth}px`
+      }
+      onWidthChange(newWidth)
+    }
+
+    const onUp = () => {
+      isDragging.current = false
+      document.body.style.cursor = ''
+      document.body.style.userSelect = ''
+      document.removeEventListener('pointermove', onMove)
+      document.removeEventListener('pointerup', onUp)
+    }
+
+    document.addEventListener('pointermove', onMove)
+    document.addEventListener('pointerup', onUp)
+  }, [open, onWidthChange])
+
   return (
     <aside
+      ref={sidebarRef}
       className={`avira-sidebar ${open ? 'open' : ''}`}
       aria-label="AVIRA assistant"
       onMouseEnter={() => {
@@ -58,10 +104,19 @@ export function AviraSidebar({
         }
       }}
       onMouseLeave={() => {
-        document.body.style.overflow = ''
-        document.body.style.paddingRight = ''
+        if (!isDragging.current) {
+          document.body.style.overflow = ''
+          document.body.style.paddingRight = ''
+        }
       }}
     >
+      {/* Drag handle on left edge */}
+      <div
+        className="avira-resize-handle"
+        onPointerDown={onPointerDown}
+        aria-hidden="true"
+      />
+
       <div className="avira-sidebar-header">
         <Bot size={18} />
         <span>AVIRA</span>

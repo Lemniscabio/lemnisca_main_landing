@@ -58,6 +58,7 @@ function ReportsClient() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [aviraOpen, setAviraOpen] = useState(false)
+  const [aviraWidth, setAviraWidth] = useState(380)
   const chat = useAviraChat()
   const autocomplete = useAutocomplete()
   const chartExpand = useExpandedChart()
@@ -123,10 +124,10 @@ function ReportsClient() {
 
   return (
     <div
-      className={`reports-page ${aviraOpen ? 'avira-open' : ''}`}
+      className={`reports-page ${aviraOpen ? 'avira-open' : ''} ${isExporting ? 'is-exporting' : ''}`}
       style={{
         '--dynamic-left': sidebarCollapsed ? '68px' : '260px',
-        '--dynamic-right': aviraOpen ? '380px' : '0px'
+        '--dynamic-right': aviraOpen ? `${aviraWidth}px` : '0px'
       } as React.CSSProperties}
     >
       {/* Blurred background layer */}
@@ -453,7 +454,8 @@ function ReportsClient() {
         attachedRefs={autocomplete.attachedRefs}
         showAutocomplete={autocomplete.showAutocomplete}
         autocompleteItems={autocomplete.autocompleteItems}
-        onClose={() => setAviraOpen(false)}
+        onClose={() => { setAviraOpen(false); setAviraWidth(380) }}
+        onWidthChange={(w) => setAviraWidth(w)}
         onInputChange={(val) => {
           chat.setInput(val)
           autocomplete.handleInputChange(val)
