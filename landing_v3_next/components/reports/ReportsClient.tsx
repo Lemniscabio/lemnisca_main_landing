@@ -436,11 +436,8 @@ function ReportsClient() {
         <ChartExpandOverlay
           expandedChart={chartExpand.expandedChart}
           chartKey={chartExpand.chartKey}
-          hiddenSeries={chartExpand.hiddenSeries}
           getExpandedConfig={chartExpand.getExpandedConfig}
           onCollapse={chartExpand.collapse}
-          onToggleBatch={chartExpand.toggleBatch}
-          onReset={chartExpand.resetFilters}
         />
       )}
 

@@ -228,7 +228,6 @@ export function makeCarbonBalanceChart(): Highcharts.Options {
         },
       ],
     },
-    legend: { enabled: false },
     series: [
       {
         type: 'column' as const,
@@ -278,7 +277,8 @@ export function makeSupplementComparisonChart(): Highcharts.Options {
       {
         type: 'bar' as const,
         name: 'Duration (h)',
-        data: data.map((d) => ({ y: d.duration, color: d.color + '99' })),
+        color: '#60a5fa',
+        data: data.map((d) => d.duration),
         yAxis: 0,
         borderRadius: 6,
         borderWidth: 0,
@@ -286,7 +286,8 @@ export function makeSupplementComparisonChart(): Highcharts.Options {
       {
         type: 'bar' as const,
         name: 'Final OD600',
-        data: data.map((d) => ({ y: d.finalOD, color: d.color })),
+        color: '#f59e0b',
+        data: data.map((d) => d.finalOD),
         yAxis: 1,
         borderRadius: 6,
         borderWidth: 0,
@@ -456,9 +457,9 @@ export function makeFullCarbonBalanceChart(): Highcharts.Options {
   const THEORETICAL_YXS_MAX = 0.48 // g DCW / g glucose — elite tier
 
   const categories: string[] = []
-  const glucoseIn: { y: number; color: string }[] = []
-  const theoreticalDCW: { y: number; color: string }[] = []
-  const actualDCW: { y: number; color: string }[] = []
+  const glucoseIn: number[] = []
+  const theoreticalDCW: number[] = []
+  const actualDCW: number[] = []
 
   BATCH_IDS.forEach((id) => {
     const meta = batchMeta.find((b) => b.id === id)!
@@ -472,9 +473,9 @@ export function makeFullCarbonBalanceChart(): Highcharts.Options {
     const theoreticalMaxG = totalGlucoseG * THEORETICAL_YXS_MAX
 
     categories.push(id)
-    glucoseIn.push({ y: parseFloat(totalGlucoseG.toFixed(1)), color: '#94a3b8' })
-    theoreticalDCW.push({ y: parseFloat(theoreticalMaxG.toFixed(1)), color: '#22c55e' })
-    actualDCW.push({ y: parseFloat(actualDcwG.toFixed(1)), color: meta.color })
+    glucoseIn.push(parseFloat(totalGlucoseG.toFixed(1)))
+    theoreticalDCW.push(parseFloat(theoreticalMaxG.toFixed(1)))
+    actualDCW.push(parseFloat(actualDcwG.toFixed(1)))
   })
 
   return {
@@ -498,6 +499,7 @@ export function makeFullCarbonBalanceChart(): Highcharts.Options {
       {
         type: 'column' as const,
         name: 'Glucose Fed (g)',
+        color: '#94a3b8',
         data: glucoseIn,
         borderRadius: 4,
         borderWidth: 0,
@@ -505,6 +507,7 @@ export function makeFullCarbonBalanceChart(): Highcharts.Options {
       {
         type: 'column' as const,
         name: 'Theoretical Max DCW (g)',
+        color: '#22c55e',
         data: theoreticalDCW,
         borderRadius: 4,
         borderWidth: 0,
@@ -512,6 +515,7 @@ export function makeFullCarbonBalanceChart(): Highcharts.Options {
       {
         type: 'column' as const,
         name: 'Actual DCW (g)',
+        color: '#f59e0b',
         data: actualDCW,
         borderRadius: 4,
         borderWidth: 0,
