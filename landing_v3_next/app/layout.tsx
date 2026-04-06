@@ -1,37 +1,33 @@
 import { Inter, Playfair_Display } from 'next/font/google'
-  import './globals.css'
+import { Suspense } from 'react'
+import { PHProvider } from './providers'
+import { PostHogPageView } from '@/components/PostHogPageView'
+import './globals.css'
 
-  const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
-  const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfair' })
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
+const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfair' })
 
-  export const metadata = {
+export const metadata = {
+  title: 'Lemnisca',
+  description: 'Your site description here',
+  openGraph: {
     title: 'Lemnisca',
-    description: 'Your site description here',
-    openGraph: {
-      title: 'Lemnisca',
-      description: 'Your site description',
-      images: ['/preview.png'],
-    },
-  }
+    description: 'Your site description',
+    images: ['/preview.png'],
+  },
+}
 
-  export default function RootLayout({ children }: { children: React.ReactNode }) {
-    return (
-      <html lang="en" className={`${inter.variable} ${playfair.variable}`}>
-        <head>
-          {/* Google Analytics */}
-          <script async src="https://www.googletagmanager.com/gtag/js?id=YOUR_GA_ID" />
-          <script
-            dangerouslySetInnerHTML={{
-              __html: `
-                window.dataLayer = window.dataLayer || [];
-                function gtag(){dataLayer.push(arguments);}
-                gtag('js', new Date());
-                gtag('config', 'YOUR_GA_ID');
-              `,
-            }}
-          />
-        </head>
-        <body>{children}</body>
-      </html>
-    )
-  }
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en" className={`${inter.variable} ${playfair.variable}`}>
+      <body>
+        <PHProvider>
+          <Suspense fallback={null}>
+            <PostHogPageView />
+          </Suspense>
+          {children}
+        </PHProvider>
+      </body>
+    </html>
+  )
+}
