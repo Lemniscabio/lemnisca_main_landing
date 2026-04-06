@@ -1,8 +1,14 @@
-import { GoogleGenAI } from '@google/genai'
+import { PostHogGoogleGenAI } from '@posthog/ai/gemini'
+import { getPostHogServer } from '@/lib/posthog-server'
 import { buildSystemPrompt, buildUserMessage } from '@/lib/reports/avira-prompt'
 import { resolveReference } from '@/lib/reports/avira-references'
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! })
+const phClient = getPostHogServer()
+
+const ai = new PostHogGoogleGenAI({
+  apiKey: process.env.GEMINI_API_KEY!,
+  posthog: phClient,
+})
 
 interface ChatMsg {
   role: 'user' | 'ai'
@@ -33,23 +39,28 @@ export async function POST(request: Request) {
 
     // Build conversation history (last 10 exchanges)
     const history = (messages ?? []).slice(-20).map((msg) => ({
-      role: msg.role === 'ai' ? 'model' as const : 'user' as const,
+      role: msg.role === 'ai' ? ('model' as const) : ('user' as const),
       parts: [{ text: msg.content }],
     }))
 
     const systemPrompt = buildSystemPrompt()
     const userMessage = buildUserMessage(question, resolvedRefs)
 
-    // Create chat with history and stream response
-    const chat = ai.chats.create({
+    // Build contents array: history + new user message
+    const contents = [
+      ...history,
+      { role: 'user' as const, parts: [{ text: userMessage }] },
+    ]
+
+    const stream = ai.models.generateContentStream({
       model: 'gemini-2.5-flash',
+      contents,
       config: {
         systemInstruction: systemPrompt,
       },
-      history,
+      posthogDistinctId: 'anonymous',
+      posthogProperties: { feature: 'avira' },
     })
-
-    const stream = await chat.sendMessageStream({ message: userMessage })
 
     // Convert to ReadableStream for the frontend
     const encoder = new TextEncoder()
