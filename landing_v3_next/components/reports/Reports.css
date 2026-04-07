@@ -526,7 +526,12 @@
 /* Messages area */
 .avira-messages {
   flex: 1;
+  min-width: 0;
   overflow-y: auto;
+  /* Explicit `hidden` — without this, setting overflow-y: auto implicitly
+     allows horizontal overflow too, and a long unbroken token in a Gemini
+     response (URL, chart id) will make the whole sidebar horizontally scroll. */
+  overflow-x: hidden;
   padding: 16px;
   display: flex;
   flex-direction: column;
@@ -556,6 +561,7 @@
   display: flex;
   gap: 8px;
   max-width: 90%;
+  min-width: 0;
 }
 
 .msg-user {
@@ -585,6 +591,12 @@
   border-radius: 14px;
   font-size: 13px;
   line-height: 1.6;
+  /* Break long unbreakable tokens (URLs, chart ids, code strings) so they
+     never push the bubble wider than its flex container. */
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .msg-bubble code {
@@ -593,6 +605,12 @@
   border-radius: 4px;
   font-size: 12px;
   font-family: 'SF Mono', Menlo, monospace;
+  overflow-wrap: anywhere;
+}
+
+.msg-bubble pre {
+  overflow-x: auto;
+  max-width: 100%;
 }
 
 .msg-user .msg-bubble {
