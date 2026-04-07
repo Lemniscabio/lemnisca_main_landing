@@ -105,9 +105,15 @@ export function useAviraChat() {
 
       if (!res.ok) {
         const err = await res.json().catch(() => ({ error: 'Request failed' }))
+        const humanMessage =
+          res.status === 429
+            ? (err.message || 'Too many messages — please wait a minute before sending more.')
+            : res.status === 401
+            ? 'Your session has expired. Please reload the page and re-enter the password.'
+            : (err.message || err.error || 'Something went wrong. Please try again.')
         setMessages((prev) => {
           const updated = [...prev]
-          updated[updated.length - 1] = { role: 'ai', content: `**Error:** ${err.error || 'Something went wrong. Please try again.'}` }
+          updated[updated.length - 1] = { role: 'ai', content: `**Error:** ${humanMessage}` }
           return updated
         })
         setTyping(false)
