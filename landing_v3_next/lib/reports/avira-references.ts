@@ -1,64 +1,98 @@
-import { jnmReport } from './jnm-data'
-import { batchMeta } from './batch-data'
-// types used implicitly via jnmReport structure
+import type { ReportData, BatchMeta, Analysis } from './types'
+
+/**
+ * Avira reference catalog + resolver.
+ *
+ * IMPORTANT: this module does NOT import the report data directly. Both the
+ * catalog builder and the resolver take the report as an argument so the
+ * client bundle can use them safely (the catalog itself ships to the client
+ * via props after the server renders the page).
+ */
 
 export interface ReferenceItem {
-  id: string          // e.g. 'B04', 'H3', 'od600'
-  label: string       // display name in autocomplete
-  category: 'batch' | 'hypothesis' | 'chart' | 'section'
+  id: string                    // e.g. 'B04', 'A3', 'od600'
+  label: string                 // display name in autocomplete
+  category: 'batch' | 'analysis' | 'chart' | 'section'
 }
 
-/** All referenceable items for the # autocomplete dropdown */
-export function getReferenceCatalog(): ReferenceItem[] {
+/** All referenceable items for the # autocomplete dropdown. */
+export function getReferenceCatalog(report: ReportData): ReferenceItem[] {
   const items: ReferenceItem[] = []
 
   // Batches
-  for (const b of batchMeta) {
-    items.push({ id: b.id, label: `${b.id} — ${b.equipment}, ${b.duration}h`, category: 'batch' })
+  for (const b of report.batchMeta) {
+    items.push({
+      id: b.id,
+      label: `${b.id} — ${b.equipment}, ${b.durationH}h`,
+      category: 'batch',
+    })
   }
 
-  // Hypotheses
-  for (const h of jnmReport.hypotheses) {
-    items.push({ id: h.id.toUpperCase(), label: `${h.id.toUpperCase()} — ${h.title}`, category: 'hypothesis' })
+  // Analyses
+  for (const a of report.analyses) {
+    items.push({
+      id: a.id.toUpperCase(),
+      label: `${a.id.toUpperCase()} — ${a.title}`,
+      category: 'analysis',
+    })
   }
 
-  // Evidence items (charts, tables, text) from all hypotheses
-  const seenEvidence = new Set<string>()
-  for (const h of jnmReport.hypotheses) {
-    for (const ev of h.evidence) {
-      if (ev.chartId && !seenEvidence.has(ev.chartId)) {
-        seenEvidence.add(ev.chartId)
+  // Evidence (charts, tables, text) from all analyses
+  const seen = new Set<string>()
+  for (const a of report.analyses) {
+    for (const ev of a.evidence) {
+      if (ev.chartId && !seen.has(ev.chartId)) {
+        seen.add(ev.chartId)
         items.push({ id: ev.chartId, label: ev.title, category: 'chart' })
-      } else if (!ev.chartId && !seenEvidence.has(ev.title)) {
-        seenEvidence.add(ev.title)
-        items.push({ id: ev.title, label: `${ev.title} (${h.id.toUpperCase()})`, category: ev.type === 'table' ? 'batch' : 'section' })
+      } else if (!ev.chartId && !seen.has(ev.title)) {
+        seen.add(ev.title)
+        items.push({
+          id: ev.title,
+          label: `${ev.title} (${a.id.toUpperCase()})`,
+          category: ev.type === 'table' ? 'batch' : 'section',
+        })
       }
     }
   }
 
-  // Sections
+  // Top-level sections
   items.push({ id: 'executive-summary', label: 'Executive Summary', category: 'section' })
-  items.push({ id: 'recommendations', label: 'Recommendations', category: 'section' })
-  items.push({ id: 'overview', label: 'Problem Statement & KPIs', category: 'section' })
+  items.push({ id: 'recommendations',   label: 'Recommendations',  category: 'section' })
+  items.push({ id: 'overview',          label: 'Problem Statement & KPIs', category: 'section' })
 
   return items
 }
 
-/** Resolve a reference ID to its full text content for the prompt */
-export function resolveReference(refId: string): string | null {
+/** Resolve a reference ID to its full text content (for the LLM prompt). */
+export function resolveReference(report: ReportData, refId: string): string | null {
   const id = refId.trim()
   const idUpper = id.toUpperCase()
 
   // Batch reference: B01–B06
-  const batch = batchMeta.find((b) => b.id === idUpper)
+  const batch = report.batchMeta.find((b: BatchMeta) => b.id === idUpper)
   if (batch) {
-    return `[Batch ${batch.id}] Equipment=${batch.equipment} | Scale=${batch.scale}L | Duration=${batch.duration}h (planned ${batch.plannedDuration}h) | Final OD=${batch.finalOD} | Final WCW=${batch.finalWCW} mg/3mL | Supplements=${batch.supplements} | Closure=${batch.closureReason} | Initial Vol=${batch.batchMediumVol}mL | Feed Vol=${batch.totalFeedVol}mL | Supplement Vol=${batch.supplementVol}mL`
+    return [
+      `[Batch ${batch.id}]`,
+      `Equipment=${batch.equipment} | Scale=${batch.scaleL}L`,
+      `Duration=${batch.durationH}h (planned ${batch.plannedDurationH}h)`,
+      `Final OD=${batch.finalOd} | Final WCW=${batch.finalWcw} mg/3mL`,
+      `Final DCW=${batch.finalDcwGperL} g/L | Total DCW mass=${batch.finalDcwMassG} g`,
+      `Carbon yield (Yx/s)=${batch.carbonYield} g/g`,
+      `V_initial=${batch.vInitialMl} mL | V_final=${batch.vFinalMl} mL (+${batch.vIncreasePct}%)`,
+      `Cumulative feed=${batch.cumulFeedMl} mL`,
+      batch.supplements.length
+        ? `Supplements: ${batch.supplements.map((s) => `${s.type}@${s.timeH}h(${s.volumeMl}mL)`).join(', ')}`
+        : 'Supplements: none',
+      batch.closureReason ? `Closure: ${batch.closureReason}` : '',
+    ]
+      .filter(Boolean)
+      .join(' | ')
   }
 
-  // Hypothesis reference: H1–H7
-  const hyp = jnmReport.hypotheses.find((h) => h.id.toUpperCase() === idUpper)
-  if (hyp) {
-    const evidenceText = hyp.evidence
+  // Analysis reference: A1–A8
+  const ana = report.analyses.find((a: Analysis) => a.id.toUpperCase() === idUpper)
+  if (ana) {
+    const evidenceText = ana.evidence
       .map((ev) => {
         let text = `  - ${ev.type}: "${ev.title}" — ${ev.description}`
         if (ev.tableData) {
@@ -68,23 +102,23 @@ export function resolveReference(refId: string): string | null {
         return text
       })
       .join('\n')
-    return `[Hypothesis ${hyp.id.toUpperCase()}: ${hyp.title}]\nVerdict: ${hyp.verdict}\nSummary: ${hyp.verdictSummary}\nEvidence:\n${evidenceText}`
+    return `[Analysis ${ana.id.toUpperCase()}: ${ana.title}]\nVerdict: ${ana.verdict}\nSummary: ${ana.verdictSummary}\nEvidence:\n${evidenceText}`
   }
 
   // Chart reference by chartId
-  for (const h of jnmReport.hypotheses) {
-    for (const ev of h.evidence) {
+  for (const a of report.analyses) {
+    for (const ev of a.evidence) {
       if (ev.chartId === id) {
-        return `[Chart: ${ev.title} (id=${ev.chartId}), from ${h.id.toUpperCase()}]\n${ev.description}`
+        return `[Chart: ${ev.title} (id=${ev.chartId}), from ${a.id.toUpperCase()}]\n${ev.description}`
       }
     }
   }
 
-  // Evidence reference by title (for text/table evidence without chartId)
-  for (const h of jnmReport.hypotheses) {
-    for (const ev of h.evidence) {
+  // Evidence reference by title (text/table without chartId)
+  for (const a of report.analyses) {
+    for (const ev of a.evidence) {
       if (ev.title === id) {
-        let text = `[Evidence: "${ev.title}" (${ev.type}), from ${h.id.toUpperCase()}: ${h.title}]\n${ev.description}`
+        let text = `[Evidence: "${ev.title}" (${ev.type}), from ${a.id.toUpperCase()}: ${a.title}]\n${ev.description}`
         if (ev.tableData) {
           text += `\nTable: ${ev.tableData.headers.join(' | ')}\n`
           text += ev.tableData.rows.map((r) => r.join(' | ')).join('\n')
@@ -96,14 +130,14 @@ export function resolveReference(refId: string): string | null {
 
   // Section references
   if (id === 'executive-summary') {
-    return `[Executive Summary]\n${jnmReport.executiveSummary.bullets.map((b) => `- ${b}`).join('\n')}`
+    return `[Executive Summary]\n${report.executiveSummary.bullets.map((b) => `- ${b}`).join('\n')}`
   }
   if (id === 'recommendations') {
-    return `[Recommendations]\n${jnmReport.recommendations.map((r) => `${r.title} (${r.source}): ${r.description}`).join('\n')}`
+    return `[Recommendations]\n${report.recommendations.map((r) => `${r.title} (${r.source}): ${r.description}`).join('\n')}`
   }
   if (id === 'overview') {
-    const kpis = jnmReport.problemStatement.kpis.map((k) => `  ${k.label}: ${k.value}`).join('\n')
-    return `[Problem Statement]\n${jnmReport.problemStatement.body}\n\nKPIs:\n${kpis}`
+    const kpis = report.problemStatement.kpis.map((k) => `  ${k.label}: ${k.value}`).join('\n')
+    return `[Problem Statement]\n${report.problemStatement.body}\n\nKPIs:\n${kpis}`
   }
 
   return null

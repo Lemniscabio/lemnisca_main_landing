@@ -668,6 +668,50 @@
 }
 
 /* Input area */
+.avira-example-prompts {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 0 4px;
+}
+
+.avira-example-prompts-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--r-text-secondary, #64748b);
+  margin-bottom: 2px;
+}
+
+.avira-example-prompt {
+  all: unset;
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 10px;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--r-text, #1e293b);
+  cursor: pointer;
+  transition: background 150ms ease, border-color 150ms ease, transform 100ms ease;
+  text-align: left;
+}
+
+.avira-example-prompt:hover {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(37, 99, 235, 0.35);
+  transform: translateY(-1px);
+}
+
+.avira-example-prompt:active {
+  transform: translateY(0);
+}
+
 .avira-input-area {
   display: flex;
   align-items: flex-end; /* Align to bottom so button stays at the bottom when textarea grows */
@@ -1061,6 +1105,18 @@
   order: 1;
 }
 
+/* Single-column layout for hypotheses with no chart evidence (e.g. H8) —
+   the text/tables span the full width that would otherwise be split with
+   the visual column. Sticky positioning is irrelevant here. */
+.analysis-section.layout-single {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.analysis-section.layout-single .analysis-text {
+  position: static;
+  top: auto;
+}
+
 .analysis-header {
   display: flex;
   align-items: center;
@@ -1134,6 +1190,7 @@
 .analysis-text {
   display: flex;
   flex-direction: column;
+  gap: 16px;
   position: sticky;
   top: calc(var(--r-topbar-height) + 32px);
   align-self: start;
@@ -1279,6 +1336,13 @@
   flex-direction: column;
   gap: 16px;
   animation: chartExpandIn 350ms var(--ease-out-quint);
+}
+
+/* When the expanded view is rendering a per-batch grid, the modal needs much
+   more horizontal room so each of the six cells is properly readable. */
+.chart-expanded:has(.chart-expanded-grid) {
+  width: min(1600px, calc(100vw - 48px));
+  max-height: calc(100vh - 48px);
   overflow-y: auto;
 }
 
@@ -1371,6 +1435,42 @@
 
 .chart-expanded-body {
   min-height: 400px;
+}
+
+/* When the body holds a per-batch grid, let it scroll inside the modal so the
+   footer stays anchored at the bottom and doesn't overlap the bottom row. */
+.chart-expanded-body:has(.chart-expanded-grid) {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+/* 2×3 grid for the expanded view of qsRate / ourDecomposition / kLa.
+   The modal is widened (see `.chart-expanded:has(.chart-expanded-grid)`)
+   so each of the six cells gets ~500px of width and the charts are properly
+   readable. Falls back to 2×3 → 2-col on narrower screens. */
+.chart-expanded-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: repeat(2, auto);
+  gap: 16px;
+  width: 100%;
+}
+
+.chart-expanded-grid-cell {
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 10px;
+  padding: 12px;
+  min-width: 0;
+}
+
+@media (max-width: 1280px) {
+  .chart-expanded-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(3, auto);
+  }
 }
 
 .chart-expanded-footer {
@@ -1675,6 +1775,63 @@
 .desktop-only-notice {
   display: none;
 }
+
+/* ─── Responsive: KPI Grid & Analysis stacking ───────────────────────────────
+   Stacks 4 KPI cards (4→2→1) and the Investigation Framework expanded
+   two-column layout vertically as the viewport narrows. The `.avira-open`
+   variants kick in earlier because the chatbot sidebar (≈380px) reduces the
+   available content width by that much. */
+
+@media (max-width: 1280px) {
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 720px) {
+  .kpi-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Avira open → effective width is ~viewport − 380px sidebar.
+   Trigger 2-col at ~1660px and 1-col at ~1100px. */
+@media (max-width: 1660px) {
+  .reports-page.avira-open .kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 1100px) {
+  .reports-page.avira-open .kpi-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Investigation Framework: stack text + visual vertically when narrow */
+@media (max-width: 1100px) {
+  .analysis-section,
+  .analysis-section.layout-lr,
+  .analysis-section.layout-rl {
+    grid-template-columns: 1fr;
+  }
+
+  .analysis-section.layout-rl .analysis-text {
+    order: 1;
+  }
+
+  .analysis-section.layout-rl .analysis-visual {
+    order: 2;
+  }
+
+  /* Sticky makes no sense once stacked vertically */
+  .analysis-text,
+  .analysis-visual {
+    position: static;
+    top: auto;
+  }
+}
+
 
 @media (max-width: 768px) {
   .reports-page {

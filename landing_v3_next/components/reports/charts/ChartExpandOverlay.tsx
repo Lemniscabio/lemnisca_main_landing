@@ -18,7 +18,8 @@ export function ChartExpandOverlay({
   getExpandedConfig,
   onCollapse,
 }: ChartExpandOverlayProps) {
-  const config = getExpandedConfig()
+  const isGrid = !!expandedChart.gridConfigs && expandedChart.gridConfigs.length > 0
+  const singleConfig = isGrid ? undefined : getExpandedConfig()
 
   return (
     <>
@@ -33,7 +34,17 @@ export function ChartExpandOverlay({
           </div>
         </div>
         <div className="chart-expanded-body">
-          <HighchartsReact key={chartKey} highcharts={Highcharts} options={config} />
+          {isGrid ? (
+            <div className="chart-expanded-grid">
+              {expandedChart.gridConfigs!.map((cfg, i) => (
+                <div key={i} className="chart-expanded-grid-cell">
+                  <HighchartsReact highcharts={Highcharts} options={cfg} />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <HighchartsReact key={chartKey} highcharts={Highcharts} options={singleConfig} />
+          )}
         </div>
         <div className="chart-expanded-footer">
           <p className="chart-expanded-desc">{expandedChart.evidence.description}</p>

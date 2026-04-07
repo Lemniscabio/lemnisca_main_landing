@@ -1,12 +1,11 @@
 import { useRef, useState } from 'react'
-import { getReferenceCatalog } from '@/lib/reports/avira-references'
 import type { ReferenceItem } from '@/lib/reports/avira-references'
 
-export function useAutocomplete() {
+export function useAutocomplete(catalog: ReferenceItem[]) {
   const [attachedRefs, setAttachedRefs] = useState<{ id: string; label: string }[]>([])
   const [showAutocomplete, setShowAutocomplete] = useState(false)
   const [autocompleteItems, setAutocompleteItems] = useState<ReferenceItem[]>([])
-  const refCatalog = useRef<ReferenceItem[]>(getReferenceCatalog())
+  const refCatalog = useRef<ReferenceItem[]>(catalog)
 
   const handleInputChange = (val: string) => {
     const hashMatch = val.match(/#(\S*)$/)

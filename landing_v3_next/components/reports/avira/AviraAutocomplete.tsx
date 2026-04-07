@@ -10,7 +10,7 @@ interface AviraAutocompleteProps {
 export function AviraAutocomplete({ items, onSelect }: AviraAutocompleteProps) {
   return (
     <div className="avira-autocomplete">
-      {items.slice(0, 8).map((item) => (
+      {items.map((item) => (
         <button
           key={item.id}
           className="avira-autocomplete-item"

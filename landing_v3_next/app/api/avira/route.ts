@@ -1,6 +1,7 @@
 import { GoogleGenAI } from '@google/genai'
 import { buildSystemPrompt, buildUserMessage } from '@/lib/reports/avira-prompt'
 import { resolveReference } from '@/lib/reports/avira-references'
+import { getReport } from '@/lib/reports/jnm'
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! })
 
@@ -24,10 +25,12 @@ export async function POST(request: Request) {
       return Response.json({ error: 'Question is required' }, { status: 400 })
     }
 
+    const report = getReport()
+
     // Resolve references to full text
     const resolvedRefs: string[] = []
     for (const refId of references ?? []) {
-      const resolved = resolveReference(refId)
+      const resolved = resolveReference(report, refId)
       if (resolved) resolvedRefs.push(resolved)
     }
 
@@ -37,7 +40,7 @@ export async function POST(request: Request) {
       parts: [{ text: msg.content }],
     }))
 
-    const systemPrompt = buildSystemPrompt()
+    const systemPrompt = buildSystemPrompt(report)
     const userMessage = buildUserMessage(question, resolvedRefs)
 
     // Create chat with history and stream response

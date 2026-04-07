@@ -3,16 +3,30 @@
 import { useRef, useState, useMemo } from 'react'
 import Highcharts from 'highcharts'
 import HighchartsReact from 'highcharts-react-official'
-import { chartRegistry } from '@/lib/reports/chart-configs'
+import type { ChartRegistry } from '@/lib/reports/chart-configs'
 
-export function ReportCharts({ chartId, title }: { chartId: string; title: string }) {
+/**
+ * Standalone single-chart renderer.
+ *
+ * The registry must be passed in (it's bound to a specific report instance
+ * upstream — see `createChartRegistry()` in `chart-configs.ts`).
+ */
+export function ReportCharts({
+  chartId,
+  title,
+  registry,
+}: {
+  chartId: string
+  title: string
+  registry: ChartRegistry
+}) {
   const chartRef = useRef<HighchartsReact.RefObject>(null)
   const [expanded, setExpanded] = useState(false)
 
   const config = useMemo(() => {
-    const builder = chartRegistry[chartId]
+    const builder = registry[chartId]
     return builder ? builder() : undefined
-  }, [chartId])
+  }, [chartId, registry])
 
   if (!config) return null
 

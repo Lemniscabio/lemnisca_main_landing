@@ -10,18 +10,79 @@ const WELCOME_MSG: ChatMessage = {
   content: 'Hello! I\'m AVIRA, your AI research assistant. Ask me anything about this fermentation analysis report — batch comparisons, growth rates, supplement effects, or recommendations.',
 }
 
+// Per-tab survival across refresh: persist the chat thread to localStorage.
+// This is a single-customer MVP report, so we use a fixed key. If the report
+// ever becomes multi-customer, key this by report id.
+const STORAGE_KEY = 'avira:jnm:messages'
+const STORAGE_VERSION = 1
+// Cap how much we persist so we don't blow past localStorage's ~5 MB quota
+// during a long streaming session.
+const MAX_PERSISTED = 100
+
+interface PersistedThread {
+  v: number
+  messages: ChatMessage[]
+}
+
+function loadPersisted(): ChatMessage[] | null {
+  if (typeof window === 'undefined') return null
+  try {
+    const raw = window.localStorage.getItem(STORAGE_KEY)
+    if (!raw) return null
+    const parsed = JSON.parse(raw) as PersistedThread
+    if (parsed.v !== STORAGE_VERSION || !Array.isArray(parsed.messages)) return null
+    return parsed.messages
+  } catch {
+    return null
+  }
+}
+
+function savePersisted(messages: ChatMessage[]) {
+  if (typeof window === 'undefined') return
+  try {
+    const payload: PersistedThread = {
+      v: STORAGE_VERSION,
+      messages: messages.slice(-MAX_PERSISTED),
+    }
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(payload))
+  } catch {
+    // Quota exceeded or storage disabled — silently ignore.
+  }
+}
+
 export function useAviraChat() {
+  // Always start with the welcome message to keep the first client render
+  // identical to the server render (avoids React hydration mismatch). The
+  // saved thread is restored in a post-mount effect.
   const [messages, setMessages] = useState<ChatMessage[]>([WELCOME_MSG])
   const [input, setInput] = useState('')
   const [typing, setTyping] = useState(false)
+  const hydratedRef = useRef(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+
+  // Restore from localStorage once on mount (client only).
+  useEffect(() => {
+    const restored = loadPersisted()
+    if (restored && restored.length > 0) {
+      setMessages(restored)
+    }
+    hydratedRef.current = true
+  }, [])
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
-  const send = async (attachedRefIds: string[]) => {
-    const text = input.trim()
+  // Persist on every change AFTER hydration. Skipping the very first render
+  // prevents us from clobbering a saved thread with the placeholder welcome
+  // message before the restore effect has had a chance to run.
+  useEffect(() => {
+    if (!hydratedRef.current) return
+    savePersisted(messages)
+  }, [messages])
+
+  const send = async (attachedRefIds: string[], overrideText?: string) => {
+    const text = (overrideText ?? input).trim()
     if (!text || typing) return
 
     setMessages((prev) => [...prev, { role: 'user', content: text }])

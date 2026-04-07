@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useScrollspy } from './hooks/useScrollspy'
 import { useReportAnimations } from './hooks/useReportAnimations'
 import { useAviraChat } from './hooks/useAviraChat'
@@ -28,8 +28,9 @@ import {
   PanelLeftOpen,
   Download,
 } from 'lucide-react'
-import { jnmReport } from '@/lib/reports/jnm-data'
 import type { ReportData, KPI } from '@/lib/reports/types'
+import type { ReferenceItem } from '@/lib/reports/avira-references'
+import { createChartRegistry } from '@/lib/reports/chart-configs'
 
 const ICON_MAP: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
   'flask-conical': FlaskConical,
@@ -44,21 +45,26 @@ const ICON_MAP: Record<string, React.ComponentType<{ size?: number; className?: 
 const NAV_SECTIONS = [
   { id: 'overview', label: 'Overview', icon: LayoutDashboard },
   { id: 'executive-summary', label: 'Executive Summary', icon: FileText },
-  { id: 'hypotheses', label: 'Hypotheses & Analysis', icon: Lightbulb },
+  { id: 'hypotheses', label: 'Analyses', icon: Lightbulb },
   { id: 'recommendations', label: 'Recommendations', icon: Target },
 ]
 
 const NAV_IDS = ['overview', 'executive-summary', 'hypotheses', 'recommendations']
 
-function ReportsClient() {
-  const report: ReportData = jnmReport
+interface ReportsClientProps {
+  report: ReportData
+  referenceCatalog: ReferenceItem[]
+}
+
+function ReportsClient({ report, referenceCatalog }: ReportsClientProps) {
   const { activeSection, registerSection, scrollTo } = useScrollspy(NAV_IDS)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [aviraOpen, setAviraOpen] = useState(false)
   const [aviraWidth, setAviraWidth] = useState(380)
   const chat = useAviraChat()
-  const autocomplete = useAutocomplete()
-  const chartExpand = useExpandedChart()
+  const autocomplete = useAutocomplete(referenceCatalog)
+  const chartRegistry = useMemo(() => createChartRegistry(report), [report])
+  const chartExpand = useExpandedChart(chartRegistry, report)
   const [expandedHypotheses, setExpandedHypotheses] = useState<Set<string>>(new Set())
   const [isExporting, setIsExporting] = useState(false)
 
@@ -70,6 +76,17 @@ function ReportsClient() {
     await chat.send(refs)
   }
 
+  const handleSelectExamplePrompt = async (prompt: string) => {
+    if (chat.typing) return
+    if (!aviraOpen) {
+      setSidebarCollapsed(true)
+      setAviraOpen(true)
+    }
+    const refs = autocomplete.attachedRefs.map((r) => r.id)
+    autocomplete.clearRefs()
+    await chat.send(refs, prompt)
+  }
+
   const handleAttachToAvira = (refId: string, label: string) => {
     if (!aviraOpen) {
       setSidebarCollapsed(true)
@@ -79,14 +96,14 @@ function ReportsClient() {
   }
 
   const handleScrollToChart = (chartId: string) => {
-    // First, expand the hypothesis that contains this chart
-    const parentHyp = report.hypotheses.find((h) =>
-      h.evidence.some((ev) => ev.chartId === chartId)
+    // First, expand the analysis that contains this chart
+    const parent = report.analyses.find((a) =>
+      a.evidence.some((ev) => ev.chartId === chartId)
     )
-    if (parentHyp) {
+    if (parent) {
       setExpandedHypotheses((prev) => {
         const next = new Set(prev)
-        next.add(parentHyp.id)
+        next.add(parent.id)
         return next
       })
     }
@@ -294,86 +311,92 @@ function ReportsClient() {
           </div>
         </section>
 
-        {/* ───── Section: Hypotheses & Analysis ───── */}
+        {/* ───── Section: Analyses ───── */}
         <section className="report-section" id="hypotheses" ref={registerSection('hypotheses')}>
           <div className="section-header">
-            <span className="section-badge">Hypotheses & Analysis</span>
-            <h2 className="section-title">Investigation Framework</h2>
+            <span className="section-badge">Analyses</span>
             <p className="section-desc">
-              Seven hypotheses were derived from the fermentation data to systematically investigate
-              inter-batch variability and identify process optimization opportunities. Click to expand and view evidence.
+              Eight analyses were derived from the fermentation data to systematically investigate
+              inter-batch variability, identify process optimization opportunities, and explain the
+              astaxanthin yield gap between shake flasks and fermenters. Click to expand and view evidence.
             </p>
           </div>
 
           <div className="hypotheses-list">
-            {report.hypotheses.map((h, i) => {
-              const isExpanded = isExporting || expandedHypotheses.has(h.id)
+            {report.analyses.map((a, i) => {
+              const isExpanded = isExporting || expandedHypotheses.has(a.id)
               return (
-                <div key={h.id} className={`hypothesis-accordion ${isExpanded ? 'expanded' : ''}`}>
+                <div key={a.id} className={`hypothesis-accordion ${isExpanded ? 'expanded' : ''}`}>
                   <button
                     className="hypothesis-list-item glass-card"
                     onClick={() => {
                       setExpandedHypotheses((prev) => {
                         const next = new Set(prev)
-                        if (next.has(h.id)) next.delete(h.id)
-                        else next.add(h.id)
+                        if (next.has(a.id)) next.delete(a.id)
+                        else next.add(a.id)
                         return next
                       })
                     }}
-                    id={`hypothesis-accordion-${h.id}`}
+                    id={`hypothesis-accordion-${a.id}`}
                   >
-                    <div className="hyp-index">H{i + 1}</div>
+                    <div className="hyp-index">A{i + 1}</div>
                     <div className="hyp-content">
-                      <h3 className="hyp-title">{h.title}</h3>
-                      <p className="hyp-desc">{h.description}</p>
+                      <h3 className="hyp-title">{a.title}</h3>
+                      <p className="hyp-desc">{a.description}</p>
                     </div>
                     <ChevronRight size={18} className="hyp-arrow" />
                   </button>
 
-                  {isExpanded && (
-                    <div className="hypothesis-expanded-content">
-                      <div className={`analysis-section ${i % 2 === 0 ? 'layout-lr' : 'layout-rl'}`}>
-                        <div className="analysis-text">
-                          <div className="analysis-header">
-                            <span className="analysis-badge">H{i + 1} Evidence</span>
-                          </div>
-                          <div className="analysis-summary glass-card">
-                            <strong>Finding:</strong> {h.verdictSummary}
+                  {isExpanded && (() => {
+                    const hasCharts = a.evidence.some((e) => e.type === 'chart')
+                    return (
+                      <div className="hypothesis-expanded-content">
+                        <div
+                          className={`analysis-section ${
+                            hasCharts ? (i % 2 === 0 ? 'layout-lr' : 'layout-rl') : 'layout-single'
+                          }`}
+                        >
+                          <div className="analysis-text">
+                            <div className="analysis-summary glass-card">
+                              <strong>Finding:</strong> {a.verdictSummary}
+                            </div>
+
+                            {a.evidence
+                              .filter((e) => e.type === 'text' || e.type === 'table')
+                              .map((e, idx) => (
+                                <EvidenceRenderer
+                                  key={idx}
+                                  evidence={e}
+                                  idx={idx}
+                                  isExporting={isExporting}
+                                  resolveChartConfig={chartExpand.resolveChartConfig}
+                                  onAttachToAvira={handleAttachToAvira}
+                                  onExpandChart={chartExpand.expand}
+                                />
+                              ))}
                           </div>
 
-                          {h.evidence
-                            .filter((e) => e.type === 'text' || e.type === 'table')
-                            .map((e, idx) => (
-                              <EvidenceRenderer
-                                key={idx}
-                                evidence={e}
-                                idx={idx}
-                                isExporting={isExporting}
-                                resolveChartConfig={chartExpand.resolveChartConfig}
-                                onAttachToAvira={handleAttachToAvira}
-                                onExpandChart={chartExpand.expand}
-                              />
-                            ))}
-                        </div>
-
-                        <div className="analysis-visual">
-                          {h.evidence
-                            .filter((e) => e.type === 'chart')
-                            .map((e, idx) => (
-                              <EvidenceRenderer
-                                key={idx}
-                                evidence={e}
-                                idx={idx}
-                                isExporting={isExporting}
-                                resolveChartConfig={chartExpand.resolveChartConfig}
-                                onAttachToAvira={handleAttachToAvira}
-                                onExpandChart={chartExpand.expand}
-                              />
-                            ))}
+                          {hasCharts && (
+                            <div className="analysis-visual">
+                              {a.evidence
+                                .filter((e) => e.type === 'chart')
+                                .map((e, idx) => (
+                                  <EvidenceRenderer
+                                    key={idx}
+                                    evidence={e}
+                                    idx={idx}
+                                    isExporting={isExporting}
+                                    resolveChartConfig={chartExpand.resolveChartConfig}
+                                    onAttachToAvira={handleAttachToAvira}
+                                    onExpandChart={chartExpand.expand}
+                                  />
+                                ))}
+                            </div>
+                          )}
                         </div>
                       </div>
-                    </div>
-                  )}
+                    )
+                  })()}
                 </div>
               )
             })}
@@ -444,6 +467,7 @@ function ReportsClient() {
           autocomplete.handleInputChange(val)
         }}
         onSend={handleChatSend}
+        onSelectExamplePrompt={handleSelectExamplePrompt}
         onSelectReference={(item) => {
           const newInput = autocomplete.selectReference(item, chat.input)
           chat.setInput(newInput)

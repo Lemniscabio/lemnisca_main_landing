@@ -27,11 +27,19 @@ interface AviraSidebarProps {
   onClose: () => void
   onInputChange: (val: string) => void
   onSend: () => void
+  onSelectExamplePrompt: (prompt: string) => void
   onSelectReference: (item: ReferenceItem) => void
   onRemoveRef: (refId: string) => void
   onScrollToChart: (chartId: string) => void
   onWidthChange: (width: number) => void
 }
+
+/** Quick-start prompts shown when the chat is empty (only the welcome message). */
+const EXAMPLE_PROMPTS: string[] = [
+  'Which batch performed best and why?',
+  'What was the role of IPM supplementation?',
+  'Explain the Crabtree effect findings across the six batches.',
+]
 
 const MIN_WIDTH = 380
 const DEFAULT_WIDTH = 380
@@ -48,11 +56,17 @@ export function AviraSidebar({
   onClose,
   onInputChange,
   onSend,
+  onSelectExamplePrompt,
   onSelectReference,
   onRemoveRef,
   onScrollToChart,
   onWidthChange,
 }: AviraSidebarProps) {
+  // Example prompts are only shown when the user hasn't asked anything yet
+  // (i.e. only the welcome AI message exists in the thread).
+  const showExamplePrompts =
+    !typing && messages.length === 1 && messages[0]?.role === 'ai'
+
   const sidebarRef = useRef<HTMLElement>(null)
   const isDragging = useRef(false)
   const startX = useRef(0)
@@ -151,6 +165,21 @@ export function AviraSidebar({
               <span className="typing-dot" />
               <span className="typing-dot" />
             </div>
+          </div>
+        )}
+        {showExamplePrompts && (
+          <div className="avira-example-prompts">
+            <div className="avira-example-prompts-label">Try asking</div>
+            {EXAMPLE_PROMPTS.map((prompt) => (
+              <button
+                key={prompt}
+                type="button"
+                className="avira-example-prompt"
+                onClick={() => onSelectExamplePrompt(prompt)}
+              >
+                {prompt}
+              </button>
+            ))}
           </div>
         )}
         <div ref={messagesEndRef} />
