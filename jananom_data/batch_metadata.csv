@@ -1,0 +1,86 @@
+Table       , Batch, Start_h, End_h, Type          , Rate_or_Volume, Unit  , Description
+feed_segment, B01  ,     0  ,  12  , feed          ,            0  , mL/L/h, Batch phase - no feeding
+feed_segment, B01  ,    12  ,  24  , feed          ,            5  , mL/L/h, Fed-batch start
+feed_segment, B01  ,    24  ,  42  , feed          ,            8  , mL/L/h, Feed increase
+feed_segment, B01  ,    42  ,  60  , feed          ,           10  , mL/L/h, Feed increase
+feed_segment, B01  ,    60  ,  78  , feed          ,           12  , mL/L/h, Feed increase
+feed_segment, B01  ,    78  ,  82  , feed          ,           15  , mL/L/h, Final feed rate
+feed_segment, B02  ,     0  ,  12  , feed          ,            0  , mL/L/h, Batch phase - no feeding
+feed_segment, B02  ,    12  ,  24  , feed          ,            5  , mL/L/h, Fed-batch start
+feed_segment, B02  ,    24  ,  42  , feed          ,            8  , mL/L/h, Feed increase
+feed_segment, B02  ,    42  ,  60  , feed          ,           10  , mL/L/h, Feed increase
+feed_segment, B02  ,    60  ,  78  , feed          ,           12  , mL/L/h, Feed increase
+feed_segment, B02  ,    78  ,  96  , feed          ,           15  , mL/L/h, Final feed rate
+feed_segment, B03  ,     0  ,  12  , feed          ,            0  , mL/L/h, Batch phase - no feeding
+feed_segment, B03  ,    12  ,  24  , feed          ,            5  , mL/L/h, Fed-batch start
+feed_segment, B03  ,    24  ,  42  , feed          ,            8  , mL/L/h, Feed increase
+feed_segment, B03  ,    42  ,  60  , feed          ,           10  , mL/L/h, Feed increase
+feed_segment, B03  ,    60  ,  78  , feed          ,           12  , mL/L/h, Feed increase
+feed_segment, B03  ,    78  ,  84  , feed          ,           15  , mL/L/h, Final feed rate
+feed_segment, B04  ,     0  ,  16  , feed          ,            0  , mL/h  , Batch phase - no feeding
+feed_segment, B04  ,    16  ,  23  , feed          ,           13.5, mL/h  , Segment 1
+feed_segment, B04  ,    23  ,  31  , feed          ,            9.0, mL/h  , Segment 2
+feed_segment, B04  ,    31  ,  39  , feed          ,           13.5, mL/h  , Segment 3
+feed_segment, B04  ,    39  ,  43  , feed          ,           18.0, mL/h  , Segment 4
+feed_segment, B04  ,    43  ,  48.5, feed          ,           27.0, mL/h  , Segment 5
+feed_segment, B04  ,    48.5,  54  , feed          ,           36.0, mL/h  , Segment 6
+feed_segment, B04  ,    54  ,  64.5, feed          ,           40.5, mL/h  , Segment 7
+feed_segment, B04  ,    64.5,  67  , feed          ,           40.5, mL/h  , Segment 8 (between pulses)
+feed_segment, B04  ,    67  ,  69  , feed          ,           40.5, mL/h  , Segment 9
+feed_segment, B04  ,    69  ,  74  , feed          ,           36.0, mL/h  , Segment 10
+feed_segment, B05  ,     0  ,  15  , feed          ,            0  , mL/h  , Batch phase - no feeding
+feed_segment, B05  ,    15  ,  19  , feed          ,            4.5, mL/h  , Segment 1
+feed_segment, B05  ,    19  ,  27  , feed          ,            9  , mL/h  , Segment 2
+feed_segment, B05  ,    27  ,  31  , feed          ,           13.5, mL/h  , Segment 3
+feed_segment, B05  ,    31  ,  91  , feed          ,           18  , mL/h  , Segment 4 (long)
+feed_segment, B05  ,    91  , 107  , feed          ,           22.5, mL/h  , Segment 5
+feed_segment, B05  ,   107  , 114  , feed          ,           27  , mL/h  , Segment 6
+feed_segment, B05  ,   114  , 118  , feed          ,           31.5, mL/h  , Segment 7 (126 mL)
+feed_segment, B05  ,   118  , 121  , feed          ,           36  , mL/h  , Segment 8 (108 mL per PDF; duration 3h extends past 120h batch end)
+feed_segment, B05  ,   121  , 127  , feed          ,           40.5, mL/h  , Segment 9 (243 mL per PDF; duration 6h extends past 120h batch end)
+feed_segment, B06  ,     0  ,  14  , feed          ,            0  , mL/h  , Batch phase - no feeding
+feed_segment, B06  ,    14  ,  20  , feed          ,            4.5, mL/h  , Segment 1
+feed_segment, B06  ,    20  ,  26  , feed          ,            9  , mL/h  , Segment 2
+feed_segment, B06  ,    26  ,  30  , feed          ,           13.5, mL/h  , Segment 3
+feed_segment, B06  ,    30  ,  75  , feed          ,           18  , mL/h  , Segment 4 (long)
+feed_segment, B06  ,    75  ,  87  , feed          ,           22.5, mL/h  , Segment 5
+feed_segment, B06  ,    87  ,  92  , feed          ,           27  , mL/h  , Segment 6
+feed_segment, B06  ,    92  ,  97  , feed          ,           31.5, mL/h  , Segment 7
+feed_segment, B06  ,    97  , 103  , feed          ,           36  , mL/h  , Segment 8
+feed_segment, B06  ,   103  , 120  , feed          ,           40.5, mL/h  , Segment 9
+supplement  , B04  ,    12  ,  12  , amino_acid_ynb,           20  , mL    , Amino acid 10mL + YNB 10mL
+supplement  , B04  ,    15  ,  15  , amino_acid_ynb,           20  , mL    , Amino acid 10mL + YNB 10mL
+supplement  , B04  ,    24  ,  24  , amino_acid_ynb,           40  , mL    , Amino acid 20mL + YNB 20mL
+supplement  , B04  ,    24  ,  24  , tocopherol    ,           50  , mL    , Tocopherol
+supplement  , B04  ,    39.5,  39.5, amino_acid_ynb,           40  , mL    , Amino acid 20mL + YNB 20mL
+supplement  , B04  ,    39.5,  39.5, tocopherol    ,           50  , mL    , Tocopherol
+supplement  , B04  ,    43  ,  43  , amino_acid_ynb,           40  , mL    , Amino acid 20mL + YNB 20mL
+supplement  , B04  ,    43  ,  43  , tocopherol    ,           50  , mL    , Tocopherol
+supplement  , B04  ,    48.5,  48.5, amino_acid_ynb,           40  , mL    , Amino acid 20mL + YNB 20mL
+supplement  , B04  ,    48.5,  48.5, tocopherol    ,           50  , mL    , Tocopherol
+supplement  , B04  ,    53  ,  53  , amino_acid_ynb,           40  , mL    , Amino acid 20mL + YNB 20mL
+supplement  , B04  ,    53  ,  53  , tocopherol    ,           50  , mL    , Tocopherol
+supplement  , B04  ,    64.5,  64.5, amino_acid_ynb,           40  , mL    , Amino acid 20mL + YNB 20mL
+supplement  , B04  ,    64.5,  64.5, glucose_pulse ,           50  , mL    , Pulse A: 50mL bolus 50% glucose (25g glucose)
+supplement  , B04  ,    67  ,  67  , amino_acid_ynb,           40  , mL    , Amino acid 20mL + YNB 20mL
+supplement  , B04  ,    67  ,  67  , glucose_pulse ,           50  , mL    , Pulse B: 50mL bolus 50% glucose (25g glucose)
+supplement  , B05  ,    24  ,  24  , tocopherol    ,           50  , mL    , Tocopherol
+supplement  , B05  ,    24  ,  24  , ipm           ,          200  , mL    , Isopropyl Myristate (IPM) added directly
+supplement  , B05  ,    38.5,  38.5, tocopherol    ,           50  , mL    , Tocopherol
+supplement  , B05  ,    84.5,  84.5, tocopherol    ,           50  , mL    , Tocopherol
+supplement  , B05  ,   108.5, 108.5, tocopherol    ,           50  , mL    , Tocopherol
+supplement  , B06  ,    24  ,  24  , tocopherol    ,           50  , mL    , Tocopherol
+supplement  , B06  ,    24  ,  24  , ipm           ,          200  , mL    , Isopropyl Myristate (IPM) added directly
+supplement  , B06  ,    48  ,  48  , tocopherol    ,           50  , mL    , Tocopherol
+supplement  , B06  ,    72  ,  72  , tocopherol    ,           50  , mL    , Tocopherol
+supplement  , B06  ,    96  ,  96  , tocopherol    ,           50  , mL    , Tocopherol
+supplement  , B06  ,    90  ,  90  , glucose_pulse ,           90  , mL    , Direct glucose pulse (assume 620 g/L same as feed)
+event       , B01  ,    82  ,  82  , termination   ,               ,       , "Terminated early at 82h (planned 96h); white cells + cell death during centrifugation"
+event       , B02  ,    54  ,  72  , growth_stall  ,               ,       , "OD oscillating 112-125 while WCW flatlines ~307-309; possible diauxic shift"
+event       , B02  ,    96  ,  96  , termination   ,               ,       , "Completed at 96h as planned; white cells + partial cell death in later stages"
+event       , B03  ,    84  ,  84  , termination   ,               ,       , "Terminated at 84h; pigment loss (white cells) + cell death"
+event       , B04  ,    74  ,  74  , termination   ,               ,       , "Terminated at 74h; white cells + cell death; persistent pigment instability"
+event       , B05  ,   108  , 120  , decline       ,               ,       , "Slight OD/WCW decline after ~108h; late-phase pigment loss"
+event       , B05  ,   120  , 120  , termination   ,               ,       , "Batch ended at 120h"
+event       , B06  ,   114  , 120  , decline       ,               ,       , "Slight OD/WCW decline after ~114h; culture stability largely maintained"
+event       , B06  ,   120  , 120  , termination   ,               ,       , "Batch ended at 120h; no pO2 data for this batch"
