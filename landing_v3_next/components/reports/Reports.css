@@ -477,11 +477,33 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 20px 20px 16px;
-  border-bottom: 1px solid var(--r-border);
+  padding: 20px 20px 10px;
   font-weight: 600;
   font-size: 14px;
   color: var(--r-primary);
+  flex-shrink: 0;
+}
+
+.avira-beta-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 7px;
+  background: rgba(37, 99, 235, 0.10);
+  border: 1px solid rgba(37, 99, 235, 0.25);
+  color: #2563eb;
+  border-radius: 999px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1;
+}
+
+.avira-trust-notice {
+  padding: 0 20px 12px;
+  font-size: 9px;
+  line-height: 1.5;
+  color: var(--r-text-secondary, #64748b);
+  border-bottom: 1px solid var(--r-border);
   flex-shrink: 0;
 }
 
@@ -1833,7 +1855,10 @@
 }
 
 
-@media (max-width: 768px) {
+/* `screen and` is critical here: without it, this rule also matches during
+   print (A4 page width ≈ 595–794px falls under 768px) and the entire report
+   gets hidden, leaving a blank PDF export. */
+@media screen and (max-width: 768px) {
   .reports-page {
     display: none !important;
   }

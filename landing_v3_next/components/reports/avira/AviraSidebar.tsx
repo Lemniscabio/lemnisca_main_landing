@@ -134,9 +134,14 @@ export function AviraSidebar({
       <div className="avira-sidebar-header">
         <Bot size={18} />
         <span>AVIRA</span>
+        <span className="avira-beta-badge">BETA</span>
         <button className="avira-close" onClick={onClose} aria-label="Close AVIRA">
           <X size={16} />
         </button>
+      </div>
+      <div className="avira-trust-notice">
+        AVIRA can make mistakes. Verify critical details against the report
+        itself before acting on them.
       </div>
 
       <div className="avira-messages">

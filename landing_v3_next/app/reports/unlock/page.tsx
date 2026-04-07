@@ -136,15 +136,6 @@ function FermentationMonitor() {
       d: 'M40 280 C 100 275, 140 250, 185 195 C 235 130, 295 88, 360 75 C 410 68, 445 70, 470 72' },
   ]
 
-  const DOTS_PER_CURVE: Record<string, Array<{ x: number; y: number }>> = {
-    B01: [{ x: 80, y: 277 }, { x: 130, y: 268 }, { x: 170, y: 232 }, { x: 220, y: 195 }, { x: 250, y: 175 }],
-    B02: [{ x: 80, y: 277 }, { x: 140, y: 263 }, { x: 180, y: 220 }, { x: 230, y: 180 }, { x: 290, y: 158 }],
-    B03: [{ x: 80, y: 277 }, { x: 130, y: 258 }, { x: 170, y: 215 }, { x: 220, y: 165 }, { x: 270, y: 130 }],
-    B04: [{ x: 70, y: 272 }, { x: 110, y: 240 }, { x: 150, y: 180 }, { x: 200, y: 110 }, { x: 240, y: 70 }],
-    B05: [{ x: 90, y: 276 }, { x: 150, y: 240 }, { x: 220, y: 165 }, { x: 290, y: 110 }, { x: 360, y: 95 }, { x: 460, y: 92 }],
-    B06: [{ x: 90, y: 276 }, { x: 155, y: 230 }, { x: 230, y: 145 }, { x: 300, y: 90 }, { x: 380, y: 73 }, { x: 470, y: 72 }],
-  }
-
   return (
     <div className="monitor">
       <div className="monitor-header">
@@ -251,26 +242,6 @@ function FermentationMonitor() {
             }}
           />
         ))}
-
-        {/* Sample dots — pop in once curves are mostly drawn */}
-        {CURVES.map((c, ci) =>
-          DOTS_PER_CURVE[c.id].map((dot, di) => (
-            <circle
-              key={`${c.id}-${di}`}
-              cx={dot.x}
-              cy={dot.y}
-              r="3"
-              fill="#0a0f1c"
-              stroke={c.color}
-              strokeWidth="1.5"
-              className="dot"
-              style={{
-                animationDelay: `${0.9 + ci * 0.1 + di * 0.06}s`,
-                opacity: 0,
-              }}
-            />
-          ))
-        )}
 
         {/* Endpoint highlight: top performer gets a pulsing ring */}
         <g className="winner">

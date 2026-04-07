@@ -1,3 +1,37 @@
+/* ─── GSAP FOUC prevention ──────────────────────────────────────────────────
+   Every selector below is animated in from opacity: 0 by the GSAP timeline
+   in components/LandingPage.tsx. Without pre-hiding them in CSS, the browser
+   paints the default (visible) HTML before React hydrates and gsap.set()
+   runs inside useEffect — which produces a visible flash on cold reload.
+
+   With this rule, the first paint already has them hidden, and GSAP's
+   timeline / scrollTrigger animates them in exactly as before. If JS fails
+   to load, these elements stay hidden — acceptable for a JS-driven
+   landing page.
+
+   Scoped via `html:not(.no-js)` is overkill here; GSAP is part of the
+   bundle, so if this CSS loads, GSAP will load too. */
+.hero_header,
+.hero_eyebrow,
+.hero_word,
+.hero_main_text_subheading,
+.hero_footer,
+.problem_intro,
+.problem_cards,
+.solution_header,
+.loop_core,
+.loop_node,
+.loop_connections,
+.cta_content,
+.team_heading,
+.team_card,
+.supported_label,
+.big-number,
+.prediction_form,
+.footer > * {
+  opacity: 0;
+}
+
 :root {
   --color-bg-dark: #000000;
   --color-bg-light: #fafafa;

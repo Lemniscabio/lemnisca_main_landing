@@ -907,6 +907,80 @@ function makeKLaChart(report: ReportData): Highcharts.Options {
   }
 }
 
+// ─── A8: Carotenoid intermediates conversion (100% stacked column) ──────────
+//
+// Static data baked into the builder — not from the CSV. Numbers come from
+// the deck (A8, Slide "Conversion of carotenoid intermediates to Astaxanthin
+// drops from ~63% to ~4%"). Highcharts `stacking: 'percent'` normalises each
+// bar to 100% so the visual matches the deck, even though B06's raw numbers
+// don't sum to exactly 100.
+
+const CAROTENOID_PROCESSES = [
+  'YNB AA + 20% IPM + 0.4% Toco T-5b',
+  'B06',
+] as const
+
+const CAROTENOID_DATA: Array<{
+  name: string
+  color: string
+  values: readonly [number, number]
+}> = [
+  { name: 'Astaxanthin',    color: '#d55e00', values: [63.7, 4.4] },
+  { name: 'Canthaxanthin',  color: '#0072b2', values: [9.7,  55.0] },
+  { name: 'Zeaxanthin',     color: '#e69f00', values: [24.3, 40.6] },
+  { name: 'Beta carotene',  color: '#009e73', values: [2.3,  38.6] },
+]
+
+function makeCarotenoidConversionChart(): Highcharts.Options {
+  return {
+    ...sharedChartOptions,
+    chart: {
+      ...(sharedChartOptions.chart as Highcharts.ChartOptions),
+      type: 'column',
+      height: 380,
+    },
+    title: { text: undefined },
+    xAxis: {
+      ...(sharedChartOptions.xAxis as Highcharts.XAxisOptions),
+      title: { text: undefined },
+      categories: [...CAROTENOID_PROCESSES],
+      labels: { style: { color: '#64748b', fontSize: '11px' } },
+    },
+    yAxis: {
+      title: { text: '% of total carotenoids', style: { color: '#64748b', fontSize: '12px' } },
+      labels: { format: '{value}%', style: { color: '#64748b', fontSize: '11px' } },
+      gridLineColor: 'rgba(0, 0, 0, 0.04)',
+      min: 0,
+      max: 100,
+    },
+    tooltip: {
+      ...(sharedChartOptions.tooltip as Highcharts.TooltipOptions),
+      shared: true,
+      headerFormat: '<b>{point.key}</b><br/>',
+      pointFormat:
+        '<span style="color:{series.color}">●</span> {series.name}: <b>{point.percentage:.1f}%</b> ({point.y} raw)<br/>',
+    },
+    plotOptions: {
+      column: {
+        stacking: 'percent',
+        borderRadius: 0,
+        borderWidth: 0,
+        dataLabels: {
+          enabled: true,
+          format: '{point.percentage:.0f}%',
+          style: { color: '#fff', fontSize: '10px', fontWeight: '600', textOutline: '1px rgba(0,0,0,0.3)' },
+        },
+      },
+    },
+    series: CAROTENOID_DATA.map((c) => ({
+      type: 'column' as const,
+      name: c.name,
+      color: c.color,
+      data: [...c.values],
+    })),
+  }
+}
+
 // ─── Per-batch single-panel builders (for the expanded 2×3 grid view) ───────
 //
 // In the inline (non-expanded) view qsRate / ourDecomposition / kLa render as
@@ -1300,6 +1374,7 @@ const BUILDERS: Record<string, ChartBuilder> = {
   po2MuDualAxis:     makePO2MuDualAxisChart,
   ourDecomposition:  makeOURDecompositionChart,
   kLa:               makeKLaChart,
+  carotenoidConversion: makeCarotenoidConversionChart,
 }
 
 /**

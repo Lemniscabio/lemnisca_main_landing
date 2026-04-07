@@ -11,7 +11,7 @@ import type { ReportNarrative } from '../types'
 
 export const jnmNarrative: ReportNarrative = {
   company: { name: 'Jananom' },
-  title: 'JNM Fermentation Data Analysis',
+  title: 'Jananom Fermentation Data Analysis',
   subtitle:
     'Carotenoid-producing Saccharomyces cerevisiae — Fed-Batch Process Investigation',
 
@@ -255,27 +255,40 @@ export const jnmNarrative: ReportNarrative = {
       ],
     },
 
-    // ─── A8 (NEW from deck Slide 10) ───────────────────────────────────────
+    // ─── A8 (from deck Slide 10 + conversion-profile slide) ───────────────
     {
       id: 'a8',
-      title: 'Astaxanthin yield collapses ~96-fold in fermenters vs shake flasks',
+      title: 'Astaxanthin yield drops ~96-fold in fermenters',
       description:
-        'The deck reports a >90-fold drop in astaxanthin titre and an 8-fold drop in total carotenoids when moving from shake flasks to fermenters. The Crabtree effect alone cannot explain a drop of this magnitude. Two further mechanisms are proposed: product toxicity at high cell density, and possible genetic instability of the carotenoid pathway under selection pressure.',
+        'Fermenters show an average ~96-fold drop in astaxanthin yield and an average ~8-fold drop in total carotenoids yield compared to the shake flasks. Although the Crabtree effect might explain this, genetic stability may also be a potential cause.',
       verdict: 'partially',
       verdictSummary:
-        'Fermenters show an average 96-fold drop in astaxanthin yield and 8-fold drop in total carotenoids vs shake flasks. Crabtree partially explains it; the accumulation of pathway intermediates with only ~3.2% conversion to astaxanthin is consistent with metalloenzyme failure (Fe/Cu depletion) at WCW > 300 g/L, and white-cell phenotypes in B04 are consistent with loss of carotenoid pathway selection.',
+        'Conversion of carotenoid intermediates to astaxanthin drops from ~63% (shake flask, YNB AA + 20% IPM + 0.4% Toco T-5b) to ~4% (B06). The accumulation of pathway intermediates with only ~3.2% conversion of precursors to astaxanthin in B06 is consistent with metalloenzyme failure due to iron/copper depletion at WCW > 300 g/L.',
       evidence: [
         {
-          type: 'text',
-          title: 'Headline Finding',
+          type: 'chart',
+          title: 'Carotenoid Conversion Profile — Shake Flask vs B06',
           description:
-            'Fermenters show an average 96-fold drop in astaxanthin yield and an average 8-fold drop in total carotenoids yield compared to shake flasks. Although Crabtree effect might explain part of this, genetic stability is also a potential cause.',
+            'Per-process breakdown of carotenoid intermediates (% of total carotenoids). Shake-flask T-5b (YNB AA + 20% IPM + 0.4% Toco) converts ~63.7% of intermediates to astaxanthin, whereas B06 converts only ~4.4% — the rest accumulates as canthaxanthin (55.0%), zeaxanthin (40.6%), and β-carotene (38.6%), indicating the downstream oxidation steps are not running to completion.',
+          chartId: 'carotenoidConversion',
+        },
+        {
+          type: 'table',
+          title: 'Carotenoid Intermediates — % of Total Carotenoids',
+          description: 'Values as reported in the deck (A8 conversion profile).',
+          tableData: {
+            headers: ['Process', 'Astaxanthin', 'Canthaxanthin', 'Zeaxanthin', 'Beta carotene'],
+            rows: [
+              ['YNB AA + 20% IPM + 0.4% Toco T-5b', '63.7', '9.7',  '24.3', '2.3'],
+              ['B06',                               '4.4',  '55.0', '40.6', '38.6'],
+            ],
+          },
         },
         {
           type: 'text',
           title: 'Pathway-Intermediate Hypothesis',
           description:
-            'Accumulation of pathway intermediates with only ~3.2% conversion to astaxanthin may be a sign of metalloenzyme failure due to iron/copper depletion at WCW > 300 g/L. B04 reaches WCW ~383 g/L; B03 ~262 g/L. At those densities, micronutrient limitation becomes acute and trace-metal-dependent oxidation steps in the carotenoid pathway are the first to fail.',
+            'The accumulation of pathway intermediates with only ~3.2% conversion of precursors to astaxanthin (B06) may be a sign of metalloenzyme failure due to iron/copper depletion at >300 g/L WCW. B04 reaches WCW ~383 g/L; B03 ~262 g/L. At those densities, micronutrient limitation becomes acute and trace-metal-dependent oxidation steps in the carotenoid pathway are the first to fail.',
         },
         {
           type: 'text',
