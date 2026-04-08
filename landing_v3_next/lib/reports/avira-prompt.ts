@@ -34,7 +34,7 @@ dcwConcentration — DCW Concentration over time. DCW = 0.25 × WCW (Shuler & Ka
 totalDCWMass — Total DCW Mass (volume-corrected): DCW_mass = DCW(g/L) × V(t). The true productivity metric. [Analysis A1]
 growthRate — Specific Growth Rate (μ): μ = d(ln(DCW_mass))/dt, Savitzky-Golay smoothed. Per-batch small multiples. [Analysis A2]
 po2MuDualAxis — pO₂ + μ Cross-Correlation: per-batch dual-axis small multiples. pO₂ on the left axis, μ on the right. C_critical zone (10–15%) shaded. [Analysis A3]
-carbonBalance — Carbon Yield (Yx/s) per batch: B01/B02/B03 = 0.14, B04 = 0.25, B05 = 0.25, B06 = 0.31 g/g. Tier bands: Elite 0.42–0.48, Solid 0.38–0.42. [Analysis A4]
+carbonBalance — Biomass Yield on glucose (Yx/s) per batch: B01/B02/B03 = 0.14, B04 = 0.35, B05 = 0.25, B06 = 0.25 g/g. Tier bands: Elite 0.42–0.48, Solid 0.38–0.42. Note: deck slide is titled "Carbon Balance" but the metric is Yx/s (biomass yield on substrate), not true C-mol/C-mol carbon yield. B04 is the yield winner. [Analysis A4]
 fullCarbonBalance — Full Carbon Balance: glucose fed vs theoretical max DCW (using Yxs = 0.45, Roels) vs actual DCW per batch. [Analysis A4]
 qsRate — Specific Glucose Feed Rate (qs): per-batch small multiples with red Crabtree band (qs > 0.25), green best-range band (0.12–0.20), and unshaded starvation zone (qs < 0.10). [Analysis A5]
 ourDecomposition — OUR Decomposition (Pirt equation): OUR = (μ / Y_XO₂_max + mO₂) × X. mO₂ = 1.0 mmol O₂/g DCW/h; Y_XO₂_max = 1.25 g DCW/g O₂ (Verduyn 1991). Per-batch stacked area + total OUR line + maintenance % annotation. [Analysis A7]
@@ -98,7 +98,7 @@ function serializeReport(report: ReportData): string {
       ? b.supplements.map((s) => `${s.type}@${s.timeH}h(${s.volumeMl}mL)`).join(', ')
       : 'none'
     sections.push(
-      `${b.id}: Equipment=${b.equipment} | Scale=${b.scaleL}L | Duration=${b.durationH}h (planned ${b.plannedDurationH}h) | Final OD=${b.finalOd} | Final WCW=${b.finalWcw} mg/3mL | Final DCW=${b.finalDcwGperL} g/L (${b.finalDcwMassG} g total) | Yx/s=${b.carbonYield} g/g | V_initial=${b.vInitialMl} mL → V_final=${b.vFinalMl} mL (+${b.vIncreasePct}%) | Cumulative feed=${b.cumulFeedMl} mL | Supplements: ${supps} | Closure: ${b.closureReason ?? 'n/a'}`
+      `${b.id}: Equipment=${b.equipment} | Scale=${b.scaleL}L | Duration=${b.durationH}h | Final OD=${b.finalOd} | Final WCW=${b.finalWcw} mg/3mL | Final DCW=${b.finalDcwGperL} g/L (${b.finalDcwMassG} g total) | Yx/s=${b.biomassYield} g/g | V_initial=${b.vInitialMl} mL → V_final=${b.vFinalMl} mL (+${b.vIncreasePct}%) | Cumulative feed=${b.cumulFeedMl} mL | Supplements: ${supps} | Closure: ${b.closureReason ?? 'n/a'}`
     )
   }
 

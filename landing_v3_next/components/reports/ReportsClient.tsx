@@ -342,7 +342,6 @@ function ReportsClient({ report, referenceCatalog }: ReportsClientProps) {
                     <div className="hyp-index">A{i + 1}</div>
                     <div className="hyp-content">
                       <h3 className="hyp-title">{a.title}</h3>
-                      <p className="hyp-desc">{a.description}</p>
                     </div>
                     <ChevronRight size={18} className="hyp-arrow" />
                   </button>
@@ -357,6 +356,7 @@ function ReportsClient({ report, referenceCatalog }: ReportsClientProps) {
                           }`}
                         >
                           <div className="analysis-text">
+                            <p className="analysis-description">{a.description}</p>
                             <div className="analysis-summary glass-card">
                               <strong>Finding:</strong> {a.verdictSummary}
                             </div>

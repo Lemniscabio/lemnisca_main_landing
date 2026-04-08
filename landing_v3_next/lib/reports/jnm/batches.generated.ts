@@ -19,7 +19,6 @@ export const batchMeta: BatchMeta[] = [
     "scaleL": 1.5,
     "color": "#0072b2",
     "durationH": 82,
-    "plannedDurationH": 96,
     "vInitialMl": 1600,
     "vFinalMl": 3031,
     "vIncreasePct": 89.4,
@@ -30,7 +29,7 @@ export const batchMeta: BatchMeta[] = [
     "finalWcw": 585,
     "inoculumOd": 0.8,
     "inoculumWcw": 13.1,
-    "carbonYield": 0.14,
+    "biomassYield": 0.14,
     "closureReason": "Terminated early at 82h (planned 96h); white cells + cell death during centrifugation",
     "feedSegments": [
       {
@@ -93,7 +92,6 @@ export const batchMeta: BatchMeta[] = [
     "scaleL": 1.5,
     "color": "#56b4e9",
     "durationH": 96,
-    "plannedDurationH": 96,
     "vInitialMl": 1600,
     "vFinalMl": 3733,
     "vIncreasePct": 133.3,
@@ -104,7 +102,7 @@ export const batchMeta: BatchMeta[] = [
     "finalWcw": 571.6,
     "inoculumOd": 1.02,
     "inoculumWcw": 12.3,
-    "carbonYield": 0.14,
+    "biomassYield": 0.14,
     "closureReason": "Completed at 96h as planned; white cells + partial cell death in later stages",
     "feedSegments": [
       {
@@ -173,7 +171,6 @@ export const batchMeta: BatchMeta[] = [
     "scaleL": 1.5,
     "color": "#009e73",
     "durationH": 84,
-    "plannedDurationH": 96,
     "vInitialMl": 1600,
     "vFinalMl": 3123,
     "vIncreasePct": 95.2,
@@ -184,7 +181,7 @@ export const batchMeta: BatchMeta[] = [
     "finalWcw": 785.37,
     "inoculumOd": 1.23,
     "inoculumWcw": 7.2,
-    "carbonYield": 0.14,
+    "biomassYield": 0.14,
     "closureReason": "Terminated at 84h; pigment loss (white cells) + cell death",
     "feedSegments": [
       {
@@ -247,7 +244,6 @@ export const batchMeta: BatchMeta[] = [
     "scaleL": 2,
     "color": "#d55e00",
     "durationH": 74,
-    "plannedDurationH": 96,
     "vInitialMl": 1700,
     "vFinalMl": 3812,
     "vIncreasePct": 124.2,
@@ -258,7 +254,7 @@ export const batchMeta: BatchMeta[] = [
     "finalWcw": 1149,
     "inoculumOd": 1.3,
     "inoculumWcw": 104,
-    "carbonYield": 0.25,
+    "biomassYield": 0.35,
     "closureReason": "Terminated at 74h; white cells + cell death; persistent pigment instability",
     "feedSegments": [
       {
@@ -453,7 +449,6 @@ export const batchMeta: BatchMeta[] = [
     "scaleL": 1,
     "color": "#cc79a7",
     "durationH": 120,
-    "plannedDurationH": 120,
     "vInitialMl": 1600,
     "vFinalMl": 3911,
     "vIncreasePct": 144.4,
@@ -464,7 +459,7 @@ export const batchMeta: BatchMeta[] = [
     "finalWcw": 1021,
     "inoculumOd": 1.1,
     "inoculumWcw": 49,
-    "carbonYield": 0.25,
+    "biomassYield": 0.25,
     "closureReason": "Batch ended at 120h",
     "feedSegments": [
       {
@@ -592,7 +587,6 @@ export const batchMeta: BatchMeta[] = [
     "scaleL": 1,
     "color": "#e69f00",
     "durationH": 120,
-    "plannedDurationH": 120,
     "vInitialMl": 1600,
     "vFinalMl": 4442,
     "vIncreasePct": 177.6,
@@ -603,7 +597,7 @@ export const batchMeta: BatchMeta[] = [
     "finalWcw": 983,
     "inoculumOd": 1.96,
     "inoculumWcw": 17.9,
-    "carbonYield": 0.31,
+    "biomassYield": 0.25,
     "closureReason": "Batch ended at 120h; no pO2 data for this batch",
     "feedSegments": [
       {

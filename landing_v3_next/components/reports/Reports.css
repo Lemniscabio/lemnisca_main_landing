@@ -1205,6 +1205,13 @@
   margin: 0 0 20px;
 }
 
+.analysis-description {
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--r-text-secondary);
+  margin: 0;
+}
+
 .analysis-summary {
   padding: 16px 20px;
   font-size: 13px;
@@ -1376,6 +1383,13 @@
   flex-direction: column;
   gap: 16px;
   animation: chartExpandIn 350ms var(--ease-out-quint);
+  min-height: 0; /* allow flex children to shrink so .chart-expanded-body can scroll */
+}
+
+/* Pin header and footer so only the chart body scrolls when the viewport is short. */
+.chart-expanded-header,
+.chart-expanded-footer {
+  flex: 0 0 auto;
 }
 
 /* When the expanded view is rendering a per-batch grid, the modal needs much
@@ -1474,7 +1488,9 @@
 }
 
 .chart-expanded-body {
-  min-height: 400px;
+  min-height: 0;
+  flex: 1 1 auto;
+  overflow-y: auto;
 }
 
 /* When the body holds a per-batch grid, let it scroll inside the modal so the
@@ -2232,6 +2248,17 @@
     margin-bottom: 48px !important;
     border: none !important;
     animation: none !important;
+  }
+
+  /* Show the full hypothesis description in print — on screen it's clamped to
+     2 lines with an ellipsis as a collapsed-accordion preview, but print needs
+     the complete text. */
+  .hyp-desc {
+    display: block !important;
+    -webkit-line-clamp: unset !important;
+    overflow: visible !important;
+    white-space: normal !important;
+    text-overflow: clip !important;
   }
 
   /* ── Page break hierarchy ─────────────────────────────────────────── */

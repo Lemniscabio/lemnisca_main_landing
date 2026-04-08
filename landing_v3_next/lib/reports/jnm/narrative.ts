@@ -21,7 +21,7 @@ export const jnmNarrative: ReportNarrative = {
       'Six fed-batch fermentation runs (B01–B06) of carotenoid-producing Saccharomyces cerevisiae were conducted at bench scale. Despite shared protocols, batch outcomes varied dramatically — from early termination due to cell death (B01, B04) to extended 120-hour runs with widely different productivity and pigment stability (B05, B06). This analysis investigates the root causes of inter-batch variability through quantitative biomass, metabolic, and oxygen-transfer analyses, and identifies the combination of process levers that should drive the next campaign.',
     kpis: [
       { label: 'Batches Analyzed', value: '6', subtext: 'B01–B06', icon: 'flask-conical' },
-      { label: 'Best Carbon Yield', value: '0.31 g/g', subtext: 'B06 (Yx/s)', trend: 'up', icon: 'trending-up' },
+      { label: 'Best Biomass Yield', value: '0.35 g/g', subtext: 'B04 (Yx/s)', trend: 'up', icon: 'trending-up' },
       { label: 'Highest Total Biomass', value: '365 g', subtext: 'B04 at 74h', trend: 'up', icon: 'activity' },
       { label: 'Max Duration', value: '120 h', subtext: 'B05 & B06', icon: 'clock' },
     ],
@@ -143,7 +143,7 @@ export const jnmNarrative: ReportNarrative = {
           type: 'chart',
           title: 'Full Carbon Balance — Glucose In vs Theoretical Max DCW vs Actual DCW',
           description:
-            'Per-batch comparison of total glucose fed (g), theoretical maximum DCW assuming Yx/s = 0.45 g/g (Roels), and actual DCW produced. Feed concentration assumed at 620 g/L (client batch reports). The gap between theoretical and actual represents carbon lost to ethanol, CO₂, and maintenance.',
+            'Per-batch comparison of total glucose fed (g), theoretical maximum DCW assuming Yx/s = 0.45 g/g (Roels), and actual DCW produced. Feed concentration assumed at 620 g/L (client batch reports). The gap between theoretical and actual represents carbon lost to ethanol, CO₂.',
           chartId: 'fullCarbonBalance',
         },
         {
@@ -189,7 +189,7 @@ export const jnmNarrative: ReportNarrative = {
         'Three supplement strategies were tested across B04–B06: amino acids + YNB (biosynthetic support), tocopherol / Vitamin E (antioxidant protection of carotenoid), and IPM solvent overlay (in-situ extraction to reduce intracellular product toxicity).',
       verdict: 'supported',
       verdictSummary:
-        'Each supplement had a distinct, interpretable effect. Amino acids drove biomass yield. Tocopherol extended viability but did not prevent pigment loss. IPM was the most effective at reducing toxicity. The missing piece for B04 was IPM.',
+        'Each supplement had a distinct, interpretable effect. Amino acids drove biomass yield. Tocopherol extended viability but did not prevent pigment loss. IPM was the most effective at reducing toxicity.',
       evidence: [
         {
           type: 'table',
@@ -272,30 +272,6 @@ export const jnmNarrative: ReportNarrative = {
             'Per-process breakdown of carotenoid intermediates (% of total carotenoids). Shake-flask T-5b (YNB AA + 20% IPM + 0.4% Toco) converts ~63.7% of intermediates to astaxanthin, whereas B06 converts only ~4.4% — the rest accumulates as canthaxanthin (55.0%), zeaxanthin (40.6%), and β-carotene (38.6%), indicating the downstream oxidation steps are not running to completion.',
           chartId: 'carotenoidConversion',
         },
-        {
-          type: 'table',
-          title: 'Carotenoid Intermediates — % of Total Carotenoids',
-          description: 'Values as reported in the deck (A8 conversion profile).',
-          tableData: {
-            headers: ['Process', 'Astaxanthin', 'Canthaxanthin', 'Zeaxanthin', 'Beta carotene'],
-            rows: [
-              ['YNB AA + 20% IPM + 0.4% Toco T-5b', '63.7', '9.7',  '24.3', '2.3'],
-              ['B06',                               '4.4',  '55.0', '40.6', '38.6'],
-            ],
-          },
-        },
-        {
-          type: 'text',
-          title: 'Pathway-Intermediate Hypothesis',
-          description:
-            'The accumulation of pathway intermediates with only ~3.2% conversion of precursors to astaxanthin (B06) may be a sign of metalloenzyme failure due to iron/copper depletion at >300 g/L WCW. B04 reaches WCW ~383 g/L; B03 ~262 g/L. At those densities, micronutrient limitation becomes acute and trace-metal-dependent oxidation steps in the carotenoid pathway are the first to fail.',
-        },
-        {
-          type: 'text',
-          title: 'Genetic Stability Hypothesis',
-          description:
-            'White-cell phenotypes (loss of pigment without loss of growth) appearing in B04 around 80 h are consistent with loss of carotenoid-pathway selection — for example, loss of a Leu2 auxotrophic marker if used. Confirming this requires qPCR for carotenoid gene copy number and selection-marker tracking on the next campaign.',
-        },
       ],
     },
   ],
@@ -312,7 +288,7 @@ export const jnmNarrative: ReportNarrative = {
       title: 'Nutritional Supplements',
       source: 'from B04',
       description:
-        'Amino acids + YNB + tocopherol. Amino-acid supplementation in B04 drove the highest biomass yield (0.25 g/g) and the largest absolute biomass (365 g). Tocopherol extends viability via antioxidant protection. Carry both forward.',
+        'Amino acids + YNB + tocopherol. Amino-acid supplementation in B04 drove the highest biomass yield (Yx/s = 0.35 g/g) and the largest absolute biomass (365 g). Tocopherol extends viability via antioxidant protection. Carry both forward.',
       icon: 'pill',
     },
     {
@@ -334,9 +310,9 @@ export const jnmNarrative: ReportNarrative = {
   executiveSummary: {
     heading: 'Executive Summary',
     bullets: [
-      'Six fed-batch fermentation runs of carotenoid-producing S. cerevisiae were analysed across biomass, metabolic efficiency, oxygen transfer, and supplement strategy. B04 and B06 produced essentially equal absolute biomass (365 g and 364 g); B06 did so with the best carbon yield of all six.',
-      'B06 achieved the highest biomass yield (Yx/s = 0.31 g/g) and the most stable culture of the six. Its combination of tocopherol + IPM + measured feed strategy is the closest of the six to a shippable bench protocol.',
-      'B04 was the highest absolute-biomass performer (365 g in 74 h) but lacked IPM for in-situ product extraction, leading to carotenoid toxicity, white cells, and early termination at 74 h.',
+      'Six fed-batch fermentation runs of carotenoid-producing S. cerevisiae were analysed across biomass, metabolic efficiency, oxygen transfer, and supplement strategy. B04 and B06 produced essentially equal absolute biomass (365 g and 364 g), but B04 did so with the best biomass yield on glucose of all six (Yx/s = 0.35 g/g).',
+      'B06 was the most stable culture of the six (tocopherol + IPM + measured feed strategy) but its biomass yield was middling (Yx/s = 0.25 g/g, tied with B05). Its stability profile — not its yield — is what makes it the closest of the six to a shippable bench protocol.',
+      'B04 was the highest absolute-biomass and highest-yield performer (365 g in 74 h, Yx/s = 0.35 g/g) but lacked IPM for in-situ product extraction, leading to carotenoid toxicity, white cells, and early termination at 74 h. The next campaign should pair B04\'s supplementation with B06\'s stability levers.',
       'B05/B06 survived to 120 h thanks to tocopherol + IPM, but suffered from suboptimal late-phase qs, dipping into starvation territory and paying a substantial maintenance-energy tax.',
       'B03 delivered the best oxygen-transfer profile (pO₂ in the 30–50% productive range) and the only physically reasonable kLa values — its aeration strategy should anchor the next campaign.',
       'Dissolved oxygen was NOT a limiting factor in any batch (all values stayed above C_critical of 10–15%), disproving the hypothesis that DO limitation caused growth stalls.',

@@ -74,10 +74,10 @@ export function resolveReference(report: ReportData, refId: string): string | nu
     return [
       `[Batch ${batch.id}]`,
       `Equipment=${batch.equipment} | Scale=${batch.scaleL}L`,
-      `Duration=${batch.durationH}h (planned ${batch.plannedDurationH}h)`,
+      `Duration=${batch.durationH}h`,
       `Final OD=${batch.finalOd} | Final WCW=${batch.finalWcw} mg/3mL`,
       `Final DCW=${batch.finalDcwGperL} g/L | Total DCW mass=${batch.finalDcwMassG} g`,
-      `Carbon yield (Yx/s)=${batch.carbonYield} g/g`,
+      `Biomass yield Yx/s=${batch.biomassYield} g/g`,
       `V_initial=${batch.vInitialMl} mL | V_final=${batch.vFinalMl} mL (+${batch.vIncreasePct}%)`,
       `Cumulative feed=${batch.cumulFeedMl} mL`,
       batch.supplements.length

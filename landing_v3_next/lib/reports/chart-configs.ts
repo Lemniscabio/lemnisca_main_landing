@@ -264,7 +264,7 @@ function makeCarbonBalanceChart(report: ReportData): Highcharts.Options {
       {
         type: 'column' as const,
         name: 'Biomass Yield (Yx/s)',
-        data: report.batchMeta.map((b) => ({ y: b.carbonYield, color: b.color })),
+        data: report.batchMeta.map((b) => ({ y: b.biomassYield, color: b.color })),
         borderRadius: 6,
         borderWidth: 0,
       },
@@ -409,6 +409,11 @@ function makeSmallMultiples(
       data: pointsToSeries(points, field),
       yAxis: i,
       lineWidth: 2,
+      // Force markers on regardless of viewport. Highcharts' auto rule
+      // (enabled when avg pixel spacing > enabledThreshold) flips state
+      // unpredictably for low-point-count series like B04 (~13 points)
+      // when the chart is resized.
+      marker: { enabled: true, radius: 3, symbol: 'circle' },
     })
 
     if (opts.secondField) {
@@ -420,6 +425,7 @@ function makeSmallMultiples(
         data: pointsToSeries(points, opts.secondField),
         yAxis: i,
         lineWidth: 1.5,
+        marker: { enabled: true, radius: 2.5, symbol: 'circle' },
       })
     }
   })

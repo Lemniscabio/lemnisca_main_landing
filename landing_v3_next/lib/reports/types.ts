@@ -63,7 +63,6 @@ export interface BatchMeta {
   scaleL: number | null
   color: string
   durationH: number | null
-  plannedDurationH: number
   vInitialMl: number | null
   vFinalMl: number | null
   vIncreasePct: number | null
@@ -74,7 +73,7 @@ export interface BatchMeta {
   finalWcw: number | null
   inoculumOd: number | null
   inoculumWcw: number | null
-  carbonYield: number                // g DCW / g glucose (deck Slide 5)
+  biomassYield: number               // Yx/s — biomass yield on glucose, g DCW / g glucose (deck Slide 5).
   closureReason: string | null
   feedSegments: FeedSegment[]
   supplements: SupplementEntry[]

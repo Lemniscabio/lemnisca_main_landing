@@ -134,15 +134,13 @@ for (const row of processed.rows) {
 
 // ─── Build per-batch metadata ────────────────────────────────────────────────
 
-// Carbon yields per the deck (Slide 5). Using deck values verbatim — these
+// Biomass yields on glucose (Yx/s, g DCW / g glucose) per the deck
+// (Slide 5, "Carbon Balance Envelope"). Using deck values verbatim — these
 // are the customer-facing numbers, not values recomputed from the CSV.
-const CARBON_YIELDS = {
-  B01: 0.14, B02: 0.14, B03: 0.14, B04: 0.25, B05: 0.25, B06: 0.31,
-}
-
-// Planned durations (from current report scaffolding; deck doesn't always state).
-const PLANNED_DURATION = {
-  B01: 96, B02: 96, B03: 96, B04: 96, B05: 120, B06: 120,
+// NOTE: The deck slide is titled "Carbon Balance" but the metric plotted is
+// Yx/s (biomass yield on substrate), NOT true carbon yield (C-mol/C-mol).
+const BIOMASS_YIELDS = {
+  B01: 0.14, B02: 0.14, B03: 0.14, B04: 0.35, B05: 0.25, B06: 0.25,
 }
 
 // Story-driven Okabe-Ito (colorblind-safe) palette.
@@ -152,9 +150,9 @@ const BATCH_COLORS = {
   B01: '#0072b2', // deep blue       — KLF2000 baseline
   B02: '#56b4e9', // sky blue        — KLF2000 baseline
   B03: '#009e73', // bluish-green    — KLF2000 baseline (best aeration)
-  B04: '#d55e00', // vermillion      — Sartorius, high biomass, failed (attention)
+  B04: '#d55e00', // vermillion      — Sartorius, best biomass yield + highest absolute biomass, failed at 74h (attention)
   B05: '#cc79a7', // reddish-purple  — Sartorius, extended run with IPM
-  B06: '#e69f00', // orange          — Sartorius, best stability + best yield
+  B06: '#e69f00', // orange          — Sartorius, most stable culture (extended run with IPM + tocopherol)
 }
 
 // Pull static fields from the first row of each batch in processed.csv
@@ -233,7 +231,6 @@ const batchMeta = BATCH_IDS.map((id) => {
     scaleL: stat.scaleL,
     color: BATCH_COLORS[id],
     durationH: sum.durationH,
-    plannedDurationH: PLANNED_DURATION[id],
     vInitialMl: sum.vInitialMl,
     vFinalMl: sum.vFinalMl,
     vIncreasePct: sum.vIncreasePct,
@@ -244,7 +241,7 @@ const batchMeta = BATCH_IDS.map((id) => {
     finalWcw: last.wcw ?? null,
     inoculumOd: first.od600 ?? null,
     inoculumWcw: first.wcw ?? null,
-    carbonYield: CARBON_YIELDS[id],
+    biomassYield: BIOMASS_YIELDS[id],
     closureReason: term?.description || null,
     feedSegments: feedSegments[id] || [],
     supplements: supplements[id] || [],
