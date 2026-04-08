@@ -1,21 +1,17 @@
-import ReportsClient from '@/components/reports/ReportsClient'
-import '@/components/reports/Reports.css'
-import { getReport } from '@/lib/reports/jnm'
-import { getReferenceCatalog } from '@/lib/reports/avira-references'
+import { redirect, notFound } from 'next/navigation'
 
 /**
- * /reports — Server Component.
+ * /reports — index redirector.
  *
- * Auth gating happens upstream in `middleware.ts`. By the time this component
- * runs, the request has a valid `report_auth` cookie.
+ * Auth gating happens upstream in `middleware.ts`. By the time this runs, the
+ * request has a valid `report_auth` cookie.
  *
- * The report data is loaded from `lib/reports/jnm/` (server-only) and passed
- * to <ReportsClient /> as props. It is serialised into the SSR HTML payload
- * for this single authorised request and never enters any client JavaScript
- * bundle.
+ * The actual report content lives at /reports/[id], where [id] must match
+ * process.env.REPORT_ID. Visiting bare /reports forwards to /reports/{id}.
+ * If REPORT_ID is unset, the redirect has nowhere to go and we 404.
  */
-export default function ReportsPage() {
-  const report = getReport()
-  const referenceCatalog = getReferenceCatalog(report)
-  return <ReportsClient report={report} referenceCatalog={referenceCatalog} />
+export default function ReportsIndex() {
+  const id = process.env.REPORT_ID?.trim()
+  if (!id) notFound()
+  redirect(`/reports/${id}`)
 }

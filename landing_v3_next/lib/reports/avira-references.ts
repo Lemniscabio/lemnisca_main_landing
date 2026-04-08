@@ -57,7 +57,7 @@ export function getReferenceCatalog(report: ReportData): ReferenceItem[] {
 
   // Top-level sections
   items.push({ id: 'executive-summary', label: 'Executive Summary', category: 'section' })
-  items.push({ id: 'recommendations',   label: 'Recommendations',  category: 'section' })
+  items.push({ id: 'hypothesis-discussion', label: 'Hypothesis Discussion (H1–H4)', category: 'section' })
   items.push({ id: 'overview',          label: 'Problem Statement & KPIs', category: 'section' })
 
   return items
@@ -130,7 +130,51 @@ export function resolveReference(report: ReportData, refId: string): string | nu
 
   // Section references
   if (id === 'executive-summary') {
-    return `[Executive Summary]\n${report.executiveSummary.bullets.map((b) => `- ${b}`).join('\n')}`
+    const exec = report.executiveSummary
+    const lines: string[] = ['[Executive Summary]']
+    if (exec.intro) lines.push(exec.intro)
+    if (exec.hypotheses && exec.hypotheses.length > 0) {
+      for (const h of exec.hypotheses) {
+        lines.push(`${h.id} ${h.title}: ${h.finding} [Status: ${h.status}]`)
+      }
+    } else {
+      lines.push(...exec.bullets.map((b) => `- ${b}`))
+    }
+    if (exec.closing) lines.push(exec.closing)
+    return lines.join('\n')
+  }
+  if (id === 'hypothesis-discussion') {
+    const hd = report.hypothesisDiscussion
+    if (!hd) return null
+    const out: string[] = [`[${hd.heading}]`, hd.intro, '']
+    for (const h of hd.hypotheses) {
+      out.push(`── ${h.id} ${h.title} (${h.role}) ──`)
+      out.push(h.lead)
+      out.push('Evidence:')
+      for (const ev of h.evidence) {
+        out.push(`  • ${ev.title}`)
+        out.push(`    ${ev.body}`)
+        if (ev.footnote) out.push(`    ${ev.footnote}`)
+      }
+      out.push('Literature:')
+      for (const lit of h.literature) {
+        out.push(`  • ${lit.citation}`)
+        out.push(`    → ${lit.description}`)
+      }
+      out.push('What we need to confirm:')
+      for (const item of h.whatWeNeed) out.push(`  • ${item}`)
+      out.push('')
+    }
+    out.push(`── ${hd.causalStructure.heading} ──`)
+    out.push(hd.causalStructure.intro)
+    for (const row of hd.causalStructure.rows) {
+      out.push(`${row.id} ${row.title}: ${row.text}`)
+    }
+    if (hd.closingNote) {
+      out.push('')
+      out.push(hd.closingNote)
+    }
+    return out.join('\n')
   }
   if (id === 'recommendations') {
     return `[Recommendations]\n${report.recommendations.map((r) => `${r.title} (${r.source}): ${r.description}`).join('\n')}`

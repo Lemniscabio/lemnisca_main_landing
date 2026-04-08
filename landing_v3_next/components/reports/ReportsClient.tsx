@@ -46,10 +46,10 @@ const NAV_SECTIONS = [
   { id: 'overview', label: 'Overview', icon: LayoutDashboard },
   { id: 'executive-summary', label: 'Executive Summary', icon: FileText },
   { id: 'hypotheses', label: 'Analyses', icon: Lightbulb },
-  { id: 'recommendations', label: 'Recommendations', icon: Target },
+  { id: 'hypothesis-discussion', label: 'Hypothesis Discussion', icon: Target },
 ]
 
-const NAV_IDS = ['overview', 'executive-summary', 'hypotheses', 'recommendations']
+const NAV_IDS = ['overview', 'executive-summary', 'hypotheses', 'hypothesis-discussion']
 
 interface ReportsClientProps {
   report: ReportData
@@ -265,6 +265,19 @@ function ReportsClient({ report, referenceCatalog }: ReportsClientProps) {
 
           <div className="problem-statement glass-card">
             <p>{report.problemStatement.body}</p>
+            {report.problemStatement.bullets && report.problemStatement.bullets.length > 0 && (
+              <ul className="problem-bullets">
+                {report.problemStatement.bullets.map((b, i) => (
+                  <li key={i} className="problem-bullet">
+                    <span className="problem-bullet-title">{b.title}</span>{' '}
+                    <span className="problem-bullet-text">{b.text}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+            {report.problemStatement.closingQuestion && (
+              <p className="problem-closing">{report.problemStatement.closingQuestion}</p>
+            )}
           </div>
 
           <div className="kpi-grid">
@@ -300,14 +313,52 @@ function ReportsClient({ report, referenceCatalog }: ReportsClientProps) {
           </div>
 
           <div className="exec-summary glass-card">
-            <ul className="exec-bullets">
-              {report.executiveSummary.bullets.map((bullet, i) => (
-                <li key={i} className="exec-bullet">
-                  <span className="bullet-dot" />
-                  <span>{bullet}</span>
-                </li>
-              ))}
-            </ul>
+            {report.executiveSummary.intro && (
+              <p className="exec-intro">{report.executiveSummary.intro}</p>
+            )}
+
+            {report.executiveSummary.hypotheses && report.executiveSummary.hypotheses.length > 0 ? (
+              <div className="exec-hypotheses-table-wrap">
+                <table className="exec-hypotheses-table">
+                  <thead>
+                    <tr>
+                      <th>Hypothesis</th>
+                      <th>Finding</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {report.executiveSummary.hypotheses.map((h) => (
+                      <tr key={h.id}>
+                        <td className="hyp-cell">
+                          <span className="hyp-id">{h.id}</span>
+                          <span className="hyp-name">{h.title}</span>
+                        </td>
+                        <td className="finding-cell">{h.finding}</td>
+                        <td className="status-cell">{h.status}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <ul className="exec-bullets">
+                {report.executiveSummary.bullets.map((bullet, i) => (
+                  <li key={i} className="exec-bullet">
+                    <span className="bullet-dot" />
+                    <span>{bullet}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            {report.executiveSummary.closing && (
+              <div className="exec-closing">
+                {report.executiveSummary.closing.split('\n\n').map((para, i) => (
+                  <p key={i}>{para}</p>
+                ))}
+              </div>
+            )}
           </div>
         </section>
 
@@ -403,36 +454,107 @@ function ReportsClient({ report, referenceCatalog }: ReportsClientProps) {
           </div>
         </section>
 
-        {/* ───── Section: Recommendations ───── */}
-        <section
-          className="report-section"
-          id="recommendations"
-          ref={registerSection('recommendations')}
-        >
-          <div className="section-header">
-            <span className="section-badge">Next Steps</span>
-            <h2 className="section-title">Recommended Optimized Next Run</h2>
-            <p className="section-desc">
-              Combining the best elements from each batch into an optimized process strategy.
-            </p>
-          </div>
+        {/* ───── Section: Hypothesis Discussion ───── */}
+        {report.hypothesisDiscussion && (
+          <section
+            className="report-section"
+            id="hypothesis-discussion"
+            ref={registerSection('hypothesis-discussion')}
+          >
+            <div className="section-header">
+              <span className="section-badge">Discussion</span>
+              <h2 className="section-title">{report.hypothesisDiscussion.heading}</h2>
+              <p className="section-desc">{report.hypothesisDiscussion.intro}</p>
+            </div>
 
-          <div className="recommendations-grid">
-            {report.recommendations.map((rec, i) => {
-              const Icon = ICON_MAP[rec.icon] || FlaskConical
-              return (
-                <div key={i} className="rec-card glass-card">
-                  <div className="rec-icon-wrap">
-                    <Icon size={24} />
+            <div className="hypotheses-discussion-list">
+              {report.hypothesisDiscussion.hypotheses.map((h) => (
+                <article key={h.id} className="hypothesis-discussion-card glass-card">
+                  <header className="hd-header">
+                    <span className="hd-id">{h.id}</span>
+                    <div className="hd-title-wrap">
+                      <h3 className="hd-title">{h.title}</h3>
+                      <span className="hd-role">{h.role}</span>
+                    </div>
+                  </header>
+
+                  <p className="hd-lead">{h.lead}</p>
+
+                  <div className="hd-block hd-evidence-block">
+                    <h4 className="hd-block-heading">Evidence from Analysis</h4>
+                    <div className="hd-evidence-list">
+                      {h.evidence.map((ev, i) => (
+                        <div key={i} className="hd-evidence-item">
+                          <h5 className="hd-evidence-title">{ev.title}</h5>
+                          {ev.body.split('\n\n').map((para, pi) => (
+                            <p key={pi} className="hd-evidence-body">{para}</p>
+                          ))}
+                          {ev.footnote && (
+                            <p className="hd-evidence-footnote">{ev.footnote}</p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                  <div className="rec-source">{rec.source}</div>
-                  <h3 className="rec-title">{rec.title}</h3>
-                  <p className="rec-desc">{rec.description}</p>
-                </div>
-              )
-            })}
-          </div>
-        </section>
+
+                  <div className="hd-block hd-literature-block">
+                    <h4 className="hd-block-heading">Support from Literature</h4>
+                    <ul className="hd-literature-list">
+                      {h.literature.map((lit, i) => (
+                        <li key={i} className="hd-literature-item">
+                          <p className="hd-citation">{lit.citation}</p>
+                          <p className="hd-citation-desc">
+                            <span className="hd-arrow" aria-hidden="true">→</span>{' '}
+                            {lit.description}
+                          </p>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="hd-block hd-confirm-block">
+                    <h4 className="hd-block-heading">What we need to confirm this</h4>
+                    <ul className="hd-confirm-list">
+                      {h.whatWeNeed.map((item, i) => (
+                        <li key={i}>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </article>
+              ))}
+            </div>
+
+            {/* Causal-structure summary table */}
+            <div className="causal-structure glass-card">
+              <h3 className="causal-heading">{report.hypothesisDiscussion.causalStructure.heading}</h3>
+              <p className="causal-intro">{report.hypothesisDiscussion.causalStructure.intro}</p>
+              <div className="causal-table-wrap">
+                <table className="causal-table">
+                  <thead>
+                    <tr>
+                      <th>Hypothesis</th>
+                      <th>Role and connections</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {report.hypothesisDiscussion.causalStructure.rows.map((row) => (
+                      <tr key={row.id}>
+                        <td className="causal-hyp-cell">
+                          <span className="causal-hyp-id">{row.id}</span>
+                          <span className="causal-hyp-name">{row.title}</span>
+                        </td>
+                        <td className="causal-text-cell">{row.text}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              {report.hypothesisDiscussion.closingNote && (
+                <p className="causal-closing-note">{report.hypothesisDiscussion.closingNote}</p>
+              )}
+            </div>
+          </section>
+        )}
 
         {/* Footer */}
         <footer className="reports-footer">

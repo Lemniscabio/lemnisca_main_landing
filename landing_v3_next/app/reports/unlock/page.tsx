@@ -4,6 +4,7 @@ import { useState, type FormEvent } from 'react'
 import './unlock.css'
 
 export default function UnlockPage() {
+  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -16,16 +17,21 @@ export default function UnlockPage() {
       const res = await fetch('/api/reports/auth', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password }),
+        body: JSON.stringify({ username, password }),
       })
       if (res.ok) {
-        window.location.href = '/reports'
+        // The auth endpoint echoes the report id (= REPORT_USERNAME). Use it
+        // as the URL path segment so the user lands on /reports/{id} instead
+        // of the legacy /reports index.
+        const data = (await res.json().catch(() => ({}))) as { reportId?: string }
+        const reportId = typeof data.reportId === 'string' && data.reportId ? data.reportId : ''
+        window.location.href = reportId ? `/reports/${reportId}` : '/reports'
         return
       }
       if (res.status === 429) {
         setError('Too many attempts. Please try again in a few minutes.')
       } else {
-        setError('Incorrect password.')
+        setError('Incorrect username or password.')
       }
     } catch {
       setError('Something went wrong. Please try again.')
@@ -77,11 +83,21 @@ export default function UnlockPage() {
           </p>
 
           <input
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder="Username"
+            autoFocus
+            required
+            autoComplete="username"
+            className="unlock-input"
+          />
+
+          <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Password"
-            autoFocus
             required
             autoComplete="current-password"
             className="unlock-input"
@@ -91,7 +107,7 @@ export default function UnlockPage() {
 
           <button
             type="submit"
-            disabled={loading || !password}
+            disabled={loading || !username || !password}
             className="unlock-submit"
           >
             {loading ? 'Verifying…' : 'Unlock Report'}

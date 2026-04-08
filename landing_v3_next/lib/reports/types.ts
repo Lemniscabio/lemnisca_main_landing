@@ -113,6 +113,53 @@ export interface Recommendation {
   icon: string
 }
 
+// ─── Hypothesis Discussion section ───────────────────────────────────────────
+
+export interface HypothesisEvidence {
+  /** e.g. "Evidence 1 — Low biomass yield" */
+  title: string
+  /** Body paragraph(s). Use `\n\n` to separate paragraphs. */
+  body: string
+  /** Optional asterisk footnote rendered below the body. */
+  footnote?: string
+}
+
+export interface HypothesisLiterature {
+  /** Full citation text (author, year, title, journal). */
+  citation: string
+  /** Description following the `→` glyph in the source doc. */
+  description: string
+}
+
+export interface Hypothesis {
+  id: string                          // 'H1', 'H2', 'H3', 'H4'
+  title: string                       // 'Overflow Metabolism — Crabtree Effect'
+  role: string                        // 'primary failure mode', 'downstream consequence of H3'
+  lead: string                        // intro paragraph(s); supports `\n\n`
+  evidence: HypothesisEvidence[]
+  literature: HypothesisLiterature[]
+  whatWeNeed: string[]                // bullet list items
+}
+
+export interface CausalStructureRow {
+  id: string                          // 'H1', 'H2', …
+  title: string                       // 'Crabtree'
+  text: string                        // role-and-connections cell content
+}
+
+export interface HypothesisDiscussion {
+  heading: string                     // 'Hypothesis Discussion'
+  intro: string
+  hypotheses: Hypothesis[]
+  causalStructure: {
+    heading: string                   // 'Summary: Proposed Causal Structure'
+    intro: string
+    rows: CausalStructureRow[]
+  }
+  /** Optional closing note rendered after the causal-structure table. */
+  closingNote?: string
+}
+
 export interface ReportNarrative {
   company: { name: string; logo?: string }
   title: string
@@ -120,12 +167,30 @@ export interface ReportNarrative {
   problemStatement: {
     heading: string
     body: string
+    /** Optional sub-points rendered as a labelled bullet list under the body. */
+    bullets?: { title: string; text: string }[]
+    /** Optional closing statement (e.g. the core question) rendered after bullets. */
+    closingQuestion?: string
     kpis: KPI[]
   }
   analyses: Analysis[]
+  /** Optional discussion-level hypotheses section, layered on top of `analyses`. */
+  hypothesisDiscussion?: HypothesisDiscussion
   recommendations: Recommendation[]
   executiveSummary: {
     heading: string
+    /** Optional intro paragraph rendered above the hypotheses table. */
+    intro?: string
+    /** Hypotheses table (H1, H2, …). When present, replaces the bullet list. */
+    hypotheses?: {
+      id: string         // 'H1', 'H2', …
+      title: string      // 'Crabtree effect'
+      finding: string
+      status: string
+    }[]
+    /** Optional closing paragraph(s) rendered below the table. */
+    closing?: string
+    /** Legacy bullet list — used only when `hypotheses` is not provided. */
     bullets: string[]
   }
 }

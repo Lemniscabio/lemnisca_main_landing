@@ -898,6 +898,39 @@
   margin: 0;
 }
 
+.problem-bullets {
+  list-style: none;
+  padding: 0;
+  margin: 18px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.problem-bullet {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--r-text);
+  padding-left: 16px;
+}
+
+.problem-bullet-title {
+  font-weight: 700;
+  color: var(--r-text);
+}
+
+.problem-bullet-text {
+  color: var(--r-text);
+}
+
+.problem-closing {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--r-text);
+  margin: 20px 0 0 !important;
+  padding-top: 16px;
+}
+
 /* ─── KPI Grid ─────────────────────────────────────────────────────────────── */
 
 .kpi-grid {
@@ -987,6 +1020,116 @@
   font-size: 14px;
   line-height: 1.7;
   color: var(--r-text);
+}
+
+/* ─── Executive Summary: intro / hypotheses table / closing ──────────────── */
+
+.exec-intro {
+  font-size: 14px;
+  line-height: 1.75;
+  color: var(--r-text);
+  margin: 0 0 24px;
+}
+
+.exec-hypotheses-table-wrap {
+  overflow-x: auto;
+  margin: 0 0 24px;
+  border-radius: 10px;
+}
+
+.exec-hypotheses-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--r-text);
+}
+
+.exec-hypotheses-table thead th {
+  background: var(--r-primary);
+  color: #fff;
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  text-align: left;
+  padding: 12px 16px;
+}
+
+.exec-hypotheses-table tbody td {
+  padding: 16px;
+  vertical-align: top;
+  border-top: 1px solid var(--r-border);
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.exec-hypotheses-table tbody tr:nth-child(even) td {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.exec-hypotheses-table .hyp-cell {
+  width: 16%;
+  min-width: 140px;
+  font-weight: 600;
+}
+
+.exec-hypotheses-table .hyp-id {
+  display: inline-block;
+  background: var(--r-primary);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-right: 8px;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.exec-hypotheses-table .hyp-name {
+  color: var(--r-text);
+}
+
+.exec-hypotheses-table .finding-cell {
+  width: 56%;
+  color: var(--r-text);
+}
+
+.exec-hypotheses-table .status-cell {
+  width: 28%;
+  min-width: 200px;
+  color: var(--r-text-secondary);
+  font-style: italic;
+  font-size: 12.5px;
+}
+
+.exec-closing {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  font-size: 14px;
+  line-height: 1.75;
+  color: var(--r-text);
+}
+
+.exec-closing p {
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .exec-hypotheses-table {
+    font-size: 12px;
+  }
+  .exec-hypotheses-table thead th,
+  .exec-hypotheses-table tbody td {
+    padding: 10px 12px;
+  }
+  .exec-hypotheses-table .hyp-cell {
+    min-width: 100px;
+  }
+  .exec-hypotheses-table .status-cell {
+    min-width: 140px;
+  }
 }
 
 .bullet-dot {
@@ -1130,6 +1273,17 @@
 
 /* ─── Analysis Sections (Inside Accordion) ───────────────────────────────── */
 
+/* The expanded accordion body is a container so the inner .analysis-section
+   can stack based on its OWN width, not the viewport's. This is what makes
+   the two-column layout collapse correctly when AVIRA is open and the main
+   content area is squeezed even though the window is wide. The matching
+   @container query lives further down, AFTER the .analysis-text /
+   .analysis-visual base rules so its overrides win on source order. */
+.hypothesis-expanded-content {
+  container-type: inline-size;
+  container-name: analysis-pane;
+}
+
 .analysis-section {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
@@ -1242,6 +1396,34 @@
   top: calc(var(--r-topbar-height) + 32px);
   align-self: start;
   min-width: 0;
+}
+
+/* When the analysis pane itself is narrow (regardless of viewport), collapse
+   the two-column grid into one column AND disable sticky positioning so the
+   chart doesn't overlap the text below it. Driven by container width so it
+   fires whenever the content area is narrow — including when AVIRA is open
+   on a wide screen. Placed AFTER the .analysis-text/.analysis-visual base
+   rules so its `position: static` overrides win on source order. */
+@container analysis-pane (max-width: 900px) {
+  .analysis-section,
+  .analysis-section.layout-lr,
+  .analysis-section.layout-rl {
+    grid-template-columns: 1fr;
+  }
+
+  .analysis-section.layout-rl .analysis-text {
+    order: 1;
+  }
+
+  .analysis-section.layout-rl .analysis-visual {
+    order: 2;
+  }
+
+  .analysis-text,
+  .analysis-visual {
+    position: static;
+    top: auto;
+  }
 }
 
 /* ─── Evidence Cards ───────────────────────────────────────────────────────── */
@@ -2053,6 +2235,311 @@
   border-radius: 6px;
   color: var(--r-text);
   word-break: break-word;
+}
+
+/* ─── Hypothesis Discussion section ──────────────────────────────────────── */
+
+.hypotheses-discussion-list {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  margin-bottom: 40px;
+}
+
+.hypothesis-discussion-card {
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.hd-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding-bottom: 16px;
+}
+
+.hd-id {
+  flex: 0 0 auto;
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--r-primary);
+  color: #fff;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.hd-title-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.hd-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--r-text);
+  line-height: 1.3;
+}
+
+.hd-role {
+  display: inline-flex;
+  align-self: flex-start;
+  padding: 3px 10px;
+  background: rgba(var(--r-primary-rgb, 30, 64, 175), 0.1);
+  color: var(--r-primary);
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.hd-lead {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.75;
+  color: var(--r-text);
+}
+
+.hd-block {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.hd-block-heading {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--r-primary);
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--r-primary);
+  align-self: flex-start;
+}
+
+/* Evidence sub-blocks */
+.hd-evidence-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.hd-evidence-item {
+  padding: 16px 18px;
+  background: rgba(255, 255, 255, 0.55);
+  border-radius: 8px;
+}
+
+.hd-evidence-title {
+  margin: 0 0 8px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--r-text);
+  line-height: 1.4;
+}
+
+.hd-evidence-body {
+  margin: 0 0 10px;
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: var(--r-text);
+}
+
+.hd-evidence-body:last-of-type {
+  margin-bottom: 0;
+}
+
+.hd-evidence-footnote {
+  margin: 10px 0 0;
+  font-size: 12px;
+  font-style: italic;
+  color: var(--r-text-secondary);
+  padding-top: 8px;
+}
+
+/* Literature blocks */
+.hd-literature-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.hd-literature-item {
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 8px;
+}
+
+.hd-citation {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--r-text);
+  line-height: 1.5;
+}
+
+.hd-citation-desc {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.65;
+  color: var(--r-text-secondary);
+  padding-left: 18px;
+  text-indent: -18px;
+}
+
+.hd-arrow {
+  color: var(--r-primary);
+  font-weight: 700;
+  margin-right: 4px;
+}
+
+/* What we need to confirm bullets */
+.hd-confirm-list {
+  list-style: disc;
+  padding-left: 22px;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.hd-confirm-list li {
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: var(--r-text);
+}
+
+.hd-confirm-list li::marker {
+  color: var(--r-primary);
+}
+
+/* ─── Causal-structure summary table ─────────────────────────────────────── */
+
+.causal-structure {
+  padding: 32px;
+}
+
+.causal-heading {
+  margin: 0 0 12px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--r-text);
+}
+
+.causal-intro {
+  margin: 0 0 24px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--r-text);
+}
+
+.causal-table-wrap {
+  overflow-x: auto;
+  border-radius: 10px;
+}
+
+.causal-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.causal-table thead th {
+  background: var(--r-primary);
+  color: #fff;
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  text-align: left;
+  padding: 12px 16px;
+}
+
+.causal-table tbody td {
+  padding: 16px;
+  vertical-align: top;
+  border-top: 1px solid var(--r-border);
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.causal-table tbody tr:nth-child(even) td {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.causal-hyp-cell {
+  width: 22%;
+  min-width: 160px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.causal-hyp-id {
+  display: inline-block;
+  background: var(--r-primary);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-right: 8px;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.causal-text-cell {
+  color: var(--r-text);
+}
+
+.causal-closing-note {
+  margin: 24px 0 0;
+  padding: 16px 20px;
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--r-text);
+  background: rgba(var(--r-primary-rgb, 30, 64, 175), 0.06);
+  border-radius: 6px;
+}
+
+@media (max-width: 768px) {
+  .hypothesis-discussion-card {
+    padding: 20px;
+    gap: 18px;
+  }
+  .hd-header {
+    flex-wrap: wrap;
+  }
+  .hd-id {
+    width: 48px;
+    height: 48px;
+    font-size: 16px;
+  }
+  .hd-title {
+    font-size: 17px;
+  }
+  .causal-table {
+    font-size: 12px;
+  }
+  .causal-table thead th,
+  .causal-table tbody td {
+    padding: 10px 12px;
+  }
 }
 
 .methodology-constants {
