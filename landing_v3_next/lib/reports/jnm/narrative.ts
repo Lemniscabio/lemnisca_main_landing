@@ -26,7 +26,7 @@ export const jnmNarrative: ReportNarrative = {
       },
       {
         title: 'Carotenoid yield collapse.',
-        text: 'Fermenters showed an average 96-fold drop in astaxanthin yield and an 8-fold drop in total carotenoid yield compared to shake-flask controls. In B06, astaxanthin accounted for only 4.4% of total carotenoids, versus 63.7% in the shake-flask reference condition.',
+        text: 'Fermenters showed  >50-fold drop in astaxanthin yield compared to shake-flask controls. In B06, astaxanthin accounted for only 4.4% of total carotenoids, versus 63.7% in the shake-flask reference condition.',
       },
     ],
     closingQuestion:
@@ -271,17 +271,16 @@ export const jnmNarrative: ReportNarrative = {
     {
       id: 'a8',
       title: 'Astaxanthin yield and % conversion reduce significantly in fermenters',
-      description:
-        'Fermenters show an average ~96-fold drop in astaxanthin yield and an average ~8-fold drop in total carotenoids yield compared to the shake flasks. Although the Crabtree effect might explain this, genetic stability may also be a potential cause.',
+      description: '',
       verdict: 'partially',
       verdictSummary:
-        'Conversion of carotenoid intermediates to astaxanthin drops from ~63% (shake flask, YNB AA + 20% IPM + 0.4% Toco T-5b) to ~4% (B06). The accumulation of pathway intermediates with only ~3.2% conversion of precursors to astaxanthin in B06 is consistent with metalloenzyme failure due to iron/copper depletion at WCW > 300 g/L.',
+        'Fermenters show > 50-fold drop in astaxanthin yield compared to the shake flasks. Conversion of carotenoid intermediates to astaxanthin drops from ~63% (shake flask, YNB AA + 20% IPM + 0.4% Toco T-5b) to ~4% (B06). The accumulation of pathway intermediates with only ~3.2% conversion of precursors to astaxanthin in B06 is consistent with metalloenzyme failure due to iron/copper depletion at WCW > 300 g/L.',
       evidence: [
         {
           type: 'chart',
           title: 'Total Yield of Astaxanthin per Batch',
           description:
-            'Fermenters show a 50-fold drop in astaxanthin yield compared to the shake flasks. Batch I–VI achieve only 0.03–0.12 mg Asta/g WCW, whereas shake-flask conditions (YNB AA ± IPM ± Toco) reach 0.93–6.18 mg Asta/g WCW.',
+            'Fermenters show > 50-fold drop in astaxanthin yield compared to the shake flasks. Batch I–VI achieve only 0.03–0.12 mg Asta/g WCW, whereas shake-flask conditions (YNB AA ± IPM ± Toco) reach 0.93–6.18 mg Asta/g WCW.',
           chartId: 'astaxanthinYield',
         },
         {
@@ -296,9 +295,9 @@ export const jnmNarrative: ReportNarrative = {
   ],
 
   hypothesisDiscussion: {
-    heading: 'Hypothesis Discussion',
+    heading: 'Hypotheses',
     intro:
-      'All six fed-batch runs of the JNM strain share a common terminal phenotype: non-pigmented (white) cells appear between h66 and h84, growth stalls, and carotenoid yield is far below shake-flask benchmarks. The following section presents four mechanistic hypotheses to explain this failure, each structured as: (1) evidence from the eight analysis sections; (2) supporting literature; and (3) experiments needed to confirm or refute the hypothesis. The hypotheses are not mutually exclusive — their proposed causal relationships are summarised at the end of this section.',
+      'All six fed-batch runs of the JNM strain share a common terminal phenotype: non-pigmented (white) cells appear between h66 and h84, growth stalls, and carotenoid yield is far below shake-flask benchmarks. The following section presents four mechanistic hypotheses to explain this failure.',
     hypotheses: [
       {
         id: 'H1',
@@ -311,8 +310,6 @@ export const jnmNarrative: ReportNarrative = {
             title: 'Evidence 1 — Low biomass yield',
             body:
               'Assuming glucose-limited conditions, the carbon balance shows that only 14–35% of the glucose taken up is converted to biomass (0.14 ≤ Yₓ/ₛ ≤ 0.35 g/g across batches; A4). For a well-run bench-scale aerobic fed-batch, Yₓ/ₛ should exceed 0.38 g/g. The depressed yield is consistent with partial oxidation of glucose to ethanol: the carbon flux diverted to ethanol competes directly with flux to acetyl-CoA, the entry point of the mevalonate pathway and the key precursor for carotenoid synthesis. B04 performs best at 0.35 g/g; B01/B02 are worst at 0.14 g/g. A8 also notes that fermenters show an average 96-fold* drop in astaxanthin yield and 8-fold* drop in total carotenoid yield compared to shake-flask controls — a magnitude that ethanol-driven flux diversion can plausibly explain.',
-            footnote:
-              '* These numbers will be estimated more accurately once we receive pending information on shake flask studies.',
           },
           {
             title: 'Evidence 2 — Specific glucose feed rate above Crabtree threshold (Analysis 6: qₛ and Crabtree Risk)',
@@ -341,7 +338,7 @@ export const jnmNarrative: ReportNarrative = {
           },
         ],
         whatWeNeed: [
-          'Residual glucose concentration profiles — offline HPLC for all six batches. Without these, the glucose-limited assumption underlying the carbon balance (A4) cannot be verified.',
+          'Residual glucose concentration profiles. Without these, the glucose-limited assumption underlying the carbon balance (A4) cannot be verified.',
           'Ethanol accumulation trajectories to confirm onset and magnitude of overflow metabolism. Even end-of-batch measurements from archived samples would be informative.',
           'CO₂ evolution rate (CER) data to calculate the respiratory quotient (RQ). An RQ > 1.0 confirms net ethanol production.',
           'Feed addition timing log at fine resolution to assess lag between step-changes in feed rate and the DO response, which would clarify whether short-term Crabtree episodes occur at each step-change.',
@@ -417,7 +414,7 @@ export const jnmNarrative: ReportNarrative = {
           {
             title: 'Evidence 3 — B04: highest growth rate, earliest failure',
             body:
-              'A2 identifies B04 as the batch with the highest growth rates overall. A7 notes that B04 had physically implausible kLa estimates — attributed to (C*−Cₑ) approaching zero — and that B04 had the highest biomass and was terminated at h72–74 due to dead and non-pigmented cells. High growth rates generate high carotenoid synthesis flux, which fills intracellular storage capacity faster. B04 reached toxic intracellular concentrations earlier precisely because it grew better. The qualitative analysis explicitly states: "The missing piece for B04 was IPM — had the product been extracted in situ, the high growth rates might have translated into sustained productivity."',
+              'A2 identifies B04 as the batch with the highest growth rates overall. A7 notes that B04 had physically implausible kLa estimates — attributed to (C*−Cₑ) approaching zero — and that B04 had the highest biomass and was terminated at h72–74 due to dead and non-pigmented cells. High growth rates generate high carotenoid synthesis flux, which fills intracellular storage capacity faster. B04 reached toxic intracellular concentrations earlier precisely because it grew better.',
           },
         ],
         literature: [
@@ -455,9 +452,9 @@ export const jnmNarrative: ReportNarrative = {
           'We propose that genetic instability — the expansion of non-pigmented, pathway-deficient cell subpopulations — is not an independent primary failure mode but the cellular adaptation to sustained product toxicity (H3). Cells that spontaneously lose the pathway expression cassette eliminate their source of membrane stress, recover a growth rate advantage, and progressively displace pigmented cells under the poor selection conditions of a yeast-extract-rich medium.',
         evidence: [
           {
-            title: 'Evidence 1 — Yeast extract supplementation likely abrogates auxotrophic selection pressure',
+            title: 'Evidence 1 — Gene loss through nullified auxotrophic selection pressure or gene silencing',
             body:
-              'A6 notes that amino acid + YNB supplementation in B04 improved biomass yield significantly but may have caused loss of selection pressure if a Leu2 or His3 auxotrophic selection marker was used. The JNM medium contains 5 g/L yeast extract in the batch phase and 50 g/L in the feed, supplying a broad spectrum of amino acids and vitamins through non-selective uptake. If the complemented auxotrophic nutrient is present in excess, the selective advantage of plasmid-bearing cells is eliminated, and cells that have lost the plasmid face no growth penalty from the marker — only from carotenoid pathway expression.',
+              'A6 notes that amino acid + YNB supplementation in B04 improved biomass yield significantly but may have caused loss of selection pressure if a Leu2 or His3 auxotrophic selection marker was used. The JNM medium contains 5 g/L yeast extract in the batch phase and 50 g/L in the feed, supplying a broad spectrum of amino acids and vitamins through non-selective uptake. If the complemented auxotrophic nutrient is present in excess, the selective advantage of plasmid-bearing cells is eliminated, and cells that have lost the plasmid face no growth penalty from the marker — only from carotenoid pathway expression.\nFor integrated constructs, glucose-repression chromatin remodelling can silence loci near sub-telomeric regions. PDR activation (driven by H3) may compound this by altering histone acetylation through competition for acetyl-CoA. Cells under this mechanism retain intact pathway DNA but produce no transcript — distinguishable only by RT-PCR.',
           },
           {
             title: 'Evidence 2 — Consistent onset window across platforms and scales',
@@ -493,8 +490,6 @@ export const jnmNarrative: ReportNarrative = {
         whatWeNeed: [
           'Confirm selection marker identity and verify that the fermentation medium genuinely depletes the complemented auxotrophic nutrient at the concentrations used.',
           'Molecular characterisation of isolated white-cell colonies: genomic PCR for pathway gene presence; RT-PCR for pathway gene transcription. This distinguishes plasmid loss (gene absent) from epigenetic silencing (gene present, no transcript).',
-          'Flow cytometry of pigmented vs. non-pigmented cell fraction as a continuous function of time in a single batch — to determine the kinetics of competitive displacement.',
-          'Head-to-head plasmid stability comparison between a carotenoid-producing strain and an isogenic strain with catalytically inactivated pathway enzymes, run under identical fed-batch conditions. This is the critical test of whether product accumulation or enzyme expression drives instability.',
         ],
       },
     ],
@@ -539,13 +534,13 @@ export const jnmNarrative: ReportNarrative = {
   executiveSummary: {
     heading: 'Executive Summary',
     intro:
-      'Eight quantitative analyses of the six batch datasets were conducted, covering volume-corrected biomass, specific growth rate, growth phase segmentation, dissolved oxygen profiles, carbon balance, specific glucose feed rate, oxygen uptake rate decomposition, and carotenoid intermediate profiling. The analyses point to four interacting failure mechanisms, structured below in order of causal priority.',
+      'Eight quantitative analyses of the fermenter and shake flask data were conducted, covering volume-corrected biomass, specific growth rate, growth phase segmentation, dissolved oxygen profiles, carbon balance, specific glucose feed rate, oxygen uptake rate decomposition, and carotenoid yield and % conversion. The analyses point to four interacting failure mechanisms, structured below in order of causal priority.',
     hypotheses: [
       {
         id: 'H1',
         title: 'Crabtree effect',
         finding:
-          'Biomass yield (0.14–0.35 g/g) is well below the respiratory target of ≥0.38 g/g across all batches. Specific glucose feed rates exceeded the Crabtree threshold (qₛ > 0.25 g/g/h) in B01–B03 throughout, and transiently at fed-batch initiation in all batches. Carbon diverted to ethanol instead of the mevalonate pathway is the leading explanation for the 96-fold astaxanthin yield drop vs. shake flasks.',
+          'Biomass yield (0.14–0.35 g/g) is well below the respiratory target of ≥0.38 g/g across all batches. Specific glucose feed rates exceeded the Crabtree threshold (qₛ > 0.25 g/g/h) in B01–B03 throughout, and transiently at fed-batch initiation in all batches. Carbon diverted to ethanol instead of the mevalonate pathway is the leading explanation for the >50-fold astaxanthin yield drop vs. shake flasks.',
         status:
           'Supported by carbon balance and qₛ analysis. Unconfirmed — no glucose or ethanol measurements available.',
       },
@@ -575,7 +570,7 @@ export const jnmNarrative: ReportNarrative = {
       },
     ],
     closing:
-      'The hypotheses are not mutually exclusive. H1, H2, and H3 can all operate simultaneously, and H4 is the proximate consequence of H3. The most actionable finding is that product toxicity — not an inherent genetic limitation of the strain — appears to be driving the instability. This is remediable: B06 is the most metabolically stable batch in the dataset precisely because IPM continuously extracts the carotenoid burden. The path to a productive bioreactor process likely requires combining controlled glucose feeding (to address H1) with in-situ extraction from the start of the run (to address H3 and thereby H4), and verifying trace metal adequacy at scale (H2).\n\nThe late steps of the astaxanthin biosynthetic pathway — ketolase and hydroxylase — are iron- and copper-dependent oxidoreductases. At high cell density, intracellular demand for these metals can exceed delivery from the fixed-concentration trace metal stock, causing selective failure of non-essential heterologous pathway enzymes while essential housekeeping metalloproteins remain functional. This hypothesis explains the disproportionate accumulation of pathway intermediates relative to final product.',
+      'The hypotheses are not mutually exclusive. H1, H2, and H3 can all operate simultaneously, and H4 is the proximate consequence of H3. The most actionable finding is that product toxicity — not an inherent genetic limitation of the strain — appears to be driving the instability. This is remediable: B06 is the most metabolically stable batch in the dataset precisely because IPM continuously extracts the carotenoid burden. The path to a productive bioreactor process likely requires combining controlled glucose feeding (to address H1) with in-situ extraction from the start of the run (to address H3 and thereby H4), and verifying trace metal adequacy at scale (H2).',
     bullets: [],
   },
 }
