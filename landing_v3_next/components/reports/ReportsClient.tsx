@@ -524,35 +524,6 @@ function ReportsClient({ report, referenceCatalog }: ReportsClientProps) {
               ))}
             </div>
 
-            {/* Causal-structure summary table */}
-            <div className="causal-structure glass-card">
-              <h3 className="causal-heading">{report.hypothesisDiscussion.causalStructure.heading}</h3>
-              <p className="causal-intro">{report.hypothesisDiscussion.causalStructure.intro}</p>
-              <div className="causal-table-wrap">
-                <table className="causal-table">
-                  <thead>
-                    <tr>
-                      <th>Hypothesis</th>
-                      <th>Role and connections</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {report.hypothesisDiscussion.causalStructure.rows.map((row) => (
-                      <tr key={row.id}>
-                        <td className="causal-hyp-cell">
-                          <span className="causal-hyp-id">{row.id}</span>
-                          <span className="causal-hyp-name">{row.title}</span>
-                        </td>
-                        <td className="causal-text-cell">{row.text}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              {report.hypothesisDiscussion.closingNote && (
-                <p className="causal-closing-note">{report.hypothesisDiscussion.closingNote}</p>
-              )}
-            </div>
           </section>
         )}
 

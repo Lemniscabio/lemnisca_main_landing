@@ -937,6 +937,87 @@ const CAROTENOID_DATA: Array<{
   { name: 'Beta carotene',  color: '#009e73', values: [2.3,  38.6] },
 ]
 
+function makeAstaxanthinYieldChart(): Highcharts.Options {
+  const data = [
+    { name: 'Batch-I', y: 0.03 },
+    { name: 'Batch-II', y: 0.06 },
+    { name: 'Batch-III', y: 0.03 },
+    { name: 'Batch-IV', y: 0.08 },
+    { name: 'Batch-V', y: 0.07 },
+    { name: 'Batch-VI', y: 0.12 },
+    { name: 'YNB AA + w/o IPM T-1a', y: 1.09 },
+    { name: 'YNB AA + w/o IPM T-1b', y: 1.06 },
+    { name: 'YNB AA + w/o IPM T-2a', y: 1.05 },
+    { name: 'YNB AA + w/o IPM T-2b', y: 1.08 },
+    { name: 'YNB AA + with 20% IPM T-3a', y: 1.07 },
+    { name: 'YNB AA + with 20% IPM T-3b', y: 1.14 },
+    { name: 'YNB AA + with 20% IPM T-4a', y: 0.93 },
+    { name: 'YNB AA + with 20% IPM T-4b', y: 1.05 },
+    { name: 'YNB 20% IPM + 0.4% Toco T-5a', y: 5.64 },
+    { name: 'YNB 20% IPM + 0.4% Toco T-5b', y: 6.18 },
+  ]
+
+  return {
+    ...sharedChartOptions,
+    chart: {
+      ...(sharedChartOptions.chart as Highcharts.ChartOptions),
+      type: 'column',
+      height: 420,
+    },
+    title: { text: undefined },
+    xAxis: {
+      ...(sharedChartOptions.xAxis as Highcharts.XAxisOptions),
+      title: { text: undefined },
+      categories: data.map((d) => d.name),
+      labels: {
+        rotation: -45,
+        style: { color: '#64748b', fontSize: '10px' },
+      },
+    },
+    yAxis: {
+      title: { text: 'mg Asta / g WCW', style: { color: '#64748b', fontSize: '12px' } },
+      labels: { style: { color: '#64748b', fontSize: '11px' } },
+      gridLineColor: 'rgba(0, 0, 0, 0.04)',
+      min: 0,
+    },
+    tooltip: {
+      ...(sharedChartOptions.tooltip as Highcharts.TooltipOptions),
+      headerFormat: '<b>{point.key}</b><br/>',
+      pointFormat: 'Yield: <b>{point.y} mg Asta/g WCW</b>',
+    },
+    plotOptions: {
+      column: {
+        borderRadius: 4,
+        borderWidth: 0,
+        colorByPoint: true,
+        dataLabels: {
+          enabled: true,
+          format: '{point.y}',
+          style: { color: '#475569', fontSize: '10px', fontWeight: '600', textOutline: 'none' },
+        },
+      },
+    },
+    legend: { enabled: false },
+    colors: [
+      // Batch I–VI: muted color
+      '#94a3b8', '#94a3b8', '#94a3b8', '#94a3b8', '#94a3b8', '#94a3b8',
+      // Shake flasks w/o IPM
+      '#60a5fa', '#60a5fa', '#60a5fa', '#60a5fa',
+      // Shake flasks with 20% IPM
+      '#34d399', '#34d399', '#34d399', '#34d399',
+      // IPM + Toco
+      '#f97316', '#f97316',
+    ],
+    series: [
+      {
+        type: 'column' as const,
+        name: 'Total yield of Asta',
+        data: data.map((d) => d.y),
+      },
+    ],
+  }
+}
+
 function makeCarotenoidConversionChart(): Highcharts.Options {
   return {
     ...sharedChartOptions,
@@ -1381,6 +1462,7 @@ const BUILDERS: Record<string, ChartBuilder> = {
   ourDecomposition:  makeOURDecompositionChart,
   kLa:               makeKLaChart,
   carotenoidConversion: makeCarotenoidConversionChart,
+  astaxanthinYield: makeAstaxanthinYieldChart,
 }
 
 /**

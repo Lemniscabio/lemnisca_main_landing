@@ -270,13 +270,20 @@ export const jnmNarrative: ReportNarrative = {
     // ─── A8 (from deck Slide 10 + conversion-profile slide) ───────────────
     {
       id: 'a8',
-      title: 'Astaxanthin yield drops ~96-fold in fermenters',
+      title: 'Astaxanthin yield and % conversion reduce significantly in fermenters',
       description:
         'Fermenters show an average ~96-fold drop in astaxanthin yield and an average ~8-fold drop in total carotenoids yield compared to the shake flasks. Although the Crabtree effect might explain this, genetic stability may also be a potential cause.',
       verdict: 'partially',
       verdictSummary:
         'Conversion of carotenoid intermediates to astaxanthin drops from ~63% (shake flask, YNB AA + 20% IPM + 0.4% Toco T-5b) to ~4% (B06). The accumulation of pathway intermediates with only ~3.2% conversion of precursors to astaxanthin in B06 is consistent with metalloenzyme failure due to iron/copper depletion at WCW > 300 g/L.',
       evidence: [
+        {
+          type: 'chart',
+          title: 'Total Yield of Astaxanthin per Batch',
+          description:
+            'Fermenters show a 50-fold drop in astaxanthin yield compared to the shake flasks. Batch I–VI achieve only 0.03–0.12 mg Asta/g WCW, whereas shake-flask conditions (YNB AA ± IPM ± Toco) reach 0.93–6.18 mg Asta/g WCW.',
+          chartId: 'astaxanthinYield',
+        },
         {
           type: 'chart',
           title: 'Carotenoid Conversion Profile — Shake Flask vs B06',

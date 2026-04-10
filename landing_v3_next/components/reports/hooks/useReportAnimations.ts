@@ -45,22 +45,6 @@ export function useReportAnimations() {
         }
       )
 
-      gsap.fromTo(
-        '.rec-card',
-        { opacity: 0, y: 30, scale: 0.95 },
-        {
-          opacity: 1,
-          y: 0,
-          scale: 1,
-          duration: 0.5,
-          stagger: 0.12,
-          ease: 'power3.out',
-          scrollTrigger: {
-            trigger: '.recommendations-grid',
-            start: 'top 80%',
-          },
-        }
-      )
     })
 
     return () => mm.revert()
