@@ -33,6 +33,231 @@
   --r-radius-xs: 6px;
 }
 
+/* ─── Tab Header ──────────────────────────────────────────────────────────── */
+
+.report-tab-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: var(--dynamic-right, 0px);
+  height: var(--r-topbar-height);
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--r-border);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  transition: right 300ms var(--ease-out-quint);
+}
+
+.tab-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.tab-header-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+
+.tab-logo-img {
+  height: 22px;
+  width: auto;
+}
+
+.tab-header-sep {
+  color: var(--r-text-muted);
+  font-size: 13px;
+}
+
+.tab-header-company {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--r-text-secondary);
+}
+
+.tab-header-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.tab-header-btn {
+  position: relative;
+  padding: 8px 20px;
+  border: none;
+  background: transparent;
+  border-radius: 100px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--r-text-secondary);
+  transition: color 150ms ease, background 150ms ease;
+}
+
+.tab-header-btn:hover {
+  color: var(--r-primary);
+  background: var(--r-primary-bg);
+}
+
+.tab-header-btn:active {
+  transform: scale(0.97);
+}
+
+.tab-header-btn.active {
+  color: var(--r-primary);
+  font-weight: 600;
+  background: var(--r-primary-bg);
+}
+
+.tab-header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.logout-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: transparent;
+  border-radius: 50%;
+  cursor: pointer;
+  color: var(--r-text-muted);
+  transition: all 150ms ease;
+}
+
+.logout-btn:hover {
+  background: var(--r-danger-bg);
+  color: var(--r-danger);
+}
+
+.logout-btn:active {
+  transform: scale(0.97);
+}
+
+/* ─── Logout Modal ────────────────────────────────────────────────────────── */
+
+.logout-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: tabFadeIn 150ms ease-out both;
+}
+
+.logout-modal {
+  background: #fff;
+  border-radius: var(--r-radius);
+  padding: 32px;
+  width: 380px;
+  max-width: 90vw;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.12);
+}
+
+.logout-modal-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--r-text);
+  margin-bottom: 8px;
+}
+
+.logout-modal-desc {
+  font-size: 14px;
+  color: var(--r-text-secondary);
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+
+.logout-modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.logout-modal-cancel {
+  padding: 8px 20px;
+  border: 1px solid var(--r-border);
+  background: #fff;
+  border-radius: var(--r-radius-sm);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--r-text-secondary);
+  transition: all 150ms ease;
+}
+
+.logout-modal-cancel:hover {
+  background: rgba(0, 0, 0, 0.03);
+  color: var(--r-text);
+}
+
+.logout-modal-confirm {
+  padding: 8px 20px;
+  border: none;
+  background: var(--r-danger);
+  border-radius: var(--r-radius-sm);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  transition: all 150ms ease;
+}
+
+.logout-modal-confirm:hover {
+  opacity: 0.9;
+}
+
+.logout-modal-confirm:active {
+  transform: scale(0.97);
+}
+
+/* ─── Tab Panel Animation ─────────────────────────────────────────────────── */
+
+.tab-panel {
+  animation: tabFadeIn 200ms cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+
+@keyframes tabFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tab-panel {
+    animation: none;
+  }
+}
+
+/* ─── Tab Layout (no sidebar) ─────────────────────────────────────────────── */
+
+.reports-main.tab-layout {
+  margin-left: 0;
+  max-width: calc(100vw - var(--dynamic-right, 0px));
+}
+
 /* ─── Page Layout ──────────────────────────────────────────────────────────── */
 
 .reports-page {
@@ -2597,6 +2822,98 @@
 
 .print-cover-page {
   display: none;
+}
+
+/* ─── Analysis Cross-Reference Links ──────────────────────────────────────── */
+
+.analysis-xref {
+  display: inline;
+  padding: 1px 6px;
+  margin: 0 1px;
+  border: 1px solid rgba(37, 99, 235, 0.2);
+  background: rgba(37, 99, 235, 0.06);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: inherit;
+  font-weight: 600;
+  font-family: inherit;
+  color: var(--r-primary-light);
+  transition: all 150ms ease;
+  line-height: inherit;
+  vertical-align: baseline;
+}
+
+.analysis-xref:hover {
+  background: var(--r-primary-bg);
+  border-color: var(--r-primary-light);
+  color: var(--r-primary);
+}
+
+.analysis-xref:active {
+  transform: scale(0.95);
+}
+
+/* ─── References Tab ──────────────────────────────────────────────────────── */
+
+.references-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.reference-card {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  padding: 24px 28px;
+}
+
+.ref-number {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--r-primary-bg);
+  color: var(--r-primary);
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 8px;
+}
+
+.ref-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.ref-citation {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--r-text);
+  line-height: 1.5;
+  margin-bottom: 6px;
+}
+
+.ref-description {
+  font-size: 13px;
+  color: var(--r-text-secondary);
+  line-height: 1.6;
+  margin-bottom: 8px;
+}
+
+.ref-used-by {
+  display: flex;
+  gap: 6px;
+}
+
+.ref-hyp-tag {
+  padding: 2px 10px;
+  background: var(--r-primary-bg);
+  color: var(--r-primary);
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 100px;
 }
 
 @media print {

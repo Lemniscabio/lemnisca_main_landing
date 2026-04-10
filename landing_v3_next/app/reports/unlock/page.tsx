@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, type FormEvent } from 'react'
+import { useState, type FormEvent, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import './unlock.css'
 
 export default function UnlockPage() {
@@ -8,6 +9,14 @@ export default function UnlockPage() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [idleBanner, setIdleBanner] = useState(false)
+  const searchParams = useSearchParams()
+
+  useEffect(() => {
+    if (searchParams.get('reason') === 'idle') {
+      setIdleBanner(true)
+    }
+  }, [searchParams])
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
@@ -76,6 +85,12 @@ export default function UnlockPage() {
             <span style={{ color: '#cbd5e1' }}>·</span>
             <span>protected report</span>
           </div>
+
+          {idleBanner && (
+            <div className="unlock-idle-banner">
+              Your session expired due to inactivity. Please log in again.
+            </div>
+          )}
 
           <h1 className="unlock-form-title">Protected Report</h1>
           <p className="unlock-form-desc">
