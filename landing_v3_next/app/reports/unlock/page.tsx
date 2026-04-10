@@ -1,10 +1,18 @@
 'use client'
 
-import { useState, type FormEvent, useEffect } from 'react'
+import { Suspense, useState, type FormEvent, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import './unlock.css'
 
 export default function UnlockPage() {
+  return (
+    <Suspense>
+      <UnlockPageInner />
+    </Suspense>
+  )
+}
+
+function UnlockPageInner() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
