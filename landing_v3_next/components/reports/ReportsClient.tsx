@@ -332,6 +332,7 @@ function ReportsClient({ report, referenceCatalog }: ReportsClientProps) {
               <section className="report-section" id="hypotheses">
                 <div className="section-header">
                   <span className="section-badge">Analyses</span>
+                  <h2 className="section-title">Analyses</h2>
                   <p className="section-desc">
                     Eight analyses were derived from the fermentation data to systematically investigate
                     inter-batch variability, identify process optimization opportunities, and explain the
@@ -470,20 +471,6 @@ function ReportsClient({ report, referenceCatalog }: ReportsClientProps) {
                           </div>
                         </div>
 
-                        <div className="hd-block hd-literature-block">
-                          <h4 className="hd-block-heading">Support from Literature</h4>
-                          <ul className="hd-literature-list">
-                            {h.literature.map((lit, i) => (
-                              <li key={i} className="hd-literature-item">
-                                <p className="hd-citation">{lit.citation}</p>
-                                <p className="hd-citation-desc">
-                                  <span className="hd-arrow" aria-hidden="true">→</span>{' '}
-                                  {lit.description}
-                                </p>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
 
                         <div className="hd-block hd-confirm-block">
                           <h4 className="hd-block-heading">What we need to confirm this</h4>
@@ -509,9 +496,6 @@ function ReportsClient({ report, referenceCatalog }: ReportsClientProps) {
                 <div className="section-header">
                   <span className="section-badge">References</span>
                   <h2 className="section-title">Literature References</h2>
-                  <p className="section-desc">
-                    All literature cited across the hypothesis analyses, deduplicated.
-                  </p>
                 </div>
 
                 <div className="references-list">
