@@ -79,7 +79,7 @@ export default function UnlockPage() {
 
           <h1 className="unlock-form-title">Protected Report</h1>
           <p className="unlock-form-desc">
-            Enter the password from your invitation email to view this report.
+            Enter the username and password from your invitation email to view this report.
           </p>
 
           <input
@@ -114,7 +114,7 @@ export default function UnlockPage() {
           </button>
 
           <p className="unlock-footnote">
-            This report is protected. If you don&apos;t have a password, please
+            This report is protected. If you don&apos;t have your credentials, please
             contact the Lemnisca team.
           </p>
         </form>
