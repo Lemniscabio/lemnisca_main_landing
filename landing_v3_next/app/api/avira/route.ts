@@ -1,12 +1,16 @@
-import { GoogleGenAI } from '@google/genai'
+import { PostHogGoogleGenAI } from '@posthog/ai/gemini'
 import { NextResponse } from 'next/server'
 import { buildSystemPrompt, buildUserMessage } from '@/lib/reports/avira-prompt'
 import { resolveReference } from '@/lib/reports/avira-references'
 import { getReport } from '@/lib/reports/jnm'
+import { getPostHogServer } from '@/lib/posthog-server'
 
 export const runtime = 'nodejs'
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! })
+const ai = new PostHogGoogleGenAI({
+  apiKey: process.env.GEMINI_API_KEY!,
+  posthog: getPostHogServer(),
+})
 
 // ── In-memory rate limiter (per-IP sliding window) ─────────────────────────
 // 10 messages per 60 seconds. Single-process MVP — same caveat as the auth
@@ -83,16 +87,21 @@ export async function POST(request: Request) {
     const systemPrompt = buildSystemPrompt(report)
     const userMessage = buildUserMessage(question, resolvedRefs)
 
-    // Create chat with history and stream response
-    const chat = ai.chats.create({
+    // Build contents array: history + new user message
+    const contents = [
+      ...history,
+      { role: 'user' as const, parts: [{ text: userMessage }] },
+    ]
+
+    const stream = await ai.models.generateContentStream({
       model: 'gemini-2.5-flash',
+      contents,
       config: {
         systemInstruction: systemPrompt,
       },
-      history,
+      posthogDistinctId: 'anonymous',
+      posthogProperties: { feature: 'avira' },
     })
-
-    const stream = await chat.sendMessageStream({ message: userMessage })
 
     // Convert to ReadableStream for the frontend
     const encoder = new TextEncoder()

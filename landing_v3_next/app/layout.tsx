@@ -1,5 +1,7 @@
 import { Inter, Playfair_Display } from 'next/font/google'
   import './globals.css'
+  import { PostHogProvider } from '@/components/PostHogProvider'
+  import { PostHogPageView } from '@/components/PostHogPageView'
 
   const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
   const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfair' })
@@ -17,21 +19,12 @@ import { Inter, Playfair_Display } from 'next/font/google'
   export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
       <html lang="en" className={`${inter.variable} ${playfair.variable}`}>
-        <head>
-          {/* Google Analytics */}
-          <script async src="https://www.googletagmanager.com/gtag/js?id=YOUR_GA_ID" />
-          <script
-            dangerouslySetInnerHTML={{
-              __html: `
-                window.dataLayer = window.dataLayer || [];
-                function gtag(){dataLayer.push(arguments);}
-                gtag('js', new Date());
-                gtag('config', 'YOUR_GA_ID');
-              `,
-            }}
-          />
-        </head>
-        <body>{children}</body>
+        <body>
+          <PostHogProvider>
+            <PostHogPageView />
+            {children}
+          </PostHogProvider>
+        </body>
       </html>
     )
   }
