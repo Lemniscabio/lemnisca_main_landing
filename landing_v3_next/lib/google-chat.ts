@@ -14,10 +14,34 @@ function escapeHtml(s: string): string {
     .replace(/>/g, '&gt;')
 }
 
+function buildGmailBody(data: LeadData): string {
+  const received = data.createdAt.toUTCString()
+  const messageBlock = data.message ?? '(no message)'
+
+  return [
+    '',
+    '',
+    '',
+    '<----- Original form submission ----->',
+    `Received: ${received}`,
+    `From: ${data.name} <${data.email}>`,
+    `Organisation: ${data.organisation}`,
+    `Heard from: ${data.heardFrom}`,
+    '',
+    'Message:',
+    messageBlock,
+    '<----- End ----->',
+  ].join('\n')
+}
+
 function buildCard(data: LeadData) {
   const timestamp =
     data.createdAt.toISOString().replace('T', ' ').slice(0, 16) + ' UTC'
-  const gmailCompose = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(data.email)}&su=${encodeURIComponent('Re: Lemnisca inquiry')}`
+  const gmailCompose =
+    'https://mail.google.com/mail/?view=cm&fs=1' +
+    `&to=${encodeURIComponent(data.email)}` +
+    `&su=${encodeURIComponent('Re: Lemnisca inquiry')}` +
+    `&body=${encodeURIComponent(buildGmailBody(data))}`
 
   const widgets: unknown[] = [
     {
