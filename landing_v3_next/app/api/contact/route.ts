@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { connectToDatabase } from '@/lib/mongodb'
+import { notifyNewLead } from '@/lib/google-chat'
 
 interface ContactFormData {
   name: string
@@ -61,14 +62,17 @@ export async function POST(req: NextRequest) {
     }
 
     // Insert document
-    await collection.insertOne({
+    const doc = {
       name: name.trim(),
       email: email.trim().toLowerCase(),
       organisation: organisation.trim(),
       heardFrom: heardFrom.trim(),
       message: message?.trim() || null,
       createdAt: new Date(),
-    })
+    }
+    await collection.insertOne(doc)
+
+    await notifyNewLead(doc)
 
     return NextResponse.json({ success: true }, { status: 200 })
   } catch (error) {
