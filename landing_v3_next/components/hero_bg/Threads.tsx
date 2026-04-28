@@ -174,12 +174,22 @@ const Threads: React.FC<ThreadsProps> = ({
 
     const mesh = new Mesh(gl, { geometry, program });
 
-    // Set size once on mount - no resize listener
-    const { clientWidth, clientHeight } = container;
-    renderer.setSize(clientWidth, clientHeight);
-    program.uniforms.iResolution.value.r = clientWidth;
-    program.uniforms.iResolution.value.g = clientHeight;
-    program.uniforms.iResolution.value.b = clientWidth / clientHeight;
+    function applySize(width: number, height: number) {
+      renderer.setSize(width, height);
+      program.uniforms.iResolution.value.r = width;
+      program.uniforms.iResolution.value.g = height;
+      program.uniforms.iResolution.value.b = width / height;
+    }
+
+    applySize(container.clientWidth, container.clientHeight);
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      if (!entry) return;
+      const { width, height } = entry.contentRect;
+      if (width > 0 && height > 0) applySize(width, height);
+    });
+    resizeObserver.observe(container);
 
     let currentMouse = [0.5, 0.5];
     let targetMouse = [0.5, 0.5];
@@ -220,6 +230,7 @@ const Threads: React.FC<ThreadsProps> = ({
 
     return () => {
       if (animationFrameId.current) cancelAnimationFrame(animationFrameId.current);
+      resizeObserver.disconnect();
 
       if (enableMouseInteraction) {
         container.removeEventListener('mousemove', handleMouseMove);
