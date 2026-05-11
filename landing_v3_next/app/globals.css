@@ -73,26 +73,39 @@ html, body, #root {
 .main {
   font-family: var(--font-sans);
   overflow-x: hidden;
-  /* Isolate so the grain overlay's mix-blend-mode composites against
-     this page's pixels (and not whatever sits in the root stacking
-     context). Without this the blend collapses to grey on dark sections. */
-  isolation: isolate;
 }
 
-/* Global film-grain overlay.
-   - position: fixed → grain is anchored to the viewport, doesn't scroll
-     with the page (proper film-grain behavior).
-   - The SVG uses fractalNoise + a color matrix that produces high-contrast
-     grayscale grain (black + white specks, not soft white) so the overlay
-     blend mode produces real sparkle on dark sections and visible specks
-     on light sections.
-   - opacity 0.32 is the visible-grain sweet spot. Drop to 0.15 for whisper,
-     push to 0.45 for heavy 35mm-film. */
-.main::after {
+/* Film-grain overlay applied per-section (not at root) so the grain is
+   bounded to the page's actual content and doesn't bleed onto the root
+   background during overscroll.
+   - position: absolute → bounded to its parent section (which is
+     position: relative), not the viewport.
+   - grayscale + contrast-boosted SVG noise; overlay blend produces
+     sparkle on dark sections and visible specks on light sections.
+   - opacity 0.6 matches the previous global look. */
+.hero,
+.problem,
+.solution,
+.stats,
+.cta,
+.team,
+.prediction,
+.footer {
+  position: relative;
+}
+
+.hero::after,
+.problem::after,
+.solution::after,
+.stats::after,
+.cta::after,
+.team::after,
+.prediction::after,
+.footer::after {
   content: '';
-  position: fixed;
+  position: absolute;
   inset: 0;
-  z-index: 1000;
+  z-index: 1;
   pointer-events: none;
   opacity: 0.6;
   mix-blend-mode: overlay;

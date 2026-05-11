@@ -300,29 +300,48 @@ function App() {
     return () => ctx.revert()
   }, [])
 
-  // Re-scroll to hash target after images/fonts settle.
-  // Browser fires the initial hash scroll before lazy content loads,
-  // which causes mid-page landings on production builds.
+  // Cancel the browser's premature hash jump, wait for content to settle,
+  // then perform a single smooth scroll to the target so the user sees
+  // the page glide down to #prediction instead of snapping there.
   useEffect(() => {
     if (typeof window === 'undefined') return
     if (!window.location.hash) return
 
-    const scrollToHash = () => {
-      const id = window.location.hash.slice(1)
+    const id = window.location.hash.slice(1)
+
+    // Prevent the browser from auto-scrolling to the hash before assets load.
+    const prevRestoration = history.scrollRestoration
+    history.scrollRestoration = 'manual'
+    window.scrollTo(0, 0)
+
+    let cancelled = false
+
+    const smoothScroll = () => {
+      if (cancelled) return
       const el = document.getElementById(id)
-      if (el) el.scrollIntoView({ behavior: 'auto', block: 'start' })
+      if (!el) return
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' })
     }
 
-    const t1 = window.setTimeout(scrollToHash, 100)
-    const t2 = window.setTimeout(scrollToHash, 600)
-    const t3 = window.setTimeout(scrollToHash, 1500)
-    window.addEventListener('load', scrollToHash)
+    // Fire the smooth scroll once everything is settled.
+    // Falls back to a max-wait so we never stall on a slow asset.
+    const ready =
+      document.readyState === 'complete'
+        ? Promise.resolve()
+        : new Promise<void>((resolve) =>
+            window.addEventListener('load', () => resolve(), { once: true })
+          )
+
+    const timeout = new Promise<void>((resolve) => setTimeout(resolve, 1200))
+
+    Promise.race([ready, timeout]).then(() => {
+      // One extra frame so layout finishes after load.
+      requestAnimationFrame(smoothScroll)
+    })
 
     return () => {
-      window.clearTimeout(t1)
-      window.clearTimeout(t2)
-      window.clearTimeout(t3)
-      window.removeEventListener('load', scrollToHash)
+      cancelled = true
+      history.scrollRestoration = prevRestoration
     }
   }, [])
 
