@@ -300,6 +300,32 @@ function App() {
     return () => ctx.revert()
   }, [])
 
+  // Re-scroll to hash target after images/fonts settle.
+  // Browser fires the initial hash scroll before lazy content loads,
+  // which causes mid-page landings on production builds.
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    if (!window.location.hash) return
+
+    const scrollToHash = () => {
+      const id = window.location.hash.slice(1)
+      const el = document.getElementById(id)
+      if (el) el.scrollIntoView({ behavior: 'auto', block: 'start' })
+    }
+
+    const t1 = window.setTimeout(scrollToHash, 100)
+    const t2 = window.setTimeout(scrollToHash, 600)
+    const t3 = window.setTimeout(scrollToHash, 1500)
+    window.addEventListener('load', scrollToHash)
+
+    return () => {
+      window.clearTimeout(t1)
+      window.clearTimeout(t2)
+      window.clearTimeout(t3)
+      window.removeEventListener('load', scrollToHash)
+    }
+  }, [])
+
   return (
     <div className='main' ref={mainRef}>
 
@@ -505,7 +531,7 @@ function App() {
             <h2>Ready to transform your bioprocess scale-up?</h2>
             <p>Let's discuss how we can accelerate your path from lab to production.</p>
           </div>
-          <a href="https://calendly.com/pushkarpendse/30min" target="_blank" rel="noopener noreferrer">
+          <a href="https://calendly.com/pushkar-lemnisca/30min" target="_blank" rel="noopener noreferrer">
             <button className='btn-primary'>Book a call <ArrowRight size={18} /></button>
           </a>
         </div>
