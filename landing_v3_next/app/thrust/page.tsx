@@ -1,14 +1,19 @@
-import SiteHeader from '@/components/SiteHeader'
+import ComingSoon from '@/components/coming_soon/ComingSoon'
 
 export const metadata = {
-  title: 'Thrust — Lemnisca',
+  title: 'Thrust | Lemnisca',
 }
 
 export default function ThrustPage() {
   return (
-    <div className="page_shell">
-      <SiteHeader />
-      <main className="page_shell_main" />
-    </div>
+    <ComingSoon
+      product="Thrust"
+      tagline="Move from pilot evidence to industrial-scale confidence. Full product launching soon."
+      palette={{
+        base: '#050d12',
+        orbs: ['#1E4A5C', '#0B1F2A', '#E85D3A'],
+        accent: '#E85D3A',
+      }}
+    />
   )
 }

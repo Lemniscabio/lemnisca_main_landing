@@ -1,14 +1,19 @@
-import SiteHeader from '@/components/SiteHeader'
+import ComingSoon from '@/components/coming_soon/ComingSoon'
 
 export const metadata = {
-  title: 'Torch — Lemnisca',
+  title: 'Torch | Lemnisca',
 }
 
 export default function TorchPage() {
   return (
-    <div className="page_shell">
-      <SiteHeader />
-      <main className="page_shell_main" />
-    </div>
+    <ComingSoon
+      product="Torch"
+      tagline="Stop scaling up your fermentation process in the dark. Carry your Torch along. Full product launching soon."
+      palette={{
+        base: '#0A0306',
+        orbs: ['#C73578', '#8B1E5C', '#F0A8C7'],
+        accent: '#F0A8C7',
+      }}
+    />
   )
 }
