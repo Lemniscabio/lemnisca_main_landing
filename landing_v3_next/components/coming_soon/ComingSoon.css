@@ -41,7 +41,7 @@
     var(--cs-orb-1) 0%,
     color-mix(in oklab, var(--cs-orb-1) 40%, transparent) 40%,
     transparent 70%);
-  animation: cs_drift_a 38s ease-in-out infinite alternate;
+  animation: cs_drift_a 24s ease-in-out infinite alternate;
 }
 
 .cs_orb--2 {
@@ -51,7 +51,7 @@
     var(--cs-orb-2) 0%,
     color-mix(in oklab, var(--cs-orb-2) 35%, transparent) 45%,
     transparent 72%);
-  animation: cs_drift_b 46s ease-in-out infinite alternate;
+  animation: cs_drift_b 30s ease-in-out infinite alternate;
 }
 
 .cs_orb--3 {
@@ -64,20 +64,34 @@
     var(--cs-orb-3) 0%,
     color-mix(in oklab, var(--cs-orb-3) 30%, transparent) 50%,
     transparent 75%);
-  animation: cs_drift_c 32s ease-in-out infinite alternate;
+  animation:
+    cs_drift_c 20s ease-in-out infinite alternate,
+    cs_breathe 14s ease-in-out infinite;
 }
 
+/* Motion design notes:
+   - Travel distance is ~15-22vmax (was 6-10vmax). Now visibly perceptible
+     but still organic. Heavy blur + grain hide any banding that a faster
+     animation would expose.
+   - Cycle times are co-prime (20/24/30s) so the three orbs never realign
+     into a repeating composite pattern. Feels generative.
+   - cs_breathe oscillates a single orb's opacity to give the whole scene
+     a subtle inhale/exhale rhythm. */
 @keyframes cs_drift_a {
-  0%   { transform: translate3d(0, 0, 0) scale(1); }
-  100% { transform: translate3d(8vmax, 6vmax, 0) scale(1.08); }
+  0%   { transform: translate3d(-4vmax, -2vmax, 0) scale(1); }
+  100% { transform: translate3d(15vmax, 10vmax, 0) scale(1.12); }
 }
 @keyframes cs_drift_b {
-  0%   { transform: translate3d(0, 0, 0) scale(1.05); }
-  100% { transform: translate3d(-6vmax, -4vmax, 0) scale(1); }
+  0%   { transform: translate3d(3vmax, 2vmax, 0) scale(1.05); }
+  100% { transform: translate3d(-14vmax, -9vmax, 0) scale(0.95); }
 }
 @keyframes cs_drift_c {
-  0%   { transform: translate3d(0, 0, 0) scale(0.95); }
-  100% { transform: translate3d(-10vmax, 8vmax, 0) scale(1.1); }
+  0%   { transform: translate3d(6vmax, -3vmax, 0) scale(0.9); }
+  100% { transform: translate3d(-18vmax, 14vmax, 0) scale(1.18); }
+}
+@keyframes cs_breathe {
+  0%, 100% { opacity: 0.45; }
+  50%      { opacity: 0.75; }
 }
 
 /* Vignette: pull eyes toward center, deepen edges. */
@@ -171,5 +185,5 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .cs_orb { animation: none; }
+  .cs_orb { animation: none !important; }
 }
