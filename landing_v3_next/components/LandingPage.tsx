@@ -7,6 +7,7 @@ import { FlaskConical, FlaskConicalOff, TrendingUp, TrendingDown, Target, Circle
 import LinkedinIcon from './Linkedin'
 import LogoMarquee from '@/components/partners_marquee/LogoMarquee'
 import Threads from '@/components/hero_bg/Threads'
+import SiteHeader from '@/components/SiteHeader'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -307,10 +308,7 @@ function App() {
         <div className='hero_background_graphic'>
           <Threads color={[1, 1, 1]} amplitude={1} distance={0} enableMouseInteraction={true} />
         </div>
-        <div className='hero_header'>
-          <img src="/assets/Landing_assets/logo.svg" alt="lemnisca"/>
-          <a href="#prediction"><button>Enter the loop</button></a>
-        </div>
+        <SiteHeader variant="hero" />
 
         <div className='hero_main'>
           <div className='hero_content'>
