@@ -29,6 +29,18 @@ function externalLinkProps(href: string) {
   return href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {};
 }
 
+// Split "by Lemnisca" into { pre: "by", rest: "Lemnisca" } so we can stack them
+// like the footer. If the suffix has no space, render the whole thing as `rest`.
+function brandSuffixParts(suffix: string): { pre: string; rest: string } {
+  const trimmed = suffix.trim();
+  const firstSpace = trimmed.indexOf(' ');
+  if (firstSpace === -1) return { pre: '', rest: trimmed };
+  return {
+    pre: trimmed.slice(0, firstSpace),
+    rest: trimmed.slice(firstSpace + 1),
+  };
+}
+
 function isActiveRoute(href: string, pathname: string | null) {
   if (!pathname || href.startsWith('http') || href.startsWith('#')) return false;
   if (href === '/') return pathname === '/';
@@ -88,9 +100,20 @@ export function HeroNav({ brand, brandSuffix, items }: HeroNavProps) {
       ) : null}
 
       <div className="relative z-10 flex items-center justify-between px-6 py-5 md:px-10 lg:px-14">
+        {/* Brand block — mirrors the footer's "TUNE by Lemnisca" arrangement:
+            big brand on the left, tiny "by" stacked above a slightly larger
+            "Lemnisca" on the right, bottom-aligned with the brand's baseline.
+
+            ── SIZING KNOBS ──────────────────────────────────────────────
+              • Brand "Tune"      → text-[30px]            (line below)
+              • "by" small label  → text-[10px] md:text-[11px]
+              • "Lemnisca" label  → text-[14px] md:text-[15px]
+              • Gap brand↔stack   → gap-2.5
+              • Stack bottom nudge→ pb-[2px]   (drops "Lemnisca" onto baseline)
+            Increase/decrease any of these to taste; they're independent. */}
         <Link
           href="/"
-          className="group inline-flex items-baseline gap-2.5 transition-opacity duration-200 hover:opacity-85"
+          className="group inline-flex items-end gap-2.5 transition-opacity duration-200 hover:opacity-85"
         >
           <span
             className={`text-[30px] leading-none font-semibold tracking-[-0.02em] transition-colors duration-300 ${
@@ -101,11 +124,16 @@ export function HeroNav({ brand, brandSuffix, items }: HeroNavProps) {
           </span>
           {brandSuffix && (
             <span
-              className={`text-[12px] font-medium tracking-[0.02em] transition-colors duration-300 ${
+              className={`flex flex-col items-start leading-none pb-[2px] transition-colors duration-300 ${
                 scrolled || menuOpen ? 'text-blue-900/70' : 'text-white'
               }`}
             >
-              {brandSuffix}
+              <span className="text-[10px] font-medium tracking-[0.02em] md:text-[11px]">
+                {brandSuffixParts(brandSuffix).pre}
+              </span>
+              <span className="text-[14px] font-medium tracking-[-0.02em] md:text-[15px]">
+                {brandSuffixParts(brandSuffix).rest}
+              </span>
             </span>
           )}
         </Link>
