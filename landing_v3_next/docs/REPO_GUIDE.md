@@ -92,6 +92,7 @@ The Tune header (`products/tune/features/hero/HeroNav.tsx`) now exposes all thre
 
 - **Desktop (md+):** all items render inline. Identical to the main site header's desktop strip.
 - **Mobile (<md):** only the CTA pill and a hamburger toggle are visible on the bar. Tapping the toggle expands a sheet directly beneath the bar with the three product links. Closes on tap, on Escape, or on resize past the md breakpoint.
+- **Active-route indication:** the current page's nav link is marked with a persistent underline + medium font weight on desktop, and a tinted background + small `Current` label on the mobile sheet. Detection uses `usePathname()` from `next/navigation` plus a small helper that treats `/tune` as active for `/tune` and any `/tune/*` subpath. External (`http*`) and anchor (`#*`) hrefs are never marked active. The link also gets `aria-current="page"` for screen readers.
 
 **Implementation notes for the future Thrust/Torch headers:**
 - The nav source is `products/tune/content/shared.content.ts` → `shared.nav.items`. When Thrust merges, create `products/thrust/content/shared.content.ts` with the same shape (the four items: Tune, Thrust, Torch, CTA). Each product owns its own copy because the CTA URL and brand text may differ.

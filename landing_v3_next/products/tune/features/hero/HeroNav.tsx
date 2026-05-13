@@ -14,6 +14,7 @@
 // from any product page without crowding narrow viewports.
 
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 type NavItem = { label: string; href: string; cta?: boolean };
@@ -28,7 +29,14 @@ function externalLinkProps(href: string) {
   return href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {};
 }
 
+function isActiveRoute(href: string, pathname: string | null) {
+  if (!pathname || href.startsWith('http') || href.startsWith('#')) return false;
+  if (href === '/') return pathname === '/';
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
+
 export function HeroNav({ brand, brandSuffix, items }: HeroNavProps) {
+  const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -105,7 +113,12 @@ export function HeroNav({ brand, brandSuffix, items }: HeroNavProps) {
         {/* Desktop nav — all items inline. */}
         <nav className="hidden items-center gap-7 md:flex">
           {items.map((item) => (
-            <NavItem key={item.label} item={item} scrolled={scrolled} />
+            <NavItem
+              key={item.label}
+              item={item}
+              scrolled={scrolled}
+              active={isActiveRoute(item.href, pathname)}
+            />
           ))}
         </nav>
 
@@ -153,17 +166,33 @@ export function HeroNav({ brand, brandSuffix, items }: HeroNavProps) {
             className="relative z-10 flex flex-col gap-1 px-6 pb-6"
             aria-label="Mobile primary"
           >
-            {navLinks.map((item) => (
-              <Link
-                key={item.label}
-                href={item.href}
-                {...externalLinkProps(item.href)}
-                onClick={() => setMenuOpen(false)}
-                className="rounded-xl px-3 py-3 text-[16px] font-medium text-blue-900 transition-colors duration-150 hover:bg-blue-900/5"
-              >
-                {item.label}
-              </Link>
-            ))}
+            {navLinks.map((item) => {
+              const active = isActiveRoute(item.href, pathname);
+              return (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  {...externalLinkProps(item.href)}
+                  onClick={() => setMenuOpen(false)}
+                  aria-current={active ? 'page' : undefined}
+                  className={`flex items-center justify-between rounded-xl px-3 py-3 text-[16px] font-medium transition-colors duration-150 ${
+                    active
+                      ? 'bg-blue-900/8 text-blue-900'
+                      : 'text-blue-900 hover:bg-blue-900/5'
+                  }`}
+                >
+                  <span>{item.label}</span>
+                  {active && (
+                    <span
+                      aria-hidden
+                      className="text-[12px] font-medium tracking-[0.06em] uppercase text-blue-900/55"
+                    >
+                      Current
+                    </span>
+                  )}
+                </Link>
+              );
+            })}
           </nav>
         </div>
       </div>
@@ -174,9 +203,11 @@ export function HeroNav({ brand, brandSuffix, items }: HeroNavProps) {
 function NavItem({
   item,
   scrolled,
+  active,
 }: {
   item: NavItem;
   scrolled: boolean;
+  active: boolean;
 }) {
   if (item.cta && scrolled) {
     return (
@@ -191,20 +222,23 @@ function NavItem({
     );
   }
 
+  // Active route gets a persistent underline + slight weight bump so the
+  // user always knows which product page they're on, even before hovering.
   return (
     <Link
       href={item.href}
       {...externalLinkProps(item.href)}
+      aria-current={active ? 'page' : undefined}
       className={`group relative text-[14px] transition-[color,transform] duration-150 ease-out active:scale-[0.985] ${
         scrolled ? 'text-blue-900 hover:text-blue-700' : 'text-white hover:text-white/85'
-      }`}
+      } ${active ? 'font-medium' : ''}`}
     >
       <span>{item.label}</span>
       <span
         aria-hidden
-        className={`absolute -bottom-1 left-0 h-px w-0 transition-[width] duration-200 ease-out group-hover:w-full ${
-          scrolled ? 'bg-blue-900/70' : 'bg-white'
-        }`}
+        className={`absolute -bottom-1 left-0 h-px transition-[width] duration-200 ease-out group-hover:w-full ${
+          active ? 'w-full' : 'w-0'
+        } ${scrolled ? 'bg-blue-900/70' : 'bg-white'}`}
       />
     </Link>
   );
