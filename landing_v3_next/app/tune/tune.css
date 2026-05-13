@@ -181,6 +181,16 @@
   }
 }
 
+/* Anchor scroll offset — the fixed HeroNav (~72px tall with its blur chrome)
+   would otherwise overlap the top of each section when the user jumps to an
+   #anchor. scroll-margin-top pushes the scroll target down by this amount so
+   the section header is fully visible below the nav.
+
+   Knob: change the px value. 96px = nav (~72px) + ~24px breathing room. */
+:where(.tune-page) [id] {
+  scroll-margin-top: 96px;
+}
+
 /* Selection + focus — scoped so main app's defaults are untouched. */
 :where(.tune-page) ::selection {
   background: var(--color-blue-500);
