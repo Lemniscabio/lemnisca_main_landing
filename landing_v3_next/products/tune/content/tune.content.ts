@@ -18,7 +18,7 @@ const tuneContent: ProductPageContent = {
     title: 'Tune · fermentation readiness and optimization · Lemnisca',
     description:
       'A Free 10-day sprint reads your strain, baseline, and assay drift, then returns a prioritized experiment plan, variance decomposition, and paid-fit verdict.',
-    canonical: 'https://lemnisca.bio/',
+    canonical: 'https://lemnisca.bio/tune',
   },
 
   // Mini-TOC reflects the new 4-section narrative architecture.
