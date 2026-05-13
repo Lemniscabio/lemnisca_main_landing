@@ -16,7 +16,12 @@ function withAccentPhrase(text: string, phrase: string): ReactNode {
     <>
       {text.slice(0, idx)}
       <span className="whitespace-nowrap">
-        <AccentUnderline delayMs={0}>{text.slice(idx, idx + phrase.length)}</AccentUnderline>
+        {/* Brand-key blue (matches --color-blue-500). On the white card the yellow
+            hero accent reads as too loud; the brand blue is softer and ties the
+            phrase visually to the page's primary palette. */}
+        <AccentUnderline delayMs={0} color="#4140FC">
+          {text.slice(idx, idx + phrase.length)}
+        </AccentUnderline>
       </span>
       {text.slice(idx + phrase.length)}
     </>

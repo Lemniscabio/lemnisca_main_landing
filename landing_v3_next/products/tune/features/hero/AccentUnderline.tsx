@@ -10,9 +10,15 @@ import type { ReactNode } from 'react';
 type AccentUnderlineProps = {
   children: ReactNode;
   delayMs?: number;
+  /** Stroke color for the underline. Defaults to the hero's yellow. */
+  color?: string;
 };
 
-export function AccentUnderline({ children, delayMs = 800 }: AccentUnderlineProps) {
+export function AccentUnderline({
+  children,
+  delayMs = 800,
+  color = '#FBFC40',
+}: AccentUnderlineProps) {
   const reduced = useReducedMotion();
 
   return (
@@ -31,7 +37,7 @@ export function AccentUnderline({ children, delayMs = 800 }: AccentUnderlineProp
         <motion.path
           d="M 3 9 C 35 6, 78 11, 110 7 S 175 5, 197 8"
           fill="none"
-          stroke="#FBFC40"
+          stroke={color}
           strokeWidth={4}
           strokeLinecap="round"
           initial={{ pathLength: reduced ? 1 : 0 }}
