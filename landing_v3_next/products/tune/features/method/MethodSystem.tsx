@@ -1,6 +1,6 @@
-import type { PaidLoop as PaidLoopContent } from '@/content/schema';
-import { AccentUnderline } from '@/features/hero/AccentUnderline';
-import { LoopComparisonViz } from '@/features/engagement/LoopComparisonViz';
+import type { PaidLoop as PaidLoopContent } from '@/products/tune/content/schema';
+import { AccentUnderline } from '@/products/tune/features/hero/AccentUnderline';
+import { LoopComparisonViz } from '@/products/tune/features/engagement/LoopComparisonViz';
 
 type MethodSystemProps = {
   section: PaidLoopContent;

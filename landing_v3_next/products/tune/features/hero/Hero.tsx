@@ -1,9 +1,9 @@
 'use client';
 
 import { motion } from 'motion/react';
-import { Button } from '@/design-system/primitives/Button';
-import { shared } from '@/content/shared.content';
-import type { Hero as HeroContent, SectionTocItem } from '@/content/schema';
+import { Button } from '@/products/tune/design-system/primitives/Button';
+import { shared } from '@/products/tune/content/shared.content';
+import type { Hero as HeroContent, SectionTocItem } from '@/products/tune/content/schema';
 import { DotLattice } from './DotLattice';
 import { ConcentricLoop } from './ConcentricLoop';
 import { AccentUnderline } from './AccentUnderline';

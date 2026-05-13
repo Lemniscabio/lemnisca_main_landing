@@ -3,8 +3,8 @@
 import { motion } from 'motion/react';
 import { useRef, useState } from 'react';
 import { useInView } from 'motion/react';
-import { shared } from '@/content/shared.content';
-import { Eyebrow } from '@/design-system/primitives/Eyebrow';
+import { shared } from '@/products/tune/content/shared.content';
+import { Eyebrow } from '@/products/tune/design-system/primitives/Eyebrow';
 
 const FAQS = [
   {

@@ -1,10 +1,10 @@
 'use client';
 
 import { motion } from 'motion/react';
-import type { EngagementJourney as EngagementJourneyContent } from '@/content/schema';
-import { CALENDLY_URL } from '@/content/shared.content';
-import { Eyebrow } from '@/design-system/primitives/Eyebrow';
-import { AccentUnderline } from '@/features/hero/AccentUnderline';
+import type { EngagementJourney as EngagementJourneyContent } from '@/products/tune/content/schema';
+import { CALENDLY_URL } from '@/products/tune/content/shared.content';
+import { Eyebrow } from '@/products/tune/design-system/primitives/Eyebrow';
+import { AccentUnderline } from '@/products/tune/features/hero/AccentUnderline';
 
 type EngagementSectionProps = {
   section: EngagementJourneyContent;

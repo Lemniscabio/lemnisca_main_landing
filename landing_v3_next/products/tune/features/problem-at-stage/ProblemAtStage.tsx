@@ -1,5 +1,5 @@
-import type { ProblemSection } from '@/content/schema';
-import { Eyebrow } from '@/design-system/primitives/Eyebrow';
+import type { ProblemSection } from '@/products/tune/content/schema';
+import { Eyebrow } from '@/products/tune/design-system/primitives/Eyebrow';
 
 type ProblemAtStageProps = {
   section: ProblemSection;

@@ -1,8 +1,8 @@
 'use client';
 
 import { motion } from 'motion/react';
-import type { SprintCta as SprintCtaContent } from '@/content/schema';
-import { CALENDLY_URL } from '@/content/shared.content';
+import type { SprintCta as SprintCtaContent } from '@/products/tune/content/schema';
+import { CALENDLY_URL } from '@/products/tune/content/shared.content';
 
 type SprintCtaProps = {
   section: SprintCtaContent;

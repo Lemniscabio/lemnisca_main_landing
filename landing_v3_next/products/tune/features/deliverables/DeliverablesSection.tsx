@@ -1,5 +1,5 @@
-import type { DeliverablesSection as DeliverablesSectionContent } from '@/content/schema';
-import { Eyebrow } from '@/design-system/primitives/Eyebrow';
+import type { DeliverablesSection as DeliverablesSectionContent } from '@/products/tune/content/schema';
+import { Eyebrow } from '@/products/tune/design-system/primitives/Eyebrow';
 
 type DeliverablesSectionProps = {
   section: DeliverablesSectionContent;
