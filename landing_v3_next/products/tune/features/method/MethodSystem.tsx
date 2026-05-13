@@ -47,20 +47,18 @@ export function MethodSystem({ section, id = 'how-method' }: MethodSystemProps) 
         <div className="mt-20 md:mt-24">
           <div className="max-w-[860px]">
             <h3 className="mt-5 text-[clamp(2rem,3.4vw,3rem)] font-medium leading-[1.04] tracking-[-0.03em] text-ink-black">
-              Tune explores{' '}
-              {/* SIZING KNOB for the 1000x callout — first triplet is text-[clamp(min, vw, max)].
-                  Current: clamp(3rem, 6.5vw, 5.4rem).
-                  To shrink: lower any/all three values. Examples:
-                    • Slight shrink → text-[clamp(2.6rem,5.6vw,4.4rem)]
-                    • Medium shrink → text-[clamp(2.2rem,4.8vw,3.8rem)]
-                  The middle (vw) is the scaling factor; the outer two clamp it on
-                  small / large viewports. */}
-              <span className="inline-block align-[-0.12em] text-[clamp(3rem,6.5vw,5.4rem)] font-semibold leading-[0.88] tracking-[-0.06em] text-ink-black">
-                1000x
-              </span>{' '}
-              {/* Keep "the design space." together so "space." doesn't get orphaned
-                  on the next line. Then force the second sentence to a new line. */}
-              <span className="whitespace-nowrap">the design space.</span>
+              {/* Two-line layout: sentence 1 wrapped in whitespace-nowrap so
+                  "Tune explores 1000x the design space." stays on a single
+                  line; sentence 2 forced to its own block below. If 1000x
+                  overflows on narrower viewports, shrink it via the clamp
+                  triplet on the inner span. */}
+              <span className="whitespace-nowrap">
+                Tune explores{' '}
+                <span className="inline-block align-[-0.12em] text-[clamp(3rem,6.5vw,5.4rem)] font-semibold leading-[0.88] tracking-[-0.06em] text-ink-black">
+                  1000x
+                </span>{' '}
+                the design space.
+              </span>
               <br />
               Run fewer but smarter experiments.
             </h3>
