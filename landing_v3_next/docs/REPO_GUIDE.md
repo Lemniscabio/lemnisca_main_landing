@@ -100,6 +100,33 @@ The Tune header (`products/tune/features/hero/HeroNav.tsx`) now exposes all thre
 - The hamburger uses an inline SVG (two morphing lines → X) rather than `lucide-react` to keep `products/tune/` free of external icon-library deps. Keep that pattern in Thrust/Torch.
 - The bar adopts the "scrolled" white-blur chrome whenever the menu is open OR scrolled past 80px. Without this, opening the menu over the transparent hero would leave the sheet floating against the blue gradient with no separation.
 
+### Root-level SEO & metadata (May 2026)
+The main landing was shipping with the Create-Next-App placeholder copy in its `<meta>` tags. Replaced with a full structured metadata block in `app/layout.tsx`:
+
+- **Title template**: `'%s · Lemnisca'`. Any child route that sets its own `metadata.title` automatically gets `' · Lemnisca'` appended in the browser tab.
+- **Description** (used everywhere — search snippet, OG, Twitter): the real Lemnisca tagline about biology as the ultimate manufacturing engine. Kept verbatim in a `const description` so all three locations (root description, openGraph.description, twitter.description) stay in sync from one source of truth.
+- **applicationName, authors, creator, publisher**: set to "Lemnisca".
+- **formatDetection**: disables iOS Safari auto-linking of phone numbers / emails / addresses in body copy (prevents marketing copy from being silently restyled by the browser).
+- **alternates.canonical**: `https://lemnisca.bio` at root; `app/page.tsx` re-declares it explicitly so future child routes can't inherit a wrong canonical via fallback.
+- **openGraph**: full `type`, `siteName`, `url`, structured `images` entry with `width`, `height`, `alt`.
+- **twitter**: `summary_large_image` card with title/description/images.
+- **robots**: explicit `{ index: true, follow: true }`.
+- **JSON-LD Organization schema** inlined in `<body>` (not the Metadata API — App Router doesn't yet have first-class JSON-LD support). Surfaces in Google Knowledge Graph, helps crawlers connect brand → site. Update its `sameAs` array when you have company-level LinkedIn / X / Crunchbase URLs.
+
+OG preview image: `public/preview.png` resized to **1200×630** (1.91:1 platform standard). The Tune product page has its own preview at `app/tune/opengraph-image.png` via Next.js's file-system OG convention — sharing `/tune` unfurls with the product image, sharing `/` unfurls with the marketing image. Future product pages should follow the same convention (`app/<product>/opengraph-image.png`).
+
+### Sticky on-scroll SiteHeader (May 2026)
+`components/SiteHeader.tsx` was changed from inline to **fixed** positioning to match the Tune `HeroNav` behavior:
+
+- Always `position: fixed; top: 0` regardless of scroll position.
+- Transparent at rest (so it floats over the dark hero).
+- Adds `.is-scrolled` modifier class once `window.scrollY > 80` (or when the mobile menu is open) — CSS swaps the bar to a white-blur chrome with a thin bottom border + soft shadow, mirroring Tune.
+- In `.is-scrolled`: logo flips to dark via `filter: brightness(0)`, CTA button border + text flip dark with inverted hover, nav-link colors fade to ink-black.
+- Nav links (`Tune`, `Thrust`, `Torch`) gain a hover underline via a `::after` pseudo-element that grows from `width: 0` to `100%` over 220ms. Underline uses `currentColor` so it inherits the text color in both transparent (white) and scrolled (dark) states with no extra rules.
+- `.hero` `padding-top` bumped from `2rem` → `5.5rem` to reserve space for the now-floating bar (previously the SiteHeader took flow space and provided its own offset).
+
+For future product page headers, follow `HeroNav.tsx` as the reference — same scroll threshold (80px), same chrome swap logic, scoped under the product's wrapper class.
+
 ### Post-merge bug fixes (and why they happened)
 We discovered three regressions after the initial merge. All three traced to the same root cause: Tune was built on top of Tailwind Preflight (the global CSS reset), and we deliberately skipped that import to avoid leaking it to the main marketing pages. We then had to re-implement the relevant subset of Preflight rules under `:where(.tune-page)`:
 

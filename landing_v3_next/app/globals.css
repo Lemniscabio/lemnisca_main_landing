@@ -225,15 +225,53 @@ html, body, #root {
   position: relative;
 }
 
+/* SiteHeader (and its hero variant) — fixed at the top of the viewport.
+   Transparent over the dark hero ground at rest; adopts a white-blur chrome
+   the moment `.is-scrolled` is toggled by SiteHeader.tsx (past ~80px or
+   when the mobile menu opens). Mirrors products/tune/features/hero/HeroNav.tsx
+   so the two products feel like one site. */
 .hero_header,
 .site_header {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   width: 100%;
   align-items: center;
-  position: relative;
-  z-index: 10;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 40;
   gap: 2rem;
+  padding: 1.25rem 4rem;
+  background-color: transparent;
+  border-bottom: 1px solid transparent;
+  backdrop-filter: blur(0);
+  -webkit-backdrop-filter: blur(0);
+  box-shadow: none;
+  transition:
+    background-color 0.3s ease,
+    backdrop-filter 0.3s ease,
+    -webkit-backdrop-filter 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.hero_header.is-scrolled,
+.site_header.is-scrolled {
+  background-color: rgba(255, 255, 255, 0.78);
+  border-bottom-color: rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  box-shadow:
+    inset 0 -1px 0 rgba(255, 255, 255, 0.16),
+    0 18px 54px -38px rgba(3, 8, 42, 0.2);
+}
+
+/* The hero section's first child used to be the inline SiteHeader; now that
+   the header is fixed, the hero content needs explicit top space so the
+   eyebrow/headline don't slide under the floating bar. */
+.hero {
+  padding-top: 5.5rem;
 }
 
 .site_header_logo {
@@ -264,17 +302,48 @@ html, body, #root {
 }
 
 .site_header_nav_link {
+  position: relative;
   color: white;
   text-decoration: none;
   font-size: 0.8rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   font-weight: 500;
-  opacity: 0.75;
-  transition: opacity 0.3s ease;
+  opacity: 0.85;
+  transition: color 0.3s ease, opacity 0.2s ease;
+}
+
+/* Hover underline — slides from left to right, matches Tune's HeroNav.
+   Uses currentColor so it auto-switches white → dark with the link color
+   when the header enters its .is-scrolled state. */
+.site_header_nav_link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  height: 1px;
+  width: 0;
+  background-color: currentColor;
+  transition: width 220ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .site_header_nav_link:hover {
+  opacity: 1;
+}
+
+.site_header_nav_link:hover::after {
+  width: 100%;
+}
+
+/* Scrolled state: dark text on the white-blur chrome. */
+.hero_header.is-scrolled .site_header_nav_link,
+.site_header.is-scrolled .site_header_nav_link {
+  color: #14110E;
+  opacity: 0.78;
+}
+
+.hero_header.is-scrolled .site_header_nav_link:hover,
+.site_header.is-scrolled .site_header_nav_link:hover {
   opacity: 1;
 }
 
@@ -303,6 +372,32 @@ html, body, #root {
 .site_header_cta button:hover {
   background-color: white;
   color: black;
+}
+
+/* Scrolled-state inversions for the logo + CTA so they don't disappear into
+   the white-blur chrome. Logo is a white SVG — `filter: brightness(0)` pushes
+   it to near-black. CTA flips its border + text to dark; hover inverts back. */
+.hero_header.is-scrolled .site_header_logo img,
+.site_header.is-scrolled .site_header_logo img {
+  filter: brightness(0);
+  transition: filter 0.3s ease;
+}
+
+.hero_header.is-scrolled button,
+.site_header.is-scrolled .site_header_cta button {
+  border-color: #14110E;
+  color: #14110E;
+}
+
+.hero_header.is-scrolled button:hover,
+.site_header.is-scrolled .site_header_cta button:hover {
+  background-color: #14110E;
+  color: white;
+}
+
+.hero_header.is-scrolled .site_header_menu_btn,
+.site_header.is-scrolled .site_header_menu_btn {
+  color: #14110E;
 }
 
 .site_header_menu_btn {

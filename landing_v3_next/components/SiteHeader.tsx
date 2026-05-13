@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Menu, X } from 'lucide-react'
 
@@ -21,8 +21,28 @@ type Props = {
 
 export default function SiteHeader({ variant = 'page', ctaHref }: Props) {
   const [open, setOpen] = useState(false)
+  // Mirrors Tune's HeroNav scroll-state: transparent over the dark hero,
+  // adopts the white-blur chrome past ~80px scroll. The CSS does the styling
+  // via the `is-scrolled` modifier class; this only flips the flag.
+  const [scrolled, setScrolled] = useState(false)
+
+  useEffect(() => {
+    function onScroll() {
+      setScrolled(window.scrollY > 80)
+    }
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
   const cta = ctaHref ?? (variant === 'hero' ? '#prediction' : '/#prediction')
-  const rootClass = `site_header${variant === 'hero' ? ' hero_header' : ''}`
+  const rootClass = [
+    'site_header',
+    variant === 'hero' ? 'hero_header' : '',
+    scrolled || open ? 'is-scrolled' : '',
+  ]
+    .filter(Boolean)
+    .join(' ')
 
   return (
     <div className={rootClass}>
