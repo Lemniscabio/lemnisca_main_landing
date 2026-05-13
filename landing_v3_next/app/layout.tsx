@@ -7,6 +7,7 @@ import { Inter, Playfair_Display } from 'next/font/google'
   const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfair' })
 
   export const metadata = {
+    metadataBase: new URL('https://lemnisca.bio'),
     title: 'Lemnisca',
     description: 'Your site description here',
     openGraph: {
