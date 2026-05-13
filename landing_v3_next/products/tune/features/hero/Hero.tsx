@@ -53,11 +53,11 @@ export function Hero({ hero, sectionToc }: HeroProps) {
         <DotLattice />
 
         <div className="relative mx-auto flex min-h-[100svh] max-w-[1320px] flex-col justify-center px-6 pt-32 pb-12 md:min-h-0 md:px-10 md:pt-40 md:pb-40 md:justify-start lg:px-14">
-          <div className="grid grid-cols-1 gap-12 md:grid-cols-12 md:gap-0">
+          <div className="grid grid-cols-1 gap-12 min-[1100px]:grid-cols-12 min-[1100px]:gap-0">
             {/* Left: cols 1–7 — eyebrow, headline, sub, CTAs.
                 Vertical-nudge knob lives in `md:-mt-10` (desktop/tablet only,
                 so it doesn't crowd the title under the nav on mobile). */}
-            <div className="md:col-span-7 md:-mt-10 md:pr-12">
+            <div className="min-[1100px]:col-span-7 min-[1100px]:-mt-10 min-[1100px]:pr-12">
               {hero.eyebrow && (
                 <p
                   className="label-m text-blue-200 motion-settle"
@@ -104,7 +104,7 @@ export function Hero({ hero, sectionToc }: HeroProps) {
             </div>
 
             {/* Right: cols 8–12 — auto-looping OPTDOE technical loop */}
-            <div className="flex items-center justify-center md:col-span-5 md:justify-center md:ml-16 min-[1100px]:-mt-16">
+            <div className="flex items-center justify-center min-[1100px]:col-span-5 min-[1100px]:justify-center min-[1100px]:ml-16 min-[1100px]:-mt-16">
               <ConcentricLoop />
             </div>
           </div>
