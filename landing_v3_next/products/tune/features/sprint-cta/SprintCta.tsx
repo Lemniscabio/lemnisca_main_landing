@@ -50,7 +50,7 @@ export function SprintCta({ section, id = 'engagement-start' }: SprintCtaProps) 
           />
 
           <div className="relative z-10 grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-stretch lg:gap-12">
-            <div className="flex min-h-[520px] flex-col justify-center lg:min-h-[600px]">
+            <div className="flex flex-col justify-center lg:min-h-[600px]">
               <h2 className="display-section max-w-[12ch] text-white">
                 {section.headline}
               </h2>
