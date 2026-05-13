@@ -46,8 +46,12 @@ export function MethodSystem({ section, id = 'how-method' }: MethodSystemProps) 
 
         <div className="mt-20 md:mt-24">
           <div className="max-w-[860px]">
-            <h3 className="mt-5 max-w-[16ch] text-[clamp(2rem,3.4vw,3rem)] font-medium leading-[1.04] tracking-[-0.03em] text-ink-black">
-              Run fewer but smarter experiments. 
+            <h3 className="mt-5 text-[clamp(2rem,3.4vw,3rem)] font-medium leading-[1.04] tracking-[-0.03em] text-ink-black">
+              Tune explores{' '}
+              <span className="inline-block align-[-0.12em] text-[clamp(3rem,6.5vw,5.4rem)] font-semibold leading-[0.88] tracking-[-0.06em] text-ink-black">
+                1000x
+              </span>{' '}
+              the design space. Run fewer but smarter experiments.
             </h3>
             <p className="mt-5 max-w-[58ch] text-[16px] leading-[1.65] text-ink-graphite md:text-[18px]">
               Tune replaces slow wet-lab loops with an accelerated loop that samples 100× more of the design space, so your physical runs are the winners from thousands of virtual ones.
