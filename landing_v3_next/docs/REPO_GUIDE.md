@@ -87,6 +87,18 @@ b9c56a5 feat(tune): copy Tune source into products/tune/ (verbatim)
 - Spec: `docs/superpowers/specs/2026-05-13-tune-merge-design.md` — full rationale for every decision.
 - Plan: `docs/superpowers/plans/2026-05-13-tune-merge.md` — the implementation plan with exact code and commands.
 
+### Cross-product nav in product headers
+The Tune header (`products/tune/features/hero/HeroNav.tsx`) now exposes all three product routes (`/tune`, `/thrust`, `/torch`) plus the CTA. This keeps a user on a product page one click away from any sibling product, matching the main marketing `components/SiteHeader.tsx` pattern. Responsive behavior:
+
+- **Desktop (md+):** all items render inline. Identical to the main site header's desktop strip.
+- **Mobile (<md):** only the CTA pill and a hamburger toggle are visible on the bar. Tapping the toggle expands a sheet directly beneath the bar with the three product links. Closes on tap, on Escape, or on resize past the md breakpoint.
+
+**Implementation notes for the future Thrust/Torch headers:**
+- The nav source is `products/tune/content/shared.content.ts` → `shared.nav.items`. When Thrust merges, create `products/thrust/content/shared.content.ts` with the same shape (the four items: Tune, Thrust, Torch, CTA). Each product owns its own copy because the CTA URL and brand text may differ.
+- `HeroNav.tsx` filters `cta: true` out of the mobile sheet (only the link list renders), then re-renders the CTA as a compact pill on the top bar. Preserve this split when porting.
+- The hamburger uses an inline SVG (two morphing lines → X) rather than `lucide-react` to keep `products/tune/` free of external icon-library deps. Keep that pattern in Thrust/Torch.
+- The bar adopts the "scrolled" white-blur chrome whenever the menu is open OR scrolled past 80px. Without this, opening the menu over the transparent hero would leave the sheet floating against the blue gradient with no separation.
+
 ### Post-merge bug fixes (and why they happened)
 We discovered three regressions after the initial merge. All three traced to the same root cause: Tune was built on top of Tailwind Preflight (the global CSS reset), and we deliberately skipped that import to avoid leaking it to the main marketing pages. We then had to re-implement the relevant subset of Preflight rules under `:where(.tune-page)`:
 
@@ -427,6 +439,7 @@ These stay in the marketing repo:
 | Change Tune copy | `products/tune/content/tune.content.ts` (Zod-validated — build will fail loud on shape errors) |
 | Change Tune visuals | `products/tune/features/...` (Tailwind utilities) or `app/tune/tune.css` (custom classes/keyframes) |
 | Add a new Tune section | New component under `products/tune/features/<section>/`, import in `app/tune/page.tsx` |
+| Change Tune nav items (cross-product links, CTA) | `products/tune/content/shared.content.ts` → `shared.nav.items`. Component: `products/tune/features/hero/HeroNav.tsx` |
 | Merge Thrust | §5 + Tune spec/plan in `docs/superpowers/` as template |
 | Change marketing homepage copy | `components/LandingPage.tsx` (use grep — it's 703 lines) |
 | Change marketing styles | `app/globals.css` |
