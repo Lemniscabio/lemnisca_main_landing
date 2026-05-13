@@ -57,7 +57,7 @@ export function Hero({ hero, sectionToc }: HeroProps) {
             {/* Left: cols 1–7 — eyebrow, headline, sub, CTAs.
                 Vertical-nudge knob lives in `md:-mt-10` (desktop/tablet only,
                 so it doesn't crowd the title under the nav on mobile). */}
-            <div className="md:col-span-6 md:-mt-10 md:pr-12">
+            <div className="md:col-span-7 md:-mt-10 md:pr-12">
               {hero.eyebrow && (
                 <p
                   className="label-m text-blue-200 motion-settle"
@@ -104,7 +104,7 @@ export function Hero({ hero, sectionToc }: HeroProps) {
             </div>
 
             {/* Right: cols 8–12 — auto-looping OPTDOE technical loop */}
-            <div className="flex items-center justify-center md:col-span-6 md:justify-center md:ml-8 md:-mt-20">
+            <div className="flex items-center justify-center md:col-span-5 md:justify-center md:ml-8 md:-mt-8">
               <ConcentricLoop />
             </div>
           </div>
