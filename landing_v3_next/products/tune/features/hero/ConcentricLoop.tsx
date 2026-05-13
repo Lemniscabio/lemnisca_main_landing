@@ -501,7 +501,7 @@ export function ConcentricLoop() {
 
   return (
     <figure
-      className="relative mx-auto aspect-square w-full max-w-[380px] sm:max-w-[460px] md:max-w-[520px]"
+      className="relative mx-auto aspect-square w-full max-w-[380px] sm:max-w-[520px] md:max-w-[620px]"
       aria-label="Tune four-step process: Audit the data, Model the process, Optimize, Pilot-ready process"
     >
       <svg
