@@ -1,8 +1,27 @@
 'use client';
 
 import { motion } from 'motion/react';
+import type { ReactNode } from 'react';
 import type { SprintCta as SprintCtaContent } from '@/products/tune/content/schema';
 import { CALENDLY_URL } from '@/products/tune/content/shared.content';
+import { AccentUnderline } from '@/products/tune/features/hero/AccentUnderline';
+
+// Reusable helper: splits `text` at the first case-insensitive occurrence of
+// `phrase`, wraps the match in <AccentUnderline> with whitespace-nowrap so the
+// phrase stays on one line. If the phrase isn't found, returns the text as-is.
+function withAccentPhrase(text: string, phrase: string): ReactNode {
+  const idx = text.toLowerCase().indexOf(phrase.toLowerCase());
+  if (idx === -1) return text;
+  return (
+    <>
+      {text.slice(0, idx)}
+      <span className="whitespace-nowrap">
+        <AccentUnderline delayMs={0}>{text.slice(idx, idx + phrase.length)}</AccentUnderline>
+      </span>
+      {text.slice(idx + phrase.length)}
+    </>
+  );
+}
 
 type SprintCtaProps = {
   section: SprintCtaContent;
@@ -60,7 +79,7 @@ export function SprintCta({ section, id = 'engagement-start' }: SprintCtaProps) 
               <div className="flex w-full flex-col justify-center rounded-[28px] border border-[rgba(205,205,254,0.38)] bg-[linear-gradient(180deg,rgba(244,246,255,0.98)_0%,rgba(255,255,255,1)_100%)] px-8 py-10 shadow-[0_28px_64px_-40px_rgba(2,6,22,0.48)] md:px-10 md:py-12 lg:px-12">
                 <div className="max-w-[34rem]">
                   <p className="text-[clamp(1.75rem,2.6vw,2.75rem)] font-medium leading-[1.08] tracking-[-0.04em] text-[#060B23]">
-                    {section.body[0]}
+                    {withAccentPhrase(section.body[0], 'limited number')}
                   </p>
                   <p className="mt-7 text-[18px] leading-[1.65] tracking-[-0.014em] text-[#50607D] md:text-[20px]">
                     {section.body[1]}
