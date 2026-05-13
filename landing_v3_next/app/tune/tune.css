@@ -80,6 +80,96 @@
   text-rendering: optimizeLegibility;
 }
 
+/* Scoped Preflight subset — replicates the parts of tailwindcss/preflight that
+   Tune components rely on. Skipping the global Preflight import avoids leaking
+   resets to the main app; we re-establish the same base only under .tune-page. */
+:where(.tune-page) *,
+:where(.tune-page) *::before,
+:where(.tune-page) *::after {
+  box-sizing: border-box;
+  border-width: 0;
+  border-style: solid;
+  border-color: currentColor;
+}
+
+:where(.tune-page) a {
+  color: inherit;
+  text-decoration: inherit;
+}
+
+:where(.tune-page) h1,
+:where(.tune-page) h2,
+:where(.tune-page) h3,
+:where(.tune-page) h4,
+:where(.tune-page) h5,
+:where(.tune-page) h6 {
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+:where(.tune-page) blockquote,
+:where(.tune-page) dl,
+:where(.tune-page) dd,
+:where(.tune-page) h1,
+:where(.tune-page) h2,
+:where(.tune-page) h3,
+:where(.tune-page) h4,
+:where(.tune-page) h5,
+:where(.tune-page) h6,
+:where(.tune-page) hr,
+:where(.tune-page) figure,
+:where(.tune-page) p,
+:where(.tune-page) pre {
+  margin: 0;
+}
+
+:where(.tune-page) ol,
+:where(.tune-page) ul,
+:where(.tune-page) menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+:where(.tune-page) button,
+:where(.tune-page) [role="button"] {
+  cursor: pointer;
+}
+
+:where(.tune-page) button,
+:where(.tune-page) input,
+:where(.tune-page) optgroup,
+:where(.tune-page) select,
+:where(.tune-page) textarea {
+  font-family: inherit;
+  font-feature-settings: inherit;
+  font-variation-settings: inherit;
+  font-size: 100%;
+  font-weight: inherit;
+  line-height: inherit;
+  color: inherit;
+  margin: 0;
+  padding: 0;
+}
+
+:where(.tune-page) img,
+:where(.tune-page) svg,
+:where(.tune-page) video,
+:where(.tune-page) canvas,
+:where(.tune-page) audio,
+:where(.tune-page) iframe,
+:where(.tune-page) embed,
+:where(.tune-page) object {
+  display: block;
+  vertical-align: middle;
+}
+
+:where(.tune-page) img,
+:where(.tune-page) video {
+  max-width: 100%;
+  height: auto;
+}
+
 /* Selection + focus — scoped so main app's defaults are untouched. */
 :where(.tune-page) ::selection {
   background: var(--color-blue-500);
