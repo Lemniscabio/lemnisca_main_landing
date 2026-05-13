@@ -1,0 +1,275 @@
+/* Tune product landing — scoped CSS.
+   - Skip Tailwind Preflight to avoid leaking resets into the main app.
+   - All custom classes are scoped under :where(.tune-page) so future product
+     pages can redefine the same class names without collision.
+   - Keyframes and @property are prefixed with tune-.
+   See docs/superpowers/specs/2026-05-13-tune-merge-design.md for rationale. */
+
+@layer theme, components, utilities;
+
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+/* Tailwind v4 generates utilities from this @theme block. Kept global; future
+   products override differing tokens via cascade in their own wrapper class. */
+@theme {
+  --color-surface-white: #FFFFFF;
+
+  --color-surface-parchment: #F0EAD8;
+  --color-surface-paper: #F0EAD8;
+  --color-surface-snow: #FFFFFF;
+
+  --color-line-hairline: #D6CDB8;
+  --color-line-hairline-cool: #E5E5E7;
+
+  --color-ink-black: #14110E;
+  --color-ink-graphite: #4A453E;
+  --color-ink-ash: #8C8579;
+
+  --color-blue-50: #EFEFFF;
+  --color-blue-100: #CDCDFE;
+  --color-blue-200: #A1A1FE;
+  --color-blue-300: #7473FD;
+  --color-blue-500: #4140FC;
+  --color-blue-700: #0A07D4;
+  --color-blue-900: #03027A;
+
+  --color-yellow-50: #FBFC40;
+  --color-yellow-100: #D2D234;
+  --color-yellow-200: #AAAA28;
+  --color-yellow-300: #85841D;
+  --color-yellow-500: #5F5F12;
+  --color-yellow-700: #3D3D08;
+  --color-yellow-900: #1E1E02;
+
+  --color-neutral-50: #F1F1F1;
+  --color-neutral-100: #D1D1D3;
+  --color-neutral-200: #A9A9AE;
+  --color-neutral-300: #848488;
+  --color-neutral-500: #50606B;
+  --color-neutral-700: #3F3F45;
+  --color-neutral-900: #202024;
+
+  --color-accent-lemnisca: #B86A2E;
+  --color-accent-tune: #C2783A;
+  --color-accent-thrust: #1F4A6B;
+
+  --color-data-ink: #14110E;
+  --color-data-muted: #B5AC9C;
+  --color-data-diverge: #8B2E2E;
+  --color-data-converge: #2F5D3A;
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-serif: var(--font-newsreader), ui-serif, Georgia, serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, SFMono-Regular, monospace;
+}
+
+/* Wrapper rules: replace the html/body styling that lived in Tune standalone. */
+.tune-page {
+  font-family: var(--font-sans);
+  font-feature-settings: "ss01", "cv11", "cv02";
+  background: var(--color-surface-parchment);
+  color: var(--color-ink-black);
+  width: 100%;
+  max-width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+  overscroll-behavior-x: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Selection + focus — scoped so main app's defaults are untouched. */
+:where(.tune-page) ::selection {
+  background: var(--color-blue-500);
+  color: var(--color-surface-white);
+}
+
+:where(.tune-page) *:focus-visible {
+  outline: 2px solid var(--color-ink-black);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* ── Type scale ────────────────────────────────────────────── */
+:where(.tune-page) .display-hero {
+  font-size: clamp(2.75rem, 6.5vw, 5rem);
+  line-height: 1.04;
+  letter-spacing: -0.032em;
+  font-weight: 520;
+  font-variation-settings: "wght" 520;
+}
+
+:where(.tune-page) .display-section {
+  font-size: clamp(2.5rem, 4.4vw, 4.55rem);
+  line-height: 0.96;
+  letter-spacing: -0.058em;
+  font-weight: 500;
+  font-variation-settings: "wght" 500;
+}
+
+:where(.tune-page) .display-sub {
+  font-size: clamp(1.5rem, 2.5vw, 2rem);
+  line-height: 1.15;
+  letter-spacing: -0.018em;
+  font-weight: 520;
+  font-variation-settings: "wght" 520;
+}
+
+:where(.tune-page) .body-xl {
+  font-size: clamp(1.125rem, 1.5vw, 1.5rem);
+  line-height: 1.4;
+  letter-spacing: -0.005em;
+  font-weight: 400;
+}
+:where(.tune-page) .body-l { font-size: 1.25rem; line-height: 1.5; font-weight: 400; }
+:where(.tune-page) .body-m { font-size: 1rem; line-height: 1.55; font-weight: 400; }
+:where(.tune-page) .body-s { font-size: 0.875rem; line-height: 1.5; letter-spacing: 0.003em; font-weight: 400; }
+
+:where(.tune-page) .label-m {
+  font-size: 0.8125rem;
+  line-height: 1.35;
+  letter-spacing: 0.08em;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+:where(.tune-page) .label-s {
+  font-size: 0.6875rem;
+  line-height: 1.3;
+  letter-spacing: 0.10em;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+:where(.tune-page) .mono-m { font-family: var(--font-mono); font-size: 0.875rem; line-height: 1.45; }
+:where(.tune-page) .mono-s { font-family: var(--font-mono); font-size: 0.75rem; line-height: 1.4; }
+
+:where(.tune-page) .accent-italic {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 500;
+  letter-spacing: 0.012em;
+  font-feature-settings: "calt" off;
+}
+
+:where(.tune-page) .tabular { font-variant-numeric: tabular-nums lining-nums; }
+
+/* ── Background — faint dotted grid ────────────────────────── */
+:where(.tune-page) .bg-dot-grid {
+  background-image: radial-gradient(circle, rgba(20, 17, 14, 0.09) 1px, transparent 1.2px);
+  background-size: 32px 32px;
+  background-position: 0 0;
+}
+
+/* ── Motion — keyframes prefixed with tune- ───────────────── */
+@keyframes tune-settle {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+:where(.tune-page) .motion-settle {
+  animation: tune-settle 600ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+
+@keyframes tune-hairline-draw {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+:where(.tune-page) .motion-hairline {
+  transform-origin: left;
+  animation: tune-hairline-draw 700ms cubic-bezier(0.4, 0, 0.2, 1) backwards;
+}
+
+@keyframes tune-numeral-fade {
+  from { opacity: 0; }
+  to   { opacity: 0.08; }
+}
+:where(.tune-page) .motion-numeral {
+  animation: tune-numeral-fade 400ms ease-out backwards;
+  opacity: 0.08;
+}
+
+/* @property registered globally with tune- prefix to avoid cross-product collision. */
+@property --tune-engagement-pill-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes tune-engagement-pill-spin {
+  from { --tune-engagement-pill-angle: 0deg; }
+  to   { --tune-engagement-pill-angle: 360deg; }
+}
+
+@keyframes tune-hero-loop-drift {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes tune-blue-sheen-drift {
+  0% { transform: translateY(0%); opacity: 0.18; }
+  50% { transform: translateY(3%); opacity: 0.28; }
+  100% { transform: translateY(0%); opacity: 0.18; }
+}
+
+:where(.tune-page) .engagement-transition-pill {
+  position: relative;
+  display: inline-flex;
+  padding: 1px;
+  border-radius: 9999px;
+  isolation: isolate;
+}
+
+:where(.tune-page) .engagement-transition-pill::before,
+:where(.tune-page) .engagement-transition-pill::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: conic-gradient(
+    from var(--tune-engagement-pill-angle),
+    var(--color-blue-50),
+    var(--color-blue-200),
+    var(--color-blue-500),
+    var(--color-blue-700),
+    var(--color-blue-900),
+    var(--color-blue-50)
+  );
+  animation: tune-engagement-pill-spin 5.8s linear infinite;
+}
+
+:where(.tune-page) .engagement-transition-pill::before {
+  filter: blur(10px);
+  opacity: 0.22;
+  transform: scale(1.02);
+}
+
+:where(.tune-page) .engagement-transition-pill::after {
+  opacity: 1;
+}
+
+:where(.tune-page) .engagement-transition-pill__surface {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  border-radius: inherit;
+  background: rgba(255, 255, 255, 0.96);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :where(.tune-page) .motion-settle,
+  :where(.tune-page) .motion-hairline,
+  :where(.tune-page) .motion-numeral,
+  :where(.tune-page) .engagement-transition-pill::before,
+  :where(.tune-page) .engagement-transition-pill::after {
+    animation: none !important;
+  }
+  :where(.tune-page) .hero-loop-drift,
+  :where(.tune-page) .blue-sheen-drift {
+    animation: none !important;
+  }
+  :where(.tune-page) .motion-settle { opacity: 1; transform: none; }
+  :where(.tune-page) .motion-hairline { transform: scaleX(1); }
+  :where(.tune-page) .motion-numeral { opacity: 0.08; }
+}
