@@ -104,7 +104,7 @@ export function Hero({ hero, sectionToc }: HeroProps) {
             </div>
 
             {/* Right: cols 8–12 — auto-looping OPTDOE technical loop */}
-            <div className="flex items-center justify-center md:col-span-5 md:justify-center md:ml-8 md:-mt-8">
+            <div className="flex items-center justify-center md:col-span-5 md:justify-center md:ml-8 md:-mt-16">
               <ConcentricLoop />
             </div>
           </div>
