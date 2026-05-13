@@ -379,7 +379,7 @@ export function LoopComparisonViz() {
         label="Without Tune"
         steps={[{ label: 'Run experiments' }, { label: 'Analyse data' }]}
         exitLabel="Pilot"
-        stat="~10s"
+        stat="~10"
         statNote="Physical experiments per loop — guided by intuition, high uncertainty"
         loopBackToIndex={0}
       />
@@ -393,7 +393,7 @@ export function LoopComparisonViz() {
           { label: 'Validate recommended runs' },
         ]}
         exitLabel="Pilot"
-        stat="10,000s"
+        stat="10,000"
         statNote="Virtual experiments per loop — only targeted physical runs needed"
         loopBackToIndex={1}
         loopLabel="iterate model"
