@@ -47,12 +47,14 @@ export function MethodSystem({ section, id = 'how-method' }: MethodSystemProps) 
         <div className="mt-20 md:mt-24">
           <div className="max-w-[860px]">
             <h3 className="mt-5 text-[clamp(2rem,3.4vw,3rem)] font-medium leading-[1.04] tracking-[-0.03em] text-ink-black">
-              {/* Two-line layout: sentence 1 wrapped in whitespace-nowrap so
-                  "Tune explores 1000x the design space." stays on a single
-                  line; sentence 2 forced to its own block below. If 1000x
-                  overflows on narrower viewports, shrink it via the clamp
-                  triplet on the inner span. */}
-              <span className="whitespace-nowrap">
+              {/* Adaptive two-line layout:
+                  - ≥640px (sm+): sentence 1 forced to a single line via
+                    sm:whitespace-nowrap. Sentence 2 sits below via <br />.
+                  - <640px: nowrap disabled so sentence 1 can wrap naturally
+                    (the giant 1000x makes a single-line layout impossible on
+                    phones). Sentence 2 still gets its own line via <br />.
+                  Tune the threshold by swapping sm: for min-[700px]:, etc. */}
+              <span className="sm:whitespace-nowrap">
                 Tune explores{' '}
                 <span className="inline-block align-[-0.12em] text-[clamp(3rem,6.5vw,5.4rem)] font-semibold leading-[0.88] tracking-[-0.06em] text-ink-black">
                   1000x
