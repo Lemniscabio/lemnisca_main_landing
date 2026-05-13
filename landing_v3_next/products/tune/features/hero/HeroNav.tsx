@@ -128,10 +128,10 @@ export function HeroNav({ brand, brandSuffix, items }: HeroNavProps) {
                 scrolled || menuOpen ? 'text-blue-900/70' : 'text-white'
               }`}
             >
-              <span className="text-[10px] font-medium tracking-[0.02em] md:text-[11px]">
+              <span className="text-[7px] font-medium tracking-[0.02em] md:text-[8px]">
                 {brandSuffixParts(brandSuffix).pre}
               </span>
-              <span className="text-[14px] font-medium tracking-[-0.02em] md:text-[15px]">
+              <span className="text-[9px] font-medium tracking-[-0.02em] md:text-[10px]">
                 {brandSuffixParts(brandSuffix).rest}
               </span>
             </span>
