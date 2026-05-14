@@ -368,6 +368,75 @@
   background: rgba(255, 255, 255, 0.96);
 }
 
+:where(.tune-page) .loop-comparison-shell {
+  container: tune-loop-comparison / inline-size;
+}
+
+:where(.tune-page) .loop-comparison-grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+:where(.tune-page) .loop-comparison-panel {
+  container-type: inline-size;
+}
+
+:where(.tune-page) .loop-comparison-panel-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 6rem;
+  margin-top: 2rem;
+}
+
+:where(.tune-page) .loop-comparison-flow-slot {
+  min-width: 0;
+}
+
+:where(.tune-page) .loop-comparison-stat {
+  min-width: 0;
+}
+
+:where(.tune-page) .loop-comparison-flow-horizontal {
+  display: none;
+}
+
+:where(.tune-page) .loop-comparison-flow-vertical {
+  display: block;
+}
+
+@container tune-loop-comparison (min-width: 1190px) {
+  :where(.tune-page) .loop-comparison-grid {
+    grid-template-columns: minmax(0, 0.991fr) minmax(0, 1.38fr);
+    gap: 1.5rem;
+  }
+
+  :where(.tune-page) .loop-comparison-flow-horizontal {
+    display: block;
+  }
+
+  :where(.tune-page) .loop-comparison-flow-vertical {
+    display: none;
+  }
+
+  :where(.tune-page) .loop-comparison-panel-body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@container tune-loop-comparison (max-width: 1129px) {
+  :where(.tune-page) .loop-comparison-panel {
+    max-width: 100%;
+  }
+}
+
+@container tune-loop-comparison (min-width: 720px) and (max-width: 1129px) {
+  :where(.tune-page) .loop-comparison-panel-body {
+    grid-template-columns: minmax(260px, max-content) minmax(220px, 1fr);
+    align-items: center;
+    column-gap: clamp(2.5rem, 8cqi, 6rem);
+    row-gap: 2rem;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   :where(.tune-page) .motion-settle,
   :where(.tune-page) .motion-hairline,

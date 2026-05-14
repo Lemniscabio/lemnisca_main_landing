@@ -329,7 +329,7 @@ function LoopPanel(props: PanelConfig) {
 
   return (
     <div
-      className={`flex min-w-0 flex-col rounded-[24px] border ${
+      className={`loop-comparison-panel loop-comparison-panel--${variant} flex min-w-0 flex-col rounded-[24px] border ${
         blue
           ? 'border-blue-200 bg-[linear-gradient(160deg,#F4F6FF_0%,#EEF1FF_100%)] p-6 md:p-7'
           : 'border-[#E4E8EF] bg-[#F9FAFB] px-8 pt-6 pb-8 md:px-10 md:pt-7 md:pb-10'
@@ -343,29 +343,32 @@ function LoopPanel(props: PanelConfig) {
         {label}
       </div>
 
-      {/* Horizontal layout at 1230px+; vertical layout below 1230px */}
-      <div className="mt-8 hidden min-[1230px]:mt-10 min-[1230px]:block">
-        <HorizontalFlow {...props} />
-      </div>
-      <div className="mt-8 min-[1230px]:hidden">
-        <VerticalFlow {...props} />
-      </div>
+      <div className="loop-comparison-panel-body">
+        <div className="loop-comparison-flow-slot">
+          <div className="loop-comparison-flow-horizontal min-[1300px]:mt-10">
+            <HorizontalFlow {...props} />
+          </div>
+          <div className="loop-comparison-flow-vertical">
+            <VerticalFlow {...props} />
+          </div>
+        </div>
 
-      <div className="mt-24">
-        <p
-          className={`text-[3rem] font-bold leading-none tracking-[-0.05em] md:text-[3.6rem] ${
-            blue ? 'text-blue-600' : 'text-[#C8D0DC]'
-          }`}
-        >
-          {stat}
-        </p>
-        <p
-          className={`mt-2.5 text-[14px] leading-[1.5] tracking-[-0.01em] md:text-[15px] ${
-            blue ? 'text-[#50607D]' : 'text-[#9BA8BF]'
-          }`}
-        >
-          {statNote}
-        </p>
+        <div className="loop-comparison-stat">
+          <p
+            className={`text-[3rem] font-bold leading-none tracking-[-0.05em] md:text-[3.6rem] ${
+              blue ? 'text-blue-600' : 'text-[#C8D0DC]'
+            }`}
+          >
+            {stat}
+          </p>
+          <p
+            className={`mt-2.5 text-[14px] leading-[1.5] tracking-[-0.01em] md:text-[15px] ${
+              blue ? 'text-[#50607D]' : 'text-[#9BA8BF]'
+            }`}
+          >
+            {statNote}
+          </p>
+        </div>
       </div>
     </div>
   );
@@ -373,31 +376,33 @@ function LoopPanel(props: PanelConfig) {
 
 export function LoopComparisonViz() {
   return (
-    <div className="grid gap-5 min-[1230px]:grid-cols-[0.991fr_1.38fr] min-[1230px]:gap-6">
-      <LoopPanel
-        variant="muted"
-        label="Without Tune"
-        steps={[{ label: 'Run experiments' }, { label: 'Analyse data' }]}
-        exitLabel="Pilot"
-        stat="~10"
-        statNote="Physical experiments per loop — guided by intuition, high uncertainty"
-        loopBackToIndex={0}
-      />
-      <LoopPanel
-        variant="blue"
-        label="With Tune"
-        steps={[
-          { label: 'Run experiments' },
-          { label: 'Build predictive model' },
-          { label: 'Run virtual experiments' },
-          { label: 'Validate recommended runs' },
-        ]}
-        exitLabel="Pilot"
-        stat="10,000"
-        statNote="Virtual experiments per loop — only targeted physical runs needed"
-        loopBackToIndex={1}
-        loopLabel="iterate model"
-      />
+    <div className="loop-comparison-shell">
+      <div className="loop-comparison-grid grid gap-5">
+        <LoopPanel
+          variant="muted"
+          label="Without Tune"
+          steps={[{ label: 'Run experiments' }, { label: 'Analyse data' }]}
+          exitLabel="Pilot"
+          stat="~10"
+          statNote="Physical experiments per loop — guided by intuition, high uncertainty"
+          loopBackToIndex={0}
+        />
+        <LoopPanel
+          variant="blue"
+          label="With Tune"
+          steps={[
+            { label: 'Run experiments' },
+            { label: 'Build predictive model' },
+            { label: 'Run virtual experiments' },
+            { label: 'Validate recommended runs' },
+          ]}
+          exitLabel="Pilot"
+          stat="~10,000"
+          statNote="Virtual experiments per loop — only targeted physical runs needed"
+          loopBackToIndex={1}
+          loopLabel="iterate model"
+        />
+      </div>
     </div>
   );
 }
