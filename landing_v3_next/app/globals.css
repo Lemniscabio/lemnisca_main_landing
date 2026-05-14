@@ -75,44 +75,6 @@ html, body, #root {
   overflow-x: hidden;
 }
 
-/* Film-grain overlay applied per-section (not at root) so the grain is
-   bounded to the page's actual content and doesn't bleed onto the root
-   background during overscroll.
-   - position: absolute → bounded to its parent section (which is
-     position: relative), not the viewport.
-   - grayscale + contrast-boosted SVG noise; overlay blend produces
-     sparkle on dark sections and visible specks on light sections.
-   - opacity 0.6 matches the previous global look. */
-.hero,
-.problem,
-.solution,
-.stats,
-.cta,
-.team,
-.prediction,
-.footer {
-  position: relative;
-}
-
-.hero::after,
-.problem::after,
-.solution::after,
-.stats::after,
-.cta::after,
-.team::after,
-.prediction::after,
-.footer::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  opacity: 0.6;
-  mix-blend-mode: overlay;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='260' height='260'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='1.05' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='matrix' values='0.7 0.7 0.7 0 -0.55  0.7 0.7 0.7 0 -0.55  0.7 0.7 0.7 0 -0.55  0 0 0 0 1'/></filter><rect width='100%' height='100%' filter='url(%23g)'/></svg>");
-  background-size: 260px 260px;
-}
-
 /* UTILITY CLASSES */
 .eyebrow {
   font-size: 0.7rem;

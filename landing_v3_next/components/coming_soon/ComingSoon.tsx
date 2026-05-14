@@ -33,7 +33,6 @@ export default function ComingSoon({ product, tagline, palette }: Props) {
       <div className="cs_orb cs_orb--1" aria-hidden />
       <div className="cs_orb cs_orb--2" aria-hidden />
       <div className="cs_orb cs_orb--3" aria-hidden />
-      <div className="cs_grain" aria-hidden />
       <div className="cs_vignette" aria-hidden />
 
       <div className="cs_shell">
