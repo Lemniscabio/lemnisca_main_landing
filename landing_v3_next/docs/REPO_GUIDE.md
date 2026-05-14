@@ -475,3 +475,89 @@ These stay in the marketing repo:
 | Fix an AVIRA chat issue | `components/reports/avira/*` + `app/api/avira/route.ts` (and verify §6.6 before touching render path) |
 | Add typecheck script | `package.json`, add `"typecheck": "tsc --noEmit"` |
 | Extract reports to new repo | §9 |
+| Merge Torch / Thrust landings | §12 |
+
+---
+
+## 12. Torch + Thrust Landing Merge Plan (May 2026)
+
+> **Status as of 2026-05-14:** Torch standalone landing exists at `/Users/kartikey/Desktop/product_LPs/torch`. Thrust standalone landing exists separately and needs major changes. Tune merge (§4) is the working template for both.
+
+### 12.1 Sequencing decision
+
+**Start with Torch only. Do not touch Thrust yet.** Reasoning:
+
+- Torch landing is close to ready; the merge is mostly mechanical and low-risk.
+- Thrust still needs major content/UI work — folding that into the same window risks confusing which branch caused which regression on `main`.
+- Doing Torch first validates the §5 "Repeating for Thrust/Torch" pattern once more after Tune, so the Thrust merge later is even more mechanical.
+
+Sequence:
+1. **Now:** create branch `torch-landing-merge` off `main`, port Torch source under `products/torch/` + `app/torch/`, adjust UI as needed on the branch. Branch sits idle (no merge to `main`) until Torch launch day.
+2. **Meanwhile:** either pause Thrust work, OR start a parallel `thrust-landing-merge` branch from `main` for the major Thrust changes. Pick one — do not interleave Thrust work into the Torch branch.
+3. **Torch launch day:** rebase `torch-landing-merge` onto current `main`, run the regression checklist (§12.4), merge to `main`, deploy.
+4. **Thrust later (separate launch):** same flow on `thrust-landing-merge`.
+
+### 12.2 Torch product app split (key architectural decision)
+
+The `/torch` route in **this repo** is the **marketing landing only** — public, no auth, no customer data.
+
+The actual Torch product (authenticated, customer-facing) will live at **`torch.lemnisca.bio` in a separate private repo**, created closer to launch. This avoids the §6.1 / §9 mistake we made with reports — keep the product app out of the public marketing repo from day one.
+
+**Contract between landing and product app:**
+- Landing CTA links to `torch.lemnisca.bio` (or its login/signup route).
+- No shared middleware, no shared auth cookie, no cross-repo imports.
+- Each side owns its own deploy, env vars, and dependency surface.
+
+When the Torch product repo is created, add a `docs/TORCH_SPLIT_DECISION.md` modeled on §9 that captures the contract, env var split, and DNS setup. Do not write that doc until the product repo actually exists — premature contracts go stale.
+
+### 12.3 Merge mechanics (Torch — same applies to Thrust later)
+
+Follow the Tune pattern verbatim (§4, §5). Concretely:
+
+1. Branch from `main`: `git checkout -b torch-landing-merge`.
+2. Copy Torch source verbatim under `products/torch/{content,features,design-system}/`.
+3. Rewrite imports from `@/content`, `@/features`, `@/design-system` → `@/products/torch/...`.
+4. Create `app/torch/{page,layout,torch.css}` mirroring `app/tune/`.
+5. In `torch.css`:
+   - Import only `tailwindcss/theme.css` + `tailwindcss/utilities.css` (never bare `tailwindcss`).
+   - Re-implement the Preflight subset wrapped in `@layer base` under `:where(.torch-page)`.
+   - Wrap every custom class in `:where(.torch-page) ...`.
+   - Prefix all `@keyframes` and `@property` with `torch-`.
+6. Replace `app/torch/page.tsx`'s `ComingSoon` with the real composition.
+7. Ensure the Torch header's CTA points to `torch.lemnisca.bio` (placeholder URL is fine until the product app exists).
+8. Add `app/torch/opengraph-image.png` (1200×630) per the file-system OG convention.
+
+### 12.4 Fault tolerance — pre-merge checklist for each branch
+
+Run on the branch immediately before merging to `main`:
+
+- [ ] `git rebase main` clean (or `git merge main` into the branch) — surfaces drift early.
+- [ ] `npm run build` passes.
+- [ ] `npx tsc --noEmit` clean for `app/torch/**`, `products/torch/**`, `app/layout.tsx`.
+- [ ] Manual browser check of **all** route categories:
+  - `/` (marketing — verify no Preflight leakage)
+  - `/tune` (verify still works — same isolation contract)
+  - `/torch` (the new route)
+  - `/thrust` (still `ComingSoon` until its own merge)
+  - `/reports/unlock` (auth gate still works)
+  - `/api/contact` POST (smoke test)
+- [ ] Four §4 regression categories on `/torch`: link decoration, button background, list margins, font inheritance / form element fonts.
+- [ ] Back-navigate between `/` and `/torch` repeatedly — confirms no CSS leakage on client-side nav.
+- [ ] `package-lock.json` regenerated cleanly if deps changed.
+- [ ] `git tag pre-torch-merge` on `main` before merging (one-command rollback if needed).
+
+### 12.5 If Torch and Thrust branches both exist simultaneously
+
+- Rebase each branch onto `main` at least every few days while open.
+- Any change to shared files (`app/layout.tsx`, `app/globals.css`, `components/SiteHeader.tsx`, root `package.json`, `postcss.config.mjs`, `@theme` tokens) lands on `main` first; both branches rebase.
+- Do a throwaway local dry-run (`git checkout -b dry-run main && git merge torch-landing-merge && git merge thrust-landing-merge`) at least once before the first real merge to surface collisions early.
+- Keep each branch's diff narrow: only its own `products/<name>/`, `app/<name>/`, and the minimal `SiteHeader`/nav wiring needed for its route to be reachable. Anything cross-cutting goes to `main` directly.
+
+### 12.6 Rollback
+
+If a merge to `main` causes a regression discovered post-deploy:
+```bash
+git revert -m 1 <merge-commit-sha>
+```
+This undoes the merge as a single revert commit. The branch (`torch-landing-merge`) still exists for a second attempt. The pre-merge tag (`pre-torch-merge`) is the reference point for "known good."
+

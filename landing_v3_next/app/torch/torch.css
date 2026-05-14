@@ -1,0 +1,274 @@
+/* Torch product landing — scoped CSS.
+   Mirrors app/tune/tune.css strategy:
+   - Skip Tailwind Preflight to avoid leaking resets into the main app.
+   - All custom classes are scoped under :where(.torch-page).
+   - Keyframes prefixed with torch- to avoid cross-product collision.
+   See docs/REPO_GUIDE.md §5 and §12 for rationale. */
+
+@layer theme, base, components, utilities;
+
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+/* Torch components hard-code hex values for their magenta/black palette, so
+   we deliberately do NOT add Torch's accent ramp to the global @theme. Tune's
+   tune.css already defines @theme tokens (ink-black, surface-white, font
+   stacks); Torch reuses those. Torch-specific values live as plain CSS vars
+   inside .torch-page below — cascade-overridable without touching globals. */
+
+/* Wrapper rules: replace the html/body styling that lived in Torch standalone. */
+.torch-page {
+  font-family: var(--font-sans);
+  font-feature-settings: "ss01", "cv11", "cv02";
+  background: #050507;
+  color: #FFFFFF;
+  width: 100%;
+  max-width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+  overscroll-behavior-x: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Scoped Preflight subset — replicates the parts of tailwindcss/preflight that
+   Torch components rely on. Identical to app/tune/tune.css subset; only the
+   wrapper class differs. Wrapped in @layer base so utility classes correctly
+   override these resets. */
+@layer base {
+  :where(.torch-page) *,
+  :where(.torch-page) *::before,
+  :where(.torch-page) *::after {
+    box-sizing: border-box;
+    border-width: 0;
+    border-style: solid;
+    border-color: currentColor;
+  }
+
+  :where(.torch-page) a {
+    color: inherit;
+    text-decoration: inherit;
+  }
+
+  :where(.torch-page) h1,
+  :where(.torch-page) h2,
+  :where(.torch-page) h3,
+  :where(.torch-page) h4,
+  :where(.torch-page) h5,
+  :where(.torch-page) h6 {
+    font-size: inherit;
+    font-weight: inherit;
+  }
+
+  :where(.torch-page) blockquote,
+  :where(.torch-page) dl,
+  :where(.torch-page) dd,
+  :where(.torch-page) h1,
+  :where(.torch-page) h2,
+  :where(.torch-page) h3,
+  :where(.torch-page) h4,
+  :where(.torch-page) h5,
+  :where(.torch-page) h6,
+  :where(.torch-page) hr,
+  :where(.torch-page) figure,
+  :where(.torch-page) p,
+  :where(.torch-page) pre {
+    margin: 0;
+  }
+
+  :where(.torch-page) ol,
+  :where(.torch-page) ul,
+  :where(.torch-page) menu {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  :where(.torch-page) button,
+  :where(.torch-page) [role="button"] {
+    cursor: pointer;
+  }
+
+  :where(.torch-page) button,
+  :where(.torch-page) input,
+  :where(.torch-page) optgroup,
+  :where(.torch-page) select,
+  :where(.torch-page) textarea {
+    font-family: inherit;
+    font-feature-settings: inherit;
+    font-variation-settings: inherit;
+    font-size: 100%;
+    font-weight: inherit;
+    line-height: inherit;
+    color: inherit;
+    margin: 0;
+    padding: 0;
+  }
+
+  :where(.torch-page) button,
+  :where(.torch-page) input:where([type="button"], [type="reset"], [type="submit"]) {
+    appearance: button;
+    background-color: transparent;
+    background-image: none;
+  }
+
+  :where(.torch-page) img,
+  :where(.torch-page) svg,
+  :where(.torch-page) video,
+  :where(.torch-page) canvas,
+  :where(.torch-page) audio,
+  :where(.torch-page) iframe,
+  :where(.torch-page) embed,
+  :where(.torch-page) object {
+    display: block;
+    vertical-align: middle;
+  }
+
+  :where(.torch-page) img,
+  :where(.torch-page) video {
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+/* Anchor scroll offset — fixed HeroNav (~72px) would overlap section headers
+   on #anchor jumps. 96px = nav (~72px) + breathing room. */
+:where(.torch-page) [id] {
+  scroll-margin-top: 96px;
+}
+
+/* Selection + focus — scoped so main app's defaults are untouched. */
+:where(.torch-page) ::selection {
+  background: #E5388B;
+  color: #050507;
+}
+
+:where(.torch-page) *:focus-visible {
+  outline: 2px solid #E5388B;
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* ── Type scale ────────────────────────────────────────────── */
+:where(.torch-page) .display-hero {
+  font-size: clamp(2.75rem, 6.5vw, 5rem);
+  line-height: 1.04;
+  letter-spacing: -0.032em;
+  font-weight: 520;
+  font-variation-settings: "wght" 520;
+}
+
+:where(.torch-page) .display-section {
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1.1;
+  letter-spacing: -0.022em;
+  font-weight: 520;
+  font-variation-settings: "wght" 520;
+}
+
+:where(.torch-page) .display-sub {
+  font-size: clamp(1.5rem, 2.5vw, 2rem);
+  line-height: 1.15;
+  letter-spacing: -0.018em;
+  font-weight: 520;
+  font-variation-settings: "wght" 520;
+}
+
+:where(.torch-page) .body-xl {
+  font-size: clamp(1.125rem, 1.5vw, 1.5rem);
+  line-height: 1.4;
+  letter-spacing: -0.005em;
+  font-weight: 400;
+}
+:where(.torch-page) .body-l { font-size: 1.25rem; line-height: 1.5; font-weight: 400; }
+:where(.torch-page) .body-m { font-size: 1rem; line-height: 1.55; font-weight: 400; }
+:where(.torch-page) .body-s { font-size: 0.875rem; line-height: 1.5; letter-spacing: 0.003em; font-weight: 400; }
+
+:where(.torch-page) .label-m {
+  font-size: 0.8125rem;
+  line-height: 1.35;
+  letter-spacing: 0.08em;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+:where(.torch-page) .label-s {
+  font-size: 0.6875rem;
+  line-height: 1.3;
+  letter-spacing: 0.10em;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+:where(.torch-page) .mono-m { font-family: var(--font-mono); font-size: 0.875rem; line-height: 1.45; }
+:where(.torch-page) .mono-s { font-family: var(--font-mono); font-size: 0.75rem; line-height: 1.4; }
+
+:where(.torch-page) .accent-italic {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 500;
+  letter-spacing: 0.012em;
+  font-feature-settings: "calt" off;
+}
+
+/* ── Motion — keyframes prefixed with torch- to avoid collision ───────── */
+@keyframes torch-settle {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+:where(.torch-page) .motion-settle {
+  animation: torch-settle 600ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+
+@keyframes torch-hairline-draw {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+:where(.torch-page) .motion-hairline {
+  transform-origin: left;
+  animation: torch-hairline-draw 700ms cubic-bezier(0.4, 0, 0.2, 1) backwards;
+}
+
+/* Torch flame — slow opacity-only flicker (no transform → no positional shift) */
+@keyframes torch-flame-flicker {
+  0%, 100% { opacity: 1;    }
+  22%      { opacity: 0.92; }
+  46%      { opacity: 1;    }
+  68%      { opacity: 0.95; }
+  84%      { opacity: 0.98; }
+}
+:where(.torch-page) .motion-flame {
+  animation: torch-flame-flicker 6.5s ease-in-out infinite;
+}
+
+/* Light wash — broader, slower breathing */
+@keyframes torch-wash-breathe {
+  0%, 100% { transform: scale(1);    opacity: 1;    }
+  50%      { transform: scale(1.03); opacity: 0.92; }
+}
+:where(.torch-page) .motion-wash {
+  animation: torch-wash-breathe 14s ease-in-out infinite;
+}
+
+/* Embers — drift upward and fade */
+@keyframes torch-ember-rise {
+  0%   { transform: translate3d(0, 0, 0)        scale(1);   opacity: 0;   }
+  12%  { opacity: 1; }
+  100% { transform: translate3d(6%, -120%, 0)   scale(0.4); opacity: 0;   }
+}
+:where(.torch-page) .motion-ember {
+  animation: torch-ember-rise linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :where(.torch-page) .motion-settle,
+  :where(.torch-page) .motion-hairline,
+  :where(.torch-page) .motion-flame,
+  :where(.torch-page) .motion-wash,
+  :where(.torch-page) .motion-ember {
+    animation: none !important;
+  }
+  :where(.torch-page) .motion-settle { opacity: 1; transform: none; }
+  :where(.torch-page) .motion-hairline { transform: scaleX(1); }
+  :where(.torch-page) .motion-ember { opacity: 0.6; }
+}
