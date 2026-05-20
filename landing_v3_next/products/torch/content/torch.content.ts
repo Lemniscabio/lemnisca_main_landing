@@ -7,15 +7,15 @@ const torch: TorchContent = torchContentSchema.parse({
     title: 'Torch · fermentation scale-up risk predictor · Lemnisca',
     description:
       'Predict scale-up risk across oxygen, mixing, shear, CO₂, and heat. Find the bottleneck before pilot.',
-    canonical: 'https://lemnisca.bio/torch',
+    canonical: 'https://torch.lemnisca.bio',
   },
   hero: {
     headlinePre: 'Stop scaling up your fermentation process in the dark, carry your',
     headlineAccent: 'Torch',
     headlinePost: 'along',
     sub: 'Enter your lab-scale process parameters and get a comprehensive MOSCH report that qualitatively and quantitatively shows you how risky it is to scale-up your process from lab → pilot → industry.',
-    primaryCta: { label: 'Run assessment', href: '#assess' },
-    secondaryCta: { label: 'See an example assessment', href: '#example' },
+    primaryCta: { label: 'Run assessment', href: 'https://torch.lemnisca.bio/assess' },
+    secondaryCta: { label: 'See an example assessment', href: 'https://torch.lemnisca.bio/example' },
     stats: [
       { value: 'Free', label: 'No cost, no pitch' },
       { value: '5', label: 'Risk domains covered' },

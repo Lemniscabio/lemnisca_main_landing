@@ -14,7 +14,7 @@ export const shared: SharedContent = sharedContentSchema.parse({
       { label: 'Tune', href: '/tune' },
       { label: 'Thrust', href: '/thrust' },
       { label: 'Torch', href: '/torch' },
-      { label: 'Run assessment', href: '#assess', cta: true },
+      { label: 'Run assessment', href: 'https://torch.lemnisca.bio/assess', cta: true },
     ],
   },
 });
