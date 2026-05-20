@@ -9,7 +9,10 @@ export function MoschSection({ section }: { section: Mosch }) {
     <section
       id="mosch"
       className="relative isolate overflow-hidden"
-      style={{ background: '#050507' }}
+      style={{
+        background:
+          'linear-gradient(180deg, #010102 0%, #050507 180px, #050507 100%)',
+      }}
     >
       <div className="relative mx-auto max-w-[1320px] px-6 py-24 md:px-10 md:py-32 lg:px-14">
         <div className="flex justify-center">
