@@ -19,11 +19,6 @@ export const sharedContentSchema = z.object({
   }),
 });
 
-export const statSchema = z.object({
-  value: z.string(),
-  label: z.string(),
-});
-
 export const heroSchema = z.object({
   headlinePre: z.string(),
   headlineAccent: z.string(),
@@ -31,7 +26,6 @@ export const heroSchema = z.object({
   sub: z.string(),
   primaryCta: z.object({ label: z.string(), href: z.string() }),
   secondaryCta: z.object({ label: z.string(), href: z.string() }),
-  stats: z.array(statSchema).length(4),
 });
 
 export const domainSchema = z.object({
@@ -80,7 +74,6 @@ export const torchContentSchema = z.object({
 
 export type NavItem = z.infer<typeof navItemSchema>;
 export type SharedContent = z.infer<typeof sharedContentSchema>;
-export type Stat = z.infer<typeof statSchema>;
 export type Hero = z.infer<typeof heroSchema>;
 export type Domain = z.infer<typeof domainSchema>;
 export type Mosch = z.infer<typeof moschSchema>;

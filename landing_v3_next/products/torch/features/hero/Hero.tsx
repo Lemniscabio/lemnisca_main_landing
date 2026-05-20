@@ -8,7 +8,7 @@
 //   4. Star field — sparse, distributed
 //   5. Grain (feTurbulence)
 //   6. Vignette darkening lower corners
-//   7. Content (headline · subhead · CTAs · stat strip)
+//   7. Content (headline · subhead · CTAs)
 
 import Link from 'next/link';
 import { HeroNav } from './HeroNav';
@@ -107,7 +107,7 @@ export function Hero({ hero }: { hero: HeroContent }) {
         />
 
         {/* ── Content ── */}
-        <div className="relative mx-auto flex min-h-[100svh] max-w-[1200px] flex-col items-center justify-center px-6 pt-32 pb-16 text-center md:px-10 md:pt-40 md:pb-24 lg:px-14">
+        <div className="relative mx-auto flex min-h-[100svh] max-w-[1200px] flex-col items-center justify-center px-6 pt-24 pb-28 text-center md:px-10 md:pt-32 md:pb-36 lg:px-14">
           <h1
             className="display-hero mx-auto max-w-[22ch] text-balance text-white motion-settle"
             style={{ animationDelay: '120ms' }}
@@ -152,33 +152,8 @@ export function Hero({ hero }: { hero: HeroContent }) {
               {hero.secondaryCta.label}
             </Link>
           </div>
-
-          <div
-            className="mt-14 grid w-full max-w-[820px] grid-cols-2 gap-x-6 gap-y-8 md:mt-20 md:grid-cols-4 md:gap-x-10 motion-settle"
-            style={{ animationDelay: '480ms' }}
-          >
-            {hero.stats.map((s) => (
-              <Stat key={s.label} value={s.value} label={s.label} />
-            ))}
-          </div>
         </div>
       </section>
     </>
-  );
-}
-
-function Stat({ value, label }: { value: string; label: string }) {
-  return (
-    <div className="flex flex-col items-center text-center">
-      <span className="text-[clamp(1.75rem,2.6vw,2.25rem)] leading-none font-[520] tracking-[-0.02em] text-white">
-        {value}
-      </span>
-      <span
-        className="mt-2 text-[12.5px] leading-snug"
-        style={{ color: 'rgba(255,255,255,0.55)' }}
-      >
-        {label}
-      </span>
-    </div>
   );
 }

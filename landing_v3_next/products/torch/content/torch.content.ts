@@ -16,12 +16,6 @@ const torch: TorchContent = torchContentSchema.parse({
     sub: 'Enter your lab-scale process parameters and get a comprehensive MOSCH report that qualitatively and quantitatively shows you how risky it is to scale-up your process from lab → pilot → industry.',
     primaryCta: { label: 'Run assessment', href: 'https://torch.lemnisca.bio/assess' },
     secondaryCta: { label: 'See an example assessment', href: 'https://torch.lemnisca.bio/example' },
-    stats: [
-      { value: 'Free', label: 'No cost, no pitch' },
-      { value: '5', label: 'Risk domains covered' },
-      { value: '100%', label: 'Assumptions visible' },
-      { value: '90d', label: 'Report link persistence' },
-    ],
   },
   mosch: {
     eyebrow: 'The MOSCH report · A new standard for fermentation scale-up',
@@ -31,37 +25,37 @@ const torch: TorchContent = torchContentSchema.parse({
       {
         letter: 'M',
         name: 'Mixing',
-        question: 'Is the tip speed low enough to dissipate gradients?',
+        question: 'Is mixing fast enough to dissipate gradients?',
         detail:
-          'Scored on the ratio of liquid uptake time to mixing time. Slow mixing at large scale creates concentration gradients, starving cells unevenly and compromising yield reproducibility.',
+          'Scored based on the ratio of the required mixing timescale to the mixing time.',
       },
       {
         letter: 'O',
         name: 'Oxygen Transfer',
-        question: 'Can my reactor deliver sufficient oxygen to the cells?',
+        question: 'Can the reactor deliver sufficient oxygen to the cells at scale?',
         detail:
-          'Scored on the ratio of OTR (oxygen transfer rate) to OUR (oxygen uptake rate). At large scale, kLa drops and oxygen delivery often becomes the first limiting constraint on cell growth.',
+          'Scored based on the ratio of the oxygen transfer rate (OTR) to the oxygen uptake rate (OUR) of the microbe.',
       },
       {
         letter: 'S',
         name: 'Shear Stress',
-        question: 'Is the tip speed low enough to protect my cells from damage?',
+        question: 'Is impeller tip speed causing shear damage to cells?',
         detail:
-          'Scored on the ratio of organism tip-speed threshold to impeller tip speed. Compensating for poor mixing by increasing agitation can cross the shear-tolerance limit of sensitive organisms.',
+          'Scored based on the ratio of shear tolerance of the microbe to the shear due to the impeller.',
       },
       {
         letter: 'C',
         name: 'CO₂ Accumulation',
-        question: 'Is CO₂ accumulation low enough to prevent inhibition of cell growth?',
+        question: 'Is dissolved CO₂ accumulating at toxic levels?',
         detail:
-          'Scored on the ratio of organism CO₂ partial-pressure threshold to the partial pressure at the reactor bottom. Dissolved CO₂ rises with reactor depth at larger scales and is often overlooked until it manifests as yield loss.',
+          'Scored based on the ratio of the CO₂ toxicity threshold of the microbe to the CO₂ present in the reactor.',
       },
       {
         letter: 'H',
         name: 'Heat Transfer',
-        question: 'Can my heat-transfer equipment dissipate metabolic heat?',
+        question: 'Can the reactor withdraw the heat generated at scale?',
         detail:
-          'Scored on the ratio of heat withdrawal capacity to metabolic heat generated. As biomass increases, surface-area-to-volume ratio drops and heat removal becomes a limiting design constraint that is underestimated at bench scale.',
+          'Scored based on the ratio of the heat removal capacity of the reactor to the metabolic heat generated during the culture.',
       },
     ],
     callout: {
@@ -73,9 +67,24 @@ const torch: TorchContent = torchContentSchema.parse({
     eyebrow: 'Frequently Asked Questions',
     items: [
       {
-        question: 'What does the MOSCH report actually contain?',
+        question: 'How does Torch generate my MOSCH report?',
         answer:
-          'A dimensionless risk score across the five scale-up domains (Mixing, Oxygen Transfer, Shear, CO₂, Heat Transfer) at both lab and target scale. Each score comes with the underlying assumptions, the equations used, the inputs that drove it, and a categorical reading (Low / Moderate / High / Critical). Everything is traceable — no black-box outputs.',
+          'Your report is built using a combination of kinetics, thermodynamics, transport phenomena, metabolism, and uncertainty quantification. Together, these produce risk scores across all categories based on the inputs you provide.',
+      },
+      {
+        question: 'How are operating conditions estimated for the target scale?',
+        answer:
+          'Torch runs an optimization algorithm that matches your chosen scale-up criterion across both the lab and target scales. It accounts for scale-relevant operational constraints to recommend the best operating conditions at your target scale.',
+      },
+      {
+        question: 'How can I improve my scale-up risk scores?',
+        answer:
+          'Use the What-If analysis in your interactive MOSCH report. You can adjust operating conditions, like increasing oxygen enrichment, and watch your risk scores update in real time.',
+      },
+      {
+        question: 'Where can I find my past assessments?',
+        answer:
+          'All of your past assessments are available on your dashboard. You can also save any MOSCH report as a PDF to keep a local copy on your machine.',
       },
       {
         question: 'Do I need historical batch data to run an assessment?',
@@ -83,19 +92,9 @@ const torch: TorchContent = torchContentSchema.parse({
           'No. Torch is parameter-driven, not data-driven. You enter your lab-scale process inputs and target reactor geometry once. The engine derives oxygen uptake, kLa, gas hold-up, mixing time, and heat load from first-principles correlations. Batch history is useful if you have it, but not required to get a first risk reading.',
       },
       {
-        question: 'How is this different from running CFD or a full process model?',
+        question: 'How is this different from running a detailed process model?',
         answer:
-          'CFD and detailed process models tell you exactly what is happening; Torch tells you whether you should be worried before committing to that level of analysis. Think of it as the engineering second opinion that runs in minutes instead of weeks, identifying which domain to invest deeper modelling in.',
-      },
-      {
-        question: 'What happens to the data I put in?',
-        answer:
-          'Your inputs and results are tied to your account and never shared. We do not train models on your data. You can delete an assessment at any time and the underlying records go with it. Assessments are accessible via signed report links that expire after 90 days.',
-      },
-      {
-        question: 'What if my organism or process does not fit standard assumptions?',
-        answer:
-          'You can override the defaults for every parameter — organism shear tolerance, oxygen demand, viscosity model, impeller geometry, gas composition. Where overrides are applied, the report flags them explicitly so reviewers can see exactly which assumptions diverge from the typical scale-up template.',
+          'The detailed process models tell you exactly what is happening; Torch tells you whether you should be worried before committing to that level of analysis. Think of it as the engineering second opinion that runs in minutes instead of weeks, identifying which domain to invest deeper modelling in.',
       },
     ],
     wordmark: {
