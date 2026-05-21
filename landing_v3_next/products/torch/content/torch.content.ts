@@ -10,9 +10,9 @@ const torch: TorchContent = torchContentSchema.parse({
     canonical: 'https://torch.lemnisca.bio',
   },
   hero: {
-    headlinePre: 'Stop scaling up your fermentation process in the dark, carry your',
+    headlinePre: 'Stop scaling up your fermentation process in the dark. Let',
     headlineAccent: 'Torch',
-    headlinePost: 'along',
+    headlinePost: 'light the way.',
     sub: 'Enter your lab-scale process parameters and get a comprehensive MOSCH report that qualitatively and quantitatively shows you how risky it is to scale-up your process from lab → pilot → industry.',
     primaryCta: { label: 'Run assessment', href: 'https://torch.lemnisca.bio/assess' },
     secondaryCta: { label: 'See an example assessment', href: 'https://torch.lemnisca.bio/example' },
