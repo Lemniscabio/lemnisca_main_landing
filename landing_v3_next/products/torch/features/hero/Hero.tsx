@@ -10,7 +10,7 @@
 //   6. Vignette darkening lower corners
 //   7. Content (headline · subhead · CTAs)
 
-import Link from 'next/link';
+import { TorchCtaLink } from './TorchCtaLink';
 import { HeroNav } from './HeroNav';
 import { AccentUnderline } from './AccentUnderline';
 import type { Hero as HeroContent } from '@/products/torch/content/schema';
@@ -132,8 +132,9 @@ export function Hero({ hero }: { hero: HeroContent }) {
             className="mt-9 flex flex-wrap items-center justify-center gap-3 motion-settle"
             style={{ animationDelay: '360ms' }}
           >
-            <Link
+            <TorchCtaLink
               href={hero.primaryCta.href}
+              ctaLocation="hero"
               className="group inline-flex items-center gap-3 rounded-full px-7 py-3.5 text-[15px] font-[500] tracking-[-0.005em] text-white transition-[opacity,transform] duration-200 ease-out hover:opacity-90 active:scale-[0.97]"
               style={{
                 background: '#E5388B',
@@ -143,14 +144,15 @@ export function Hero({ hero }: { hero: HeroContent }) {
             >
               <span>{hero.primaryCta.label}</span>
               <span aria-hidden>→</span>
-            </Link>
+            </TorchCtaLink>
 
-            <Link
+            <TorchCtaLink
               href={hero.secondaryCta.href}
+              ctaLocation="hero_secondary"
               className="group inline-flex items-center gap-2 rounded-full border border-white/14 bg-white/[0.03] px-6 py-3.5 text-[15px] font-[500] text-white/90 transition-[background-color,border-color,transform] duration-200 ease-out hover:border-white/30 hover:bg-white/[0.06] active:scale-[0.97]"
             >
               {hero.secondaryCta.label}
-            </Link>
+            </TorchCtaLink>
           </div>
         </div>
       </section>

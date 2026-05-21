@@ -15,6 +15,10 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
           recordCrossOriginIframes: true,
         },
       })
+      posthog.register({
+        surface: 'marketing',
+        app: 'lemnisca_landing',
+      })
     }
   }, [])
 

@@ -9,10 +9,24 @@
 // so the same nav schema can be reused by Thrust later.
 
 import Link from 'next/link';
+import posthog from 'posthog-js';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { shared } from '@/products/torch/content/shared.content';
 import type { NavItem } from '@/products/torch/content/schema';
+
+function captureTorchCtaClick(ctaLocation: string, destination: string) {
+  if (!process.env.NEXT_PUBLIC_POSTHOG_KEY) return;
+  posthog.register({
+    product: 'torch',
+    surface: 'marketing',
+    app: 'lemnisca_landing',
+  });
+  posthog.capture('torch_landing_cta_clicked', {
+    cta_location: ctaLocation,
+    destination,
+  });
+}
 
 function externalLinkProps(href: string) {
   return href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {};
@@ -117,6 +131,7 @@ export function HeroNav() {
             <Link
               href={ctaItem.href}
               {...externalLinkProps(ctaItem.href)}
+              onClick={() => captureTorchCtaClick('nav_mobile', ctaItem.href)}
               className="inline-flex items-center rounded-full px-3.5 py-2 text-[13px] font-medium text-white transition-[background-color,transform] duration-150 ease-out active:scale-[0.97]"
               style={{
                 background: '#E5388B',
@@ -202,6 +217,7 @@ function NavLink({
       <Link
         href={item.href}
         {...externalLinkProps(item.href)}
+        onClick={() => captureTorchCtaClick('nav', item.href)}
         className="inline-flex items-center rounded-full px-4 py-2 text-[14px] font-medium text-white transition-[background-color,box-shadow,transform] duration-150 ease-out active:scale-[0.97]"
         style={{
           background: '#E5388B',
