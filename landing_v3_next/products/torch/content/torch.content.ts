@@ -7,7 +7,7 @@ const torch: TorchContent = torchContentSchema.parse({
     title: 'Torch · fermentation scale-up risk predictor · Lemnisca',
     description:
       'Predict scale-up risk across oxygen, mixing, shear, CO₂, and heat. Find the bottleneck before pilot.',
-    canonical: 'https://torch.lemnisca.bio',
+    canonical: 'https://lemnisca.bio/torch',
   },
   hero: {
     headlinePre: 'Stop scaling up your fermentation process in the dark. Let',
