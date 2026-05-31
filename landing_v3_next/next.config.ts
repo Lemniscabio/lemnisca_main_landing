@@ -1,8 +1,16 @@
-import type { NextConfig } from "next";
+  import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {
-  /* config options here */
-  allowedDevOrigins: ['192.168.10.198'],
-};
+  const nextConfig: NextConfig = {
+    allowedDevOrigins: ['192.168.10.198'],
+    async rewrites() {
+      return [
+        {
+          source: '/investor-update/:path*',
+          destination:
+  'https://lemnisca-investor-update.vercel.app/:path*',
+        },
+      ];
+    },
+  };
 
-export default nextConfig;
+  export default nextConfig;
