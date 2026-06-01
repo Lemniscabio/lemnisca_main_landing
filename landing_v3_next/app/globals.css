@@ -1984,3 +1984,7 @@ html, body, #root {
   text-align: right;
   margin-top: -0.75rem;
 }
+
+.message_char_count--over-limit {
+  color: #ef4444;
+}

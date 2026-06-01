@@ -8,6 +8,7 @@ import LinkedinIcon from './Linkedin'
 import LogoMarquee from '@/components/partners_marquee/LogoMarquee'
 import Threads from '@/components/hero_bg/Threads'
 import SiteHeader from '@/components/SiteHeader'
+import { MAX_CONTACT_MESSAGE_LENGTH } from '@/lib/contact'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -26,7 +27,7 @@ function App() {
   const [formStatus, setFormStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [formError, setFormError] = useState('')
 
-  const MAX_MESSAGE_LENGTH = 500
+  const isMessageOverLimit = formData.message.length > MAX_CONTACT_MESSAGE_LENGTH
 
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }))
@@ -34,6 +35,13 @@ function App() {
 
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+
+    if (isMessageOverLimit) {
+      setFormStatus('error')
+      setFormError(`Message must be ${MAX_CONTACT_MESSAGE_LENGTH} characters or less`)
+      return
+    }
+
     setFormStatus('loading')
     setFormError('')
 
@@ -645,10 +653,11 @@ function App() {
                   rows={4}
                   value={formData.message}
                   onChange={handleFormChange}
-                  maxLength={MAX_MESSAGE_LENGTH}
+                  aria-invalid={isMessageOverLimit}
                 ></textarea>
-                <div className='message_char_count'>
-                  {formData.message.length}/{MAX_MESSAGE_LENGTH}
+                <div className={`message_char_count${isMessageOverLimit ? ' message_char_count--over-limit' : ''}`}>
+                  {isMessageOverLimit && 'Message exceeds character limit. '}
+                  {formData.message.length}/{MAX_CONTACT_MESSAGE_LENGTH}
                 </div>
                 <select 
                   name="heardFrom"
@@ -669,7 +678,7 @@ function App() {
                 <button 
                   type="submit" 
                   className='btn-submit'
-                  disabled={formStatus === 'loading'}
+                  disabled={formStatus === 'loading' || isMessageOverLimit}
                 >
                   {formStatus === 'loading' ? 'Submitting...' : "Let's collaborate"}
                 </button>

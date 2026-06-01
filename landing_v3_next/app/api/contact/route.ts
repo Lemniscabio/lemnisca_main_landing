@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { connectToDatabase } from '@/lib/mongodb'
 import { notifyNewLead } from '@/lib/google-chat'
+import { MAX_CONTACT_MESSAGE_LENGTH } from '@/lib/contact'
 
 interface ContactFormData {
   name: string
@@ -9,8 +10,6 @@ interface ContactFormData {
   heardFrom: string
   message?: string
 }
-
-const MAX_MESSAGE_LENGTH = 500
 
 function isValidEmail(email: string): boolean {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -39,9 +38,9 @@ export async function POST(req: NextRequest) {
     }
 
     // Validate message length
-    if (message && message.trim().length > MAX_MESSAGE_LENGTH) {
+    if (message && message.length > MAX_CONTACT_MESSAGE_LENGTH) {
       return NextResponse.json(
-        { success: false, message: `Message must be ${MAX_MESSAGE_LENGTH} characters or less` },
+        { success: false, message: `Message must be ${MAX_CONTACT_MESSAGE_LENGTH} characters or less` },
         { status: 400 }
       )
     }
