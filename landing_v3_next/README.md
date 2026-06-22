@@ -5,6 +5,15 @@ and customer-specific landing pages. Product apps such as Torch are deployed in
 separate repos, so CTA links from this repo are part of each product's analytics
 and attribution contract.
 
+> ## 📖 Start with the Repo Guide
+>
+> **[`docs/REPO_GUIDE.md`](docs/REPO_GUIDE.md) is the single source of truth** for this
+> repo — architecture, route map, the product-isolation model, the code-audit findings,
+> the decision log, and step-by-step playbooks (reports extraction §9, Torch/Thrust
+> landing merges §12, the internal report-PDF-export branch §8). **Read it in full before
+> making any non-trivial change.** This README only covers quick start + the attribution
+> contract below.
+
 ## Getting started
 
 ```bash
