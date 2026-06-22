@@ -89,6 +89,26 @@
   gap: 4px;
 }
 
+.print-report-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 36px;
+  padding: 0 14px;
+  border: 1px solid rgba(37, 99, 235, 0.2);
+  border-radius: 9px;
+  background: var(--r-primary);
+  color: #fff;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.print-report-btn:hover {
+  background: #244b93;
+}
+
 .tab-header-btn {
   position: relative;
   padding: 8px 20px;
@@ -2970,7 +2990,10 @@
   .reports-sidebar,
   .reports-topbar,
   .avira-btn,
+  .print-report-btn,
+  .ask-avira-btn,
   .avira-sidebar,
+  .report-tab-header,
   .chart-expand-pill,
   .reports-bg,
   .hyp-arrow,
@@ -3097,8 +3120,13 @@
   .kpi-card,
   .rec-card,
   .analysis-summary,
-  .problem-statement,
-  .exec-summary {
+  .problem-statement {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .exec-hypotheses-table tr,
+  .exec-closing p {
     page-break-inside: avoid !important;
     break-inside: avoid !important;
   }

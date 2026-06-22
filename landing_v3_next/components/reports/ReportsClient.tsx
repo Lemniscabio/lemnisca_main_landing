@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useMemo, useCallback } from 'react'
+import { useState, useMemo, useCallback, useEffect } from 'react'
+import { flushSync } from 'react-dom'
 import { useReportAnimations } from './hooks/useReportAnimations'
 import { useAviraChat } from './hooks/useAviraChat'
 import { useAutocomplete } from './hooks/useAutocomplete'
@@ -21,6 +22,7 @@ import {
   ChevronRight,
   MessageSquare,
   LogOut,
+  Printer,
 } from 'lucide-react'
 import type { ReportData, KPI } from '@/lib/reports/types'
 import type { ReferenceItem } from '@/lib/reports/avira-references'
@@ -59,6 +61,7 @@ function ReportsClient({ report, referenceCatalog }: ReportsClientProps) {
   const chartRegistry = useMemo(() => createChartRegistry(report), [report])
   const chartExpand = useExpandedChart(chartRegistry, report)
   const [expandedHypotheses, setExpandedHypotheses] = useState<Set<string>>(new Set())
+  const [isExporting, setIsExporting] = useState(false)
 
   const allReferences = useMemo(() => {
     if (!report.hypothesisDiscussion) return []
@@ -92,6 +95,25 @@ function ReportsClient({ report, referenceCatalog }: ReportsClientProps) {
   }, [performLogout])
 
   useIdleTimeout(15 * 60 * 1000, handleIdleTimeout)
+
+  useEffect(() => {
+    const preparePrint = () => {
+      flushSync(() => setIsExporting(true))
+    }
+    const finishPrint = () => setIsExporting(false)
+
+    window.addEventListener('beforeprint', preparePrint)
+    window.addEventListener('afterprint', finishPrint)
+    return () => {
+      window.removeEventListener('beforeprint', preparePrint)
+      window.removeEventListener('afterprint', finishPrint)
+    }
+  }, [])
+
+  const handlePrint = useCallback(() => {
+    flushSync(() => setIsExporting(true))
+    window.setTimeout(() => window.print(), 300)
+  }, [])
 
   const switchTab = useCallback((tab: TabId) => {
     setActiveTab(tab)
@@ -175,7 +197,7 @@ function ReportsClient({ report, referenceCatalog }: ReportsClientProps) {
       </div>
 
       <div
-        className={`reports-page ${aviraOpen ? 'avira-open' : ''}`}
+        className={`reports-page ${aviraOpen ? 'avira-open' : ''} ${isExporting ? 'is-exporting' : ''}`}
         style={{ '--dynamic-right': aviraOpen ? `${aviraWidth}px` : '0px' } as React.CSSProperties}
       >
         <div className="reports-bg" />
@@ -203,6 +225,10 @@ function ReportsClient({ report, referenceCatalog }: ReportsClientProps) {
           </nav>
 
           <div className="tab-header-right">
+            <button className="print-report-btn" onClick={handlePrint} aria-label="Print or save report as PDF">
+              <Printer size={16} />
+              <span>Export PDF</span>
+            </button>
             {!aviraOpen && (
               <button className="avira-btn" onClick={toggleAvira} aria-label="Open AVIRA assistant">
                 <MessageSquare size={16} />
@@ -217,7 +243,14 @@ function ReportsClient({ report, referenceCatalog }: ReportsClientProps) {
 
         {/* Tab Content */}
         <main className="reports-main tab-layout">
-          {activeTab === 'overview' && (
+          <section className="print-cover-page" aria-hidden={!isExporting}>
+            <img src="/white_bg_logo_lemnisca.svg" alt="Lemnisca" className="print-logo" />
+            <h1 className="print-title">{report.title}</h1>
+            <p className="print-subtitle">{report.subtitle}</p>
+            <div className="print-cover-bottom">Prepared for {report.company.name}</div>
+          </section>
+
+          {(activeTab === 'overview' || isExporting) && (
             <div className="tab-panel" key="overview">
               {/* ───── Section: Overview ───── */}
               <section className="report-section" id="overview">
@@ -326,7 +359,7 @@ function ReportsClient({ report, referenceCatalog }: ReportsClientProps) {
             </div>
           )}
 
-          {activeTab === 'analyses' && (
+          {(activeTab === 'analyses' || isExporting) && (
             <div className="tab-panel" key="analyses">
               {/* ───── Section: Analyses ───── */}
               <section className="report-section" id="hypotheses">
@@ -342,7 +375,7 @@ function ReportsClient({ report, referenceCatalog }: ReportsClientProps) {
 
                 <div className="hypotheses-list">
                   {report.analyses.map((a, i) => {
-                    const isExpanded = expandedHypotheses.has(a.id)
+                    const isExpanded = isExporting || expandedHypotheses.has(a.id)
                     return (
                       <div key={a.id} className={`hypothesis-accordion ${isExpanded ? 'expanded' : ''}`}>
                         <button
@@ -386,7 +419,7 @@ function ReportsClient({ report, referenceCatalog }: ReportsClientProps) {
                                         key={idx}
                                         evidence={e}
                                         idx={idx}
-                                        isExporting={false}
+                                        isExporting={isExporting}
                                         resolveChartConfig={chartExpand.resolveChartConfig}
                                         onAttachToAvira={handleAttachToAvira}
                                         onExpandChart={chartExpand.expand}
@@ -403,7 +436,7 @@ function ReportsClient({ report, referenceCatalog }: ReportsClientProps) {
                                           key={idx}
                                           evidence={e}
                                           idx={idx}
-                                          isExporting={false}
+                                          isExporting={isExporting}
                                           resolveChartConfig={chartExpand.resolveChartConfig}
                                           onAttachToAvira={handleAttachToAvira}
                                           onExpandChart={chartExpand.expand}
@@ -423,7 +456,7 @@ function ReportsClient({ report, referenceCatalog }: ReportsClientProps) {
             </div>
           )}
 
-          {activeTab === 'hypotheses' && (
+          {(activeTab === 'hypotheses' || isExporting) && (
             <div className="tab-panel" key="hypotheses">
               {/* ───── Section: Hypothesis Discussion ───── */}
               {report.hypothesisDiscussion && (
@@ -490,7 +523,7 @@ function ReportsClient({ report, referenceCatalog }: ReportsClientProps) {
             </div>
           )}
 
-          {activeTab === 'references' && (
+          {(activeTab === 'references' || isExporting) && (
             <div className="tab-panel" key="references">
               <section className="report-section">
                 <div className="section-header">
