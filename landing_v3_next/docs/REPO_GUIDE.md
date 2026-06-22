@@ -318,6 +318,18 @@ Build must pass before any commit lands. If `/tune` regresses to a Dynamic route
 ### Pushing
 - Origin is set up but is currently 9+ commits ahead of `origin/main`. Confirm with the team before pushing — the dirty reports work may not be ready for remote.
 
+### Internal report PDF export (DO NOT MERGE)
+A print / "Export PDF" button (`components/reports/ReportsClient.tsx` + print rules in
+`Reports.css`) and a headless-Chrome export script (`scripts/export-report-pdf.mjs`, auths
+via `/api/reports/auth` and renders the report to a PDF) live **only** on the branch
+**`internal/report-pdf-export`**. This was built for **internal purposes only** — handing a
+client a static PDF of their report — and is **not** part of the product.
+
+- **Do NOT merge `internal/report-pdf-export` into `main`.** It exists purely as a reusable
+  internal tool.
+- **If you need a report PDF**, check out that branch and use it (a sample output,
+  `lemnisca-fermentation-report.pdf`, is committed there).
+
 ---
 
 ## 9. Future Plan: Reports Extraction Playbook
@@ -475,6 +487,7 @@ These stay in the marketing repo:
 | Fix an AVIRA chat issue | `components/reports/avira/*` + `app/api/avira/route.ts` (and verify §6.6 before touching render path) |
 | Add typecheck script | `package.json`, add `"typecheck": "tsc --noEmit"` |
 | Extract reports to new repo | §9 |
+| Generate a report PDF (internal only) | branch `internal/report-pdf-export` — **do NOT merge** (§8) |
 | Merge Torch / Thrust landings | §12 |
 
 ---
