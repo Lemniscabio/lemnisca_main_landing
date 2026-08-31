@@ -7,10 +7,13 @@ import { Menu, X } from 'lucide-react'
 export type NavItem = { label: string; href: string }
 
 export const NAV_ITEMS: NavItem[] = [
-  { label: 'Tune', href: '/tune' },
-  { label: 'Thrust', href: '/thrust' },
   { label: 'Torch', href: '/torch' },
+  { label: 'Trellis', href: 'https://trellis.lemnisca.bio' },
 ]
+
+function externalLinkProps(href: string) {
+  return href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {}
+}
 
 type Props = {
   /** 'hero' keeps the .hero_header class so GSAP intro animation still targets it. */
@@ -52,7 +55,12 @@ export default function SiteHeader({ variant = 'page', ctaHref }: Props) {
 
       <nav className="site_header_nav" aria-label="Primary">
         {NAV_ITEMS.map((item) => (
-          <Link key={item.href} href={item.href} className="site_header_nav_link">
+          <Link
+            key={item.href}
+            href={item.href}
+            className="site_header_nav_link"
+            {...externalLinkProps(item.href)}
+          >
             {item.label}
           </Link>
         ))}
@@ -80,6 +88,7 @@ export default function SiteHeader({ variant = 'page', ctaHref }: Props) {
             href={item.href}
             className="site_header_mobile_link"
             onClick={() => setOpen(false)}
+            {...externalLinkProps(item.href)}
           >
             {item.label}
           </Link>
