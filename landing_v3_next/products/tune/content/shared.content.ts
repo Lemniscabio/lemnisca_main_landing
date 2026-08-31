@@ -11,9 +11,8 @@ export const shared = {
   },
   nav: {
     items: [
-      { label: 'Tune', href: '/tune' },
-      { label: 'Thrust', href: '/thrust' },
       { label: 'Torch', href: '/torch' },
+      { label: 'Trellis', href: 'https://trellis.lemnisca.bio' },
       { label: 'Request a conversation', href: CALENDLY_URL, cta: true },
     ],
   },

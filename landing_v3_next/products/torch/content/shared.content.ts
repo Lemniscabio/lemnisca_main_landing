@@ -11,9 +11,8 @@ export const shared: SharedContent = sharedContentSchema.parse({
   },
   nav: {
     items: [
-      { label: 'Tune', href: '/tune' },
-      { label: 'Thrust', href: '/thrust' },
       { label: 'Torch', href: '/torch' },
+      { label: 'Trellis', href: 'https://trellis.lemnisca.bio' },
       { label: 'Run assessment', href: 'https://torch.lemnisca.bio/assess?utm_source=lemnisca_landing&utm_medium=torch_landing_cta&utm_campaign=torch_assessment&cta_location=nav', cta: true },
     ],
   },
